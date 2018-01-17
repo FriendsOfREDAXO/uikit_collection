@@ -1,0 +1,69 @@
+
+klxm_defaults_title = KLXM Defaults
+klxm_defaults_general_dummy[] = Rechte für Modulsammlung-Addon
+
+
+klxm_defaults_module              = Module
+
+klxm_defaults_module_mform_mblock = Module mit MForm / MBlock
+
+klxm_defaults_settings				= Einstellungen
+klxm_defaults_check_scss			= SCSS kompilieren?
+klxm_defaults_config_legend1		= KLXM Defaults
+klxm_defaults_config				= Einstellungen
+klxm_defaults_config_save			= Speichern
+
+klxm_defaults_modul               = Modul
+klxm_defaults_moduluebersicht     = KLXM Modulsammlung
+klxm_defaults_config_fehler       = config.inc nicht vorhanden in:
+klxm_defaults_info_fehler         = info.inc nicht vorhanden in:
+klxm_defaults_input_fehler        = input.inc nicht vorhanden in:
+klxm_defaults_output_fehler       = output.inc nicht vorhanden in:
+klxm_defaults_template_fehler     = template.inc nicht vorhanden in:
+
+klxm_defaults_fertig              = Fertig
+klxm_defaults_in_bearbeitung      = In Bearbeitung
+klxm_defaults_entwicklung_geplant = Entwicklung geplant
+klxm_defaults_input               = Input
+klxm_defaults_output              = Output
+klxm_defaults_acc_template        = Template
+
+klxm_defaults_css                   = CSS
+klxm_defaults_scss                  = SCSS
+
+klxm_defaults_info                  = Info
+klxm_defaults_styles                = Styles
+klxm_defaults_modul_installieren    = Modul installieren
+klxm_defaults_template_installieren = Template installieren
+
+klxm_defaults_modul_angelegt        = Folgendes Modul wurde angelegt:
+klxm_defaults_modulname_fehler      = Bitte einen Modulnamen angeben!
+
+klxm_defaults_template_angelegt     = Folgendes Template wurde angelegt:
+klxm_defaults_templatename_fehler   = Bitte einen Templatenamen angeben!
+
+klxm_defaults_kopierter_ordner      = Folgender Ordner wurde in den Assets Ordner kopiert:
+
+klxm_defaults_templates = Templates
+klxm_defaults_template  = Template
+klxm_defaults_templateuebersicht     = Templateübersicht
+klxm_defaults_template_id            = Template ID
+klxm_defaults_template_bezeichnung   = Template Bezeichnung
+klxm_defaults_template_verwendung    = Verwendung
+klxm_defaults_template_benutzung     = Aktuelle Templatebenutzung
+
+
+
+klxm_defaults_changelog = Changelog
+klxm_defaults_lizenz = Lizenz
+
+klxm_defaults_modul_id            = Modul ID
+klxm_defaults_modul_bezeichnung   = Modul Bezeichnung
+klxm_defaults_modul_verwendung    = Verwendung
+klxm_defaults_modul_benutzung     = Aktuelle Modulbenutzung
+klxm_defaults_module_loeschen     = Unbenutze Module löschen
+klxm_defaults_modul_geloescht     = Modul gelöscht: ID
+klxm_defaults_extras              = Extras
+
+
+perm_general_klxm_login_image[] = Rechte für das BE5 Addon Plugin: Login Image

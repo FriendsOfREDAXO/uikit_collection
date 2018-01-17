@@ -1,0 +1,14 @@
+# Alle hier gesetzten Werte können über $addon->getProperty($key) abgefragt werden
+
+package: klxm_defaults/login_image
+version: '0.2'
+author: Friends Of REDAXO
+supportpage: https://github.com/KLXM
+title: 'Login Image'
+nav_icon: fa-user-o
+kurzbeschreibung: 'Darstellung eines Bildes auf der Loginseite'
+umgebung: Backend
+
+page:
+    title: 'Login Image'
+    hidden: true

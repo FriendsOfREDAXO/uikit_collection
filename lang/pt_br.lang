@@ -1,0 +1,59 @@
+
+klxm_defaults_title = Coleção de módulos
+klxm_defaults_general_dummy[] = Permissões para coleção de módulos AddOn
+
+
+klxm_defaults_module              = Módulos
+
+klxm_defaults_module_mform_mblock = Módulos com MForm / MBlock
+
+klxm_defaults_modul               = Módulo
+klxm_defaults_moduluebersicht     = Visão geral de módulos
+klxm_defaults_config_fehler       = config.inc faltando em:
+klxm_defaults_info_fehler         = info.inc faltando em:
+klxm_defaults_input_fehler        = input.inc  faltando em:
+klxm_defaults_output_fehler       = output.inc faltando em:
+klxm_defaults_template_fehler     = template.inc faltando em:
+
+klxm_defaults_fertig              = Feito
+klxm_defaults_in_bearbeitung      = Em desenvolvimento
+klxm_defaults_entwicklung_geplant = Desenvolvimento planejado
+klxm_defaults_input               = Input
+klxm_defaults_output              = Output
+klxm_defaults_acc_template        = Template
+
+klxm_defaults_css                   = CSS
+klxm_defaults_scss                  = SCSS
+
+klxm_defaults_info                  = Info
+klxm_defaults_styles                = Estilos
+klxm_defaults_modul_installieren    = Intalar módulo
+klxm_defaults_template_installieren = Instalar template
+
+klxm_defaults_modul_angelegt        = O módulo a seguir foi criado:
+klxm_defaults_modulname_fehler      = Por favor, insira um nome para o módulo
+
+klxm_defaults_template_angelegt     = O template a seguir foi criado:
+klxm_defaults_templatename_fehler   = Por favor, insira um nome para o template!
+
+klxm_defaults_kopierter_ordner      = A pasta a seguir foi copiada para a pasta de ativos:
+
+klxm_defaults_templates = Templates
+klxm_defaults_template  = Template
+klxm_defaults_templateuebersicht     = Visão geral do template
+klxm_defaults_template_id            = Id do template
+klxm_defaults_template_bezeichnung   = Descrição do template
+klxm_defaults_template_verwendung    = Uso
+klxm_defaults_template_benutzung     = Uso de template atual
+
+
+
+klxm_defaults_changelog = Changelog
+klxm_defaults_lizenz = Licença
+
+klxm_defaults_modul_id            = Id do módulo
+klxm_defaults_modul_bezeichnung   = Descrição do módulo
+klxm_defaults_modul_verwendung    = Uso
+klxm_defaults_modul_benutzung     = Uso do módulo atual
+klxm_defaults_module_loeschen     = Deletar módulos não utilizados
+klxm_defaults_modul_geloescht     = Módulo deletado: ID

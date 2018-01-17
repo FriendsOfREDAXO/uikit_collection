@@ -1,0 +1,34 @@
+$global-link-color: #000;
+$global-link-hover-color: #5F656E;
+$global-large-box-shadow: 0 14px 25px rgba(0,0,0,0.16);
+$dotnav-item-width: 55px;
+$dotnav-item-height: 12px;
+$dotnav-item-border-radius: 5%;
+//Navigationsleiste 
+$offcanvas-bar-background: rgba(0, 0, 0, 0.85);
+$navbar-background: rgba(0, 0, 0, 0.0);
+$navbar-dropdown-margin: 0px;
+$navbar-item-color: #000;
+$global-color: #000;
+$nav-default-item-color: #FFF !important;
+$nav-default-sublist-item-color: #FFF !important;
+$global-muted-color: #000;
+$navbar-nav-item-height: 100px;
+$nav-default-font-size: 1.1em;
+
+// Überschriften und Fonts
+$base-h1-font-size: 3.0em;
+$base-h2-font-size: 1.8em; 
+$base-h3-font-size: 1.2em;
+$base-link-text-decoration: none;
+$global-font-family:  "barlow","Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
+$base-body-font-size: 100%;
+$base-body-font-family: "barlow";
+$base-body-font-weight: 400;
+
+@import "SCSS/uikit/variables-theme";
+@import "SCSS/uikit/mixins-theme";  
+
+@mixin hook-card() { }
+
+@import "SCSS/uikit/uikit-theme";

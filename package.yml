@@ -1,0 +1,30 @@
+# Alle hier gesetzten Werte können über $addon->getProperty($key) abgefragt werden
+
+package: klxm_defaults
+version: '1.0.0'
+author: 'Friends Of REDAXO'
+supportpage: https://github.com/klxm
+info: 'Klxm'
+compile: 0
+
+page:
+    title: 'translate:title'
+    perm: klxm[]
+    icon: rex-icon fa-times-circle
+    block: system
+    pjax: false
+    subpages:
+        module: {title: 'translate:module'}
+        templates: {title: 'translate:templates', icon: rex-icon fa-file-text-o}
+        settings: {title: translate:settings, icon: rex-icon fa-cog}
+        extras: { title: 'translate:extras', icon: rex-icon fa-th}
+        info:
+            title: 'Info'
+            itemclass: 'pull-right'
+            subpages:
+                info: { title: 'Info'}
+                changelog: { title: 'translate:changelog'}
+                lizenz: { title: 'translate:lizenz'}
+requires:
+    packages:
+         video: '^1.0.0'
