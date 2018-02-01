@@ -23,7 +23,7 @@ foreach ($rexInputVars as $rexVar) {
     $header = $rexVar['header'];
     $content = $rexVar['content'];
     $footer = $rexVar['footer'];
-
+  
     // wrapper
     $output[] = '<div class="' . $ukWidth . '">';
     $output[] = '<div class="uk-card ' . $ukColor . ' uk-card-body">';
@@ -48,9 +48,4 @@ foreach ($rexInputVars as $rexVar) {
 }
 
 $output[] = '</div>';
-
-
 echo join("\n", $output);
-
-
-
