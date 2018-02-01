@@ -20,9 +20,9 @@ foreach($rexInputVars as $rexVar) {
     $ukWidth = 'uk-width-'.$rexVar['ukWidth'];
 
     // content vars
-    $header = rex_escape($rexVar['header']);
-    $content = rex_escape($rexVar['content']);
-    $footer = rex_escape($rexVar['footer']);
+    $header = $rexVar['header'];
+    $content = $rexVar['content'];
+    $footer = $rexVar['footer'];
 
     // wrapper
     $output[] = '<div class="'.$ukWidth.'">';
