@@ -17,8 +17,6 @@ $MForm->closeTab();
 
 echo $MForm->show();
 
-
-// cards / mblocks
 $id = 1;
 $MForm = new MForm();
 $MForm->addFieldset('UiKit Cards:');
