@@ -17,6 +17,10 @@ $MForm->closeTab();
 
 echo $MForm->show();
 
+<<<<<<< HEAD:lib/module_mform/01_uikit_card/input.inc
+=======
+// cards / mblocks
+>>>>>>> 676dde8ff4c83cdfecd4f422d69db5d6d91b149e:lib/module_mform/01_uikit_cards/input.inc
 $id = 1;
 $MForm = new MForm();
 $MForm->addFieldset('UiKit Cards:');
