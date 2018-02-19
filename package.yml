@@ -12,7 +12,6 @@ page:
     perm: uikit[]
     icon: rex-icon fa-times-circle
     block: system
-    pjax: false
     subpages:
         module: {title: 'translate:module'}
         module_mform: {title: 'translate:module_mform_mblock'}
