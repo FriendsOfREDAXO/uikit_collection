@@ -25,7 +25,7 @@ $global-font-family:  "barlow","Segoe UI", Roboto, "Helvetica Neue", Arial, sans
 $base-body-font-size: 100%;
 $base-body-font-family: "barlow";
 $base-body-font-weight: 400;
-
+@import "SCSS/uikit/variables-theme";
 @import "SCSS/uikit/mixins-theme";  
 
 @mixin hook-card() { }
