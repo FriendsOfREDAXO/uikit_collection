@@ -9,7 +9,7 @@ compile: 0
 
 page:
     title: 'translate:title'
-    perm: klxm[]
+    perm: uikit[]
     icon: rex-icon fa-times-circle
     block: system
     pjax: false
