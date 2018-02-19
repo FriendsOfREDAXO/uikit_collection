@@ -18,7 +18,6 @@ page:
         module_mform: {title: 'translate:module_mform_mblock'}
         templates: {title: 'translate:templates', icon: rex-icon fa-file-text-o}
         settings: {title: translate:settings, icon: rex-icon fa-cog}
-        extras: { title: 'translate:extras', icon: rex-icon fa-th}
         info:
             title: 'Info'
             itemclass: 'pull-right'
