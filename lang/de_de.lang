@@ -14,7 +14,7 @@ uikit_collection_config				= Einstellungen
 uikit_collection_config_save			= Speichern
 
 uikit_collection_modul               = Modul
-uikit_collection_moduluebersicht     = KLXM Modulsammlung
+uikit_collection_moduluebersicht     = UIKIT Modulsammlung
 uikit_collection_config_fehler       = config.inc nicht vorhanden in:
 uikit_collection_info_fehler         = info.inc nicht vorhanden in:
 uikit_collection_input_fehler        = input.inc nicht vorhanden in:
