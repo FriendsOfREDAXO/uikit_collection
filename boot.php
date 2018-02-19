@@ -4,7 +4,7 @@ $this->setProperty('author', 'klxm');
 
 if (rex::isBackend() && rex::getUser()) {
 
-    rex_perm::register('klxm_modul[]');
+    rex_perm::register('uikit_modul[]');
 
     // Sortierung Medienpool aufsteigend
     if (rex::isBackend() && rex::getUser()) {
