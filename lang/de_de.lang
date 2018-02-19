@@ -9,7 +9,7 @@ uikit_collection_module_mform_mblock = Module mit MForm / MBlock
 
 uikit_collection_settings				= Einstellungen
 uikit_collection_check_scss			= SCSS kompilieren?
-uikit_collection_config_legend1		= KLXM Defaults
+uikit_collection_config_legend1		= UIKIT Collection
 uikit_collection_config				= Einstellungen
 uikit_collection_config_save			= Speichern
 
