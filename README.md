@@ -1,6 +1,6 @@
 ## UIKIT Collection für REDAXO 5.x
 
-Erleichtert die Installation einiger Tools / Templates / Assets und Module für UIKIT-Projekte
+Erleichtert die Installation einiger Tools / Templates / Assets und Module für UIKIT-Projekte https://getuikit.com
 
 ### Autor
 
