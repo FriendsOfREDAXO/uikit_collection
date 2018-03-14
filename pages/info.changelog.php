@@ -1,6 +1,6 @@
 <?php
 
-$file = rex_file::get(rex_path::addon('klxm_defaults','CHANGELOG.md'));
+$file = rex_file::get(rex_path::addon('uikit_collection','CHANGELOG.md'));
 $Parsedown = new Parsedown();
 
 $content =  '<div id="modulsammlung">'.$Parsedown->text($file).'</div>';
