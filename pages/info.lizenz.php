@@ -1,5 +1,5 @@
 <?php
-$file = rex_file::get(rex_path::addon('klxm_defaults','LICENSE.md'));
+$file = rex_file::get(rex_path::addon('uikit_collection','LICENSE.md'));
 $Parsedown = new Parsedown();
 
 $content =  '<div id="modulsammlung">'.$Parsedown->text($file).'</div>';
