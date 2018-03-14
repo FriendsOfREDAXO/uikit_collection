@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo rex_escape($this->getValue('name')); ?></title>
-    <link rel="stylesheet" href="<?= rex_url::base('assets/addons/klxm_defaults/uikit/css/uikit.css') ?>"> 
-    <script type="text/javascript" src="<?= rex_url::base('assets/addons/klxm_defaults/uikit/js/uikit.min.js') ?>"></script>
-    <script type="text/javascript" src="<?= rex_url::base('assets/addons/klxm_defaults/uikit/js/uikit-icons.min.js') ?>"></script> 
+    <link rel="stylesheet" href="<?= rex_url::base('assets/addons/uikit_collection/uikit/css/uikit.css') ?>"> 
+    <script type="text/javascript" src="<?= rex_url::base('assets/addons/uikit_collection/uikit/js/uikit.min.js') ?>"></script>
+    <script type="text/javascript" src="<?= rex_url::base('assets/addons/uikit_collection/uikit/js/uikit-icons.min.js') ?>"></script> 
 
 </head>
 <body>
