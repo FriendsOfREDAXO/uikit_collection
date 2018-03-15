@@ -11,7 +11,6 @@ page:
     title: 'translate:title'
     perm: uikit[]
     icon: rex-icon fa-times-circle
-    block: system
     subpages:
         module: {title: 'translate:module'}
         module_mform: {title: 'translate:module_mform_mblock'}
