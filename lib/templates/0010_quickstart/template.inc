@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <?php
     if(rex_addon::get("yrewrite")->isInstalled() && rex_addon::get("yrewrite")->isAvailable()) {
         $seo = new rex_yrewrite_seo();
+     
         echo $seo->getTitleTag() . PHP_EOL;
         echo $seo->getDescriptionTag() . PHP_EOL;
         echo $seo->getRobotsTag() . PHP_EOL;
@@ -21,7 +21,6 @@
             src="<?= rex_url::base('assets/addons/uikit_collection/uikit/js/uikit.min.js') ?>"></script>
     <script type="text/javascript"
             src="<?= rex_url::base('assets/addons/uikit_collection/uikit/js/uikit-icons.min.js') ?>"></script>
-
 </head>
 <body>
 

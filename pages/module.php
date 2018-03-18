@@ -1,5 +1,5 @@
 <?php
-$dir = '../redaxo/src/addons/klxm_defaults/lib/module';
+$dir = '../redaxo/src/addons/uikit_collection/lib/module';
 $modulesdirs = glob($dir.'/*',GLOB_ONLYDIR);
 
 $moduls = array();

@@ -1,6 +1,6 @@
 <?php
 
-$dir = '../redaxo/src/addons/klxm_defaults/lib/pakete';
+$dir = '../redaxo/src/addons/uikit_collection/lib/pakete';
 $modulesdirs = glob($dir.'/*',GLOB_ONLYDIR);
 
 $templates = array();

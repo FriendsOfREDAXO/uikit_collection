@@ -1,5 +1,5 @@
 <?php
-$dir = '../redaxo/src/addons/klxm_defaults/lib/module_mform';
+$dir = '../redaxo/src/addons/uikit_collection/lib/module_mform';
 $modulesdirs = glob($dir.'/*',GLOB_ONLYDIR);
 
 $moduls = array();
