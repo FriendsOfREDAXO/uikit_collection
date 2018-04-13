@@ -88,7 +88,7 @@ if(!rex::isBackend()) {
 			$klxm_image = '<img class="'.$bild_schatten.' uk-border-circle" src="/media/'.$media.'">';
 		}
 		else {
-			$klxm_image = '<img class="'.$bild_schatten.' uk-border-circle" src="/images/klxm_quadrat/'.$media.'">';
+			$klxm_image = '<img class="'.$bild_schatten.' uk-border-circle" src="/images/uikit_quadrat/'.$media.'">';
 		}
 	}
 
@@ -97,13 +97,13 @@ if(!rex::isBackend()) {
 			$klxm_image = '<img class="'.$bild_schatten.'" src="/media/'.$media.'">';
 		}
 		else {
-			$klxm_image = '<img class="'.$bild_schatten.'" src="/images/klxm_standard/'.$media.'" >';
+			$klxm_image = '<img class="'.$bild_schatten.'" src="/images/uikit_standard/'.$media.'" >';
 		}
 	}
 
 ## Lightbox Funktion ##
 if($uk_lightbox != ' ') {
-	$media_output = '<a class="uk-inline" href="/images/klxm_standard/'.$media.'" alt="'.$caption_bild.'" caption="'.$caption_bild.'" >
+	$media_output = '<a class="uk-inline" href="/images/uikit_standard/'.$media.'" alt="'.$caption_bild.'" caption="'.$caption_bild.'" >
 						'.$klxm_image.'
 					</a>
 					<p class="klxm_bild_unterschrift uk-margin-small '.$bild_unterschrift_anzeigen.'">'.$caption_bild.'</p>';
