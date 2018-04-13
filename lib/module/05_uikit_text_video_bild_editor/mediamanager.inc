@@ -1,168 +1,91 @@
 <?php
 
-###################################################
-###################################################
-###########		 INITIAL FUNCTIONS		###########
-###################################################
-###################################################
+## uikit_SRCSET ##
 
-if(rex::isBackend())
-{
-echo '<i class="fa fa-anchor" aria-hidden="true"></i> Anker: <span class="label label-success">#topicREX_ARTICLE_ID-REX_SLICE_ID</span> <i>Animationen werden im Backend nicht angezeigt</i>';
-}
+  $mediamanager_typ = rex_sql::factory();
+  $mediamanager_typ->setTable('rex_media_manager_type');
+        $mediamanager_typ->setValue('name','uikit_srcset');
+        $mediamanager_typ->setValue('description','Erstellen eines Image Source-Set');
 
-$text = $media = $plyr = $link = $flyIn = $position_bild = $groesse_bild = $bild_unterschrift_anzeigen = $caption_bild = $autoplayStandard = $hideControls = $clickToPlay = $media_output = $uk_lightbox = $columns = '';
+        try {
+          $mediamanager_typ->insert();
+          echo rex_view::success('Der Media Manager "uikit_srcset" Typ wurde angelegt. ');
+        } catch (rex_sql_exception $e) {
+              echo rex_view::warning('Der Media Manager "uikit_srcset" Typ wurde nicht angelegt.<br/>Wahrscheinlich existiert er schon.');
+        }
 
-###################################################
-###################################################
-###########		   TEXT FUNCTIONS		###########
-###################################################
-###################################################
+        $mediamanager_typ_id = (int) $mediamanager_typ->getLastId();
 
-$text = 'REX_VALUE[id=1 output=html]';
-$columns = 'REX_VALUE[8]';
+        $mediamanager_typ_effekt = rex_sql::factory();
+        $mediamanager_typ_effekt->setTable('rex_media_manager_type_effect');
+        $mediamanager_typ_effekt->setValue('type_id', $mediamanager_typ_id);
+        $mediamanager_typ_effekt->setValue('priority', 1);
+        $mediamanager_typ_effekt->setValue('effect', 'srcset');
+        $mediamanager_typ_effekt->setValue('parameters', '{"rex_effect_rounded_corners":{"rex_effect_rounded_corners_topleft":"","rex_effect_rounded_corners_topright":"","rex_effect_rounded_corners_bottomleft":"","rex_effect_rounded_corners_bottomright":""},"rex_effect_workspace":{"rex_effect_workspace_width":"","rex_effect_workspace_height":"","rex_effect_workspace_hpos":"left","rex_effect_workspace_vpos":"top","rex_effect_workspace_set_transparent":"colored","rex_effect_workspace_bg_r":"","rex_effect_workspace_bg_g":"","rex_effect_workspace_bg_b":""},"rex_effect_crop":{"rex_effect_crop_width":"","rex_effect_crop_height":"","rex_effect_crop_offset_width":"","rex_effect_crop_offset_height":"","rex_effect_crop_hpos":"center","rex_effect_crop_vpos":"middle"},"rex_effect_insert_image":{"rex_effect_insert_image_brandimage":"","rex_effect_insert_image_hpos":"left","rex_effect_insert_image_vpos":"top","rex_effect_insert_image_padding_x":"-10","rex_effect_insert_image_padding_y":"-10"},"rex_effect_rotate":{"rex_effect_rotate_rotate":"0"},"rex_effect_filter_colorize":{"rex_effect_filter_colorize_filter_r":"","rex_effect_filter_colorize_filter_g":"","rex_effect_filter_colorize_filter_b":""},"rex_effect_image_properties":{"rex_effect_image_properties_jpg_quality":"","rex_effect_image_properties_png_compression":"","rex_effect_image_properties_webp_quality":"","rex_effect_image_properties_interlace":null},"rex_effect_focuspoint_fit":{"rex_effect_focuspoint_fit_width":"","rex_effect_focuspoint_fit_height":"","rex_effect_focuspoint_fit_zoom":"Zielgr\u00f6\u00dfe verwenden (0%)","rex_effect_focuspoint_fit_hpos":"","rex_effect_focuspoint_fit_vpos":"","rex_effect_focuspoint_fit_fp":"Fokuspunkt des Bildes, Fallback allgemeiner Bezugspunkt"},"rex_effect_focuspoint_resize":{"rex_effect_focuspoint_resize_width":"","rex_effect_focuspoint_resize_height":"","rex_effect_focuspoint_resize_style":"maximum","rex_effect_focuspoint_resize_allow_enlarge":"enlarge"},"rex_effect_filter_brightness":{"rex_effect_filter_brightness_brightness":""},"rex_effect_flip":{"rex_effect_flip_flip":"X"},"rex_effect_filter_contrast":{"rex_effect_filter_contrast_contrast":""},"rex_effect_filter_sharpen":{"rex_effect_filter_sharpen_amount":"80","rex_effect_filter_sharpen_radius":"0.5","rex_effect_filter_sharpen_threshold":"3"},"rex_effect_srcset":{"rex_effect_srcset_width":"","rex_effect_srcset_style":"maximum","rex_effect_srcset_allow_enlarge":"enlarge","rex_effect_srcset_srcset":" 479w, 767w, 959w, 1199w, 1600w"},"rex_effect_resize":{"rex_effect_resize_width":"","rex_effect_resize_height":"","rex_effect_resize_style":"maximum","rex_effect_resize_allow_enlarge":"enlarge"},"rex_effect_filter_blur":{"rex_effect_filter_blur_repeats":"10","rex_effect_filter_blur_type":"gaussian","rex_effect_filter_blur_smoothit":""},"rex_effect_mirror":{"rex_effect_mirror_height":"","rex_effect_mirror_set_transparent":"colored","rex_effect_mirror_bg_r":"","rex_effect_mirror_bg_g":"","rex_effect_mirror_bg_b":""},"rex_effect_header":{"rex_effect_header_download":"open_media","rex_effect_header_cache":"no_cache"},"rex_effect_convert2img":{"rex_effect_convert2img_convert_to":"jpg","rex_effect_convert2img_density":"150"},"rex_effect_mediapath":{"rex_effect_mediapath_mediapath":""}}');
 
-###################################################
-###################################################
-###########		   MEDIA FUNCTIONS		###########
-###################################################
-###################################################
+        try {
+          $mediamanager_typ_effekt->insert();
+          echo rex_view::success('Der Media Manager Effekt wurde angelegt und kann konfiguriert werden!');
+        } catch (rex_sql_exception $e) {
+              echo rex_view::warning('Der Media Manager Effekt wurde nicht angelegt.<br/>Wahrscheinlich existiert er schon.');
+        }
+        
+## uikit_STANDARD ##   
 
-$media						= 'REX_VALUE[6]';
-$plyr						= new rex_video();
-$link						= $plyr->getVideoType($media);
-$position_bild				= 'REX_VALUE[2]';
-$groesse_bild				= 'REX_VALUE[3]';
-$bild_unterschrift_anzeigen = 'REX_VALUE[4]';
-$caption_bild				= 'REX_VALUE[5]';
-$uk_lightbox				= 'REX_VALUE[7]';
-$bild_schatten				= 'REX_VALUE[9]';
-$bild_als_kreis				= 'REX_VALUE[10]';
-$animiere_bild				= 'REX_VALUE[11]';
-$repeat_animation			= 'REX_VALUE[12]';
-$autoplayStandart			= rex_config::get('video', 'autoplay_plyr');
-$hideControls				= rex_config::get('video', 'controls_plyr');
-$clickToPlay				= rex_config::get('video', 'click_plyr');
-if(empty($caption_bild) == true) {
-	$caption_bild = ' ';
-} 
+  $mediamanager_typ = rex_sql::factory();
+  $mediamanager_typ->setTable('rex_media_manager_type');
+        $mediamanager_typ->setValue('name','uikit_standard');
+        $mediamanager_typ->setValue('description','Erstellen eines Image Source-Set');
 
-## Bild bekommen für Typ oder ähnliches ##
-$media_type = rex_media::get($media);
-if ($media_type) {
-    // Medium vorhanden
-    $media_type = $media_type->getType();
-} else {
-    // Kein Medium ausgewählt
-}
+        try {
+          $mediamanager_typ->insert();
+          echo rex_view::success('Der Media Manager "uikit_standard" Typ wurde angelegt. ');
+        } catch (rex_sql_exception $e) {
+              echo rex_view::warning('Der Media Manager "uikit_standard" Typ wurde nicht angelegt.<br/>Wahrscheinlich existiert er schon.');
+        }
 
-## animiere Bild ##
-if(!rex::isBackend()) {
-	
-	if($repeat_animation == 'ja') {
-		$repeatIt = ' repeat: true';
-	}
-	if($repeat_animation == 'nein') {
-		$repeatIt = ' repeat: false';
-	}
+        $mediamanager_typ_id = (int) $mediamanager_typ->getLastId();
 
-	if($animiere_bild == 'ja') {
-		if($position_bild == 'klxm_pright') {
-			$flyIn = 'uk-scrollspy="cls:uk-animation-slide-right;'.$repeatIt.'"';
-		}
-		if($position_bild == 'klxm_pleft') {
-			$flyIn = 'uk-scrollspy="cls:uk-animation-slide-left;'.$repeatIt.'"';
-		}
-		if($position_bild == ' ') {
-			$flyIn = 'uk-scrollspy="cls:uk-animation-scale-up;'.$repeatIt.'"';
-		}
-	}
-}
-	if($animiere_bild == 'nein') {
-		$flyIn = ' ';
-	}
+        $mediamanager_typ_effekt = rex_sql::factory();
+        $mediamanager_typ_effekt->setTable('rex_media_manager_type_effect');
+        $mediamanager_typ_effekt->setValue('type_id', $mediamanager_typ_id);
+        $mediamanager_typ_effekt->setValue('priority', 1);
+        $mediamanager_typ_effekt->setValue('effect', 'resize');
+        $mediamanager_typ_effekt->setValue('parameters', '');
 
-## Bild als Kreis Funktion ##
-	if($bild_als_kreis == 'ja') {
-		if($media_type == 'image/svg+xml') {
-			$klxm_image = '<img class="'.$bild_schatten.' uk-border-circle" src="/media/'.$media.'">';
-		}
-		else {
-			$klxm_image = '<img class="'.$bild_schatten.' uk-border-circle" src="/images/uikit_quadrat/'.$media.'">';
-		}
-	}
+        try {
+          $mediamanager_typ_effekt->insert();
+          echo rex_view::success('Der Media Manager Effekt wurde angelegt und kann konfiguriert werden!');
+        } catch (rex_sql_exception $e) {
+              echo rex_view::warning('Der Media Manager Effekt wurde nicht angelegt.<br/>Wahrscheinlich existiert er schon.');
+        }
 
-	if($bild_als_kreis == 'nein') {
-		if($media_type == 'image/svg+xml') {
-			$klxm_image = '<img class="'.$bild_schatten.'" src="/media/'.$media.'">';
-		}
-		else {
-			$klxm_image = '<img class="'.$bild_schatten.'" src="/images/uikit_standard/'.$media.'" >';
-		}
-	}
+## uikit_QUADRAT ##
 
-## Lightbox Funktion ##
-if($uk_lightbox != ' ') {
-	$media_output = '<a class="uk-inline" href="/images/uikit_standard/'.$media.'" alt="'.$caption_bild.'" caption="'.$caption_bild.'" >
-						'.$klxm_image.'
-					</a>
-					<p class="klxm_bild_unterschrift uk-margin-small '.$bild_unterschrift_anzeigen.'">'.$caption_bild.'</p>';
-}
-else {
-		$media_output = $klxm_image.'<p class="klxm_bild_unterschrift uk-margin-small '.$bild_unterschrift_anzeigen.'">'.$caption_bild.'</p>';
-}
+  $mediamanager_typ = rex_sql::factory();
+  $mediamanager_typ->setTable('rex_media_manager_type');
+        $mediamanager_typ->setValue('name','uikit_quadrat');
+        $mediamanager_typ->setValue('description','Erstellen eines Image Source-Set');
 
-## Wenn Video dann wird Bild überschrieben ##
-if($media == '') {
-	$media_output = '';
-}
-if($plyr->checkYoutube($link) == true) {
-	$media_output = '<div class="rex_video '.$autoplayStandard.' '.$hideControls.' '.$clickToPlay.'" data-type="youtube"  data-video-id="'.$plyr->getYoutubeId($link).'"></div></br>';
-}
-if($plyr->checkVimeo($link) == true) {
-    $media_output = '<div class="rex_video '.$hideControls.' '.$autoplayStandard.' '.$clickToPlay.'" data-type="vimeo" data-video-id="'.$plyr->getVimeoId($link).'"></div></br>';
-}
-if($plyr->checkMedia($media) !== false) {
-    if($autoplayStandard == 'Ja') {
-        $localAutoplay = "autoplay";
-    }
-    $media_output = '
-        <section>
-            <video>
-                <source src="'.$link.'" type="video/mp4">
-            </video>
-        </section>
-         ';
-}
-if($plyr->checkAudio($file) !== false) {
-    $media_output = '  
-        <section>
-            <audio '.$autoplay_audio.' '.$loop_audio.'>
-                <source src="'.$link.'" type="audio/mp3">
-            </audio>
-        </section>
-        ';
-}
+        try {
+          $mediamanager_typ->insert();
+          echo rex_view::success('Der Media Manager "uikit_quadrat" Typ wurde angelegt. ');
+        } catch (rex_sql_exception $e) {
+              echo rex_view::warning('Der Media Manager "uikit_quadrat" Typ wurde nicht angelegt.<br/>Wahrscheinlich existiert er schon.');
+        }
 
-## Wenn Caption = Empty -> Caption wird auf ' ' gesetzt da sonst ein Bug entsteht ##
+        $mediamanager_typ_id = (int) $mediamanager_typ->getLastId();
 
+        $mediamanager_typ_effekt = rex_sql::factory();
+        $mediamanager_typ_effekt->setTable('rex_media_manager_type_effect');
+        $mediamanager_typ_effekt->setValue('type_id', $mediamanager_typ_id);
+        $mediamanager_typ_effekt->setValue('priority', 1);
+        $mediamanager_typ_effekt->setValue('effect', 'focuspoint_fit');
+        $mediamanager_typ_effekt->setValue('parameters', '{"rex_effect_rounded_corners":{"rex_effect_rounded_corners_topleft":"","rex_effect_rounded_corners_topright":"","rex_effect_rounded_corners_bottomleft":"","rex_effect_rounded_corners_bottomright":""},"rex_effect_workspace":{"rex_effect_workspace_width":"","rex_effect_workspace_height":"","rex_effect_workspace_hpos":"left","rex_effect_workspace_vpos":"top","rex_effect_workspace_set_transparent":"colored","rex_effect_workspace_bg_r":"","rex_effect_workspace_bg_g":"","rex_effect_workspace_bg_b":""},"rex_effect_crop":{"rex_effect_crop_width":"600","rex_effect_crop_height":"600","rex_effect_crop_offset_width":"","rex_effect_crop_offset_height":"","rex_effect_crop_hpos":"center","rex_effect_crop_vpos":"middle"},"rex_effect_insert_image":{"rex_effect_insert_image_brandimage":"","rex_effect_insert_image_hpos":"left","rex_effect_insert_image_vpos":"top","rex_effect_insert_image_padding_x":"-10","rex_effect_insert_image_padding_y":"-10"},"rex_effect_rotate":{"rex_effect_rotate_rotate":"0"},"rex_effect_filter_colorize":{"rex_effect_filter_colorize_filter_r":"","rex_effect_filter_colorize_filter_g":"","rex_effect_filter_colorize_filter_b":""},"rex_effect_image_properties":{"rex_effect_image_properties_jpg_quality":"","rex_effect_image_properties_png_compression":"","rex_effect_image_properties_webp_quality":"","rex_effect_image_properties_interlace":null},"rex_effect_focuspoint_fit":{"rex_effect_focuspoint_fit_width":"600","rex_effect_focuspoint_fit_height":"600","rex_effect_focuspoint_fit_zoom":"Ausschnitt gr\u00f6\u00dftm\u00f6glich w\u00e4hlen (100%)","rex_effect_focuspoint_fit_hpos":"","rex_effect_focuspoint_fit_vpos":"","rex_effect_focuspoint_fit_fp":"Fokuspunkt des Bildes, Fallback allgemeiner Bezugspunkt"},"rex_effect_focuspoint_resize":{"rex_effect_focuspoint_resize_width":"","rex_effect_focuspoint_resize_height":"","rex_effect_focuspoint_resize_style":"maximum","rex_effect_focuspoint_resize_allow_enlarge":"enlarge"},"rex_effect_filter_brightness":{"rex_effect_filter_brightness_brightness":""},"rex_effect_flip":{"rex_effect_flip_flip":"X"},"rex_effect_filter_contrast":{"rex_effect_filter_contrast_contrast":""},"rex_effect_filter_sharpen":{"rex_effect_filter_sharpen_amount":"80","rex_effect_filter_sharpen_radius":"0.5","rex_effect_filter_sharpen_threshold":"3"},"rex_effect_srcset":{"rex_effect_srcset_width":"","rex_effect_srcset_style":"maximum","rex_effect_srcset_allow_enlarge":"enlarge","rex_effect_srcset_srcset":""},"rex_effect_resize":{"rex_effect_resize_width":"600","rex_effect_resize_height":"600","rex_effect_resize_style":"maximum","rex_effect_resize_allow_enlarge":"enlarge"},"rex_effect_filter_blur":{"rex_effect_filter_blur_repeats":"10","rex_effect_filter_blur_type":"gaussian","rex_effect_filter_blur_smoothit":""},"rex_effect_mirror":{"rex_effect_mirror_height":"","rex_effect_mirror_set_transparent":"colored","rex_effect_mirror_bg_r":"","rex_effect_mirror_bg_g":"","rex_effect_mirror_bg_b":""},"rex_effect_header":{"rex_effect_header_download":"open_media","rex_effect_header_cache":"no_cache"},"rex_effect_convert2img":{"rex_effect_convert2img_convert_to":"jpg","rex_effect_convert2img_density":"150"},"rex_effect_mediapath":{"rex_effect_mediapath_mediapath":""}}');
 
-
-###################################################
-###################################################
-###########		   Main Part     		###########
-###################################################
-###################################################
-?>
-
-	<div id="topicREX_ARTICLE_ID-REX_SLICE_ID" class="klxm_text_container">
-
-		<div class="klxm_text <?=$columns?>">	
-			<?php if(!empty($media_output)) {  ?>
-			<div class="klxm_bild <?=$groesse_bild?> <?=$position_bild?>" <?=$uk_lightbox?> <?=$flyIn?>>
-				<?php echo $media_output;?>
-			</div>
-			<?php } ?>
-			<?=$text?>
-		</div>
-	</div>
+        try {
+          $mediamanager_typ_effekt->insert();
+          echo rex_view::success('Der Media Manager Effekt wurde angelegt und kann konfiguriert werden!');
+        } catch (rex_sql_exception $e) {
+              echo rex_view::warning('Der Media Manager Effekt wurde nicht angelegt.<br/>Wahrscheinlich existiert er schon.');
+        }
