@@ -24,5 +24,6 @@ page:
                 changelog: { title: 'translate:changelog'}
                 lizenz: { title: 'translate:lizenz'}
 requires:
+    redaxo: '>=5.1.0'
     packages:
          video: '^1.0.0'
