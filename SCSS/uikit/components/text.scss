@@ -23,6 +23,8 @@ $text-small-line-height:                         1.5 !default;
 $text-large-font-size:                           $global-large-font-size !default;
 $text-large-line-height:                         1.5 !default;
 
+$text-bold-font-weight:                          bolder !default;
+
 $text-muted-color:                               $global-muted-color !default;
 $text-primary-color:                             $global-primary-background !default;
 $text-success-color:                             $global-success-background !default;
@@ -74,7 +76,7 @@ $text-background-color:                          $global-primary-background !def
 /* Weight modifier
  ========================================================================== */
 
-.uk-text-bold { font-weight: bolder; }
+.uk-text-bold { font-weight: $text-bold-font-weight; }
 
 
 /* Transform modifier
@@ -211,9 +213,9 @@ td.uk-text-truncate { max-width: 0; }
 /*
  * 1. Wrap long words onto the next line and break them if they are too long to fit
  * 2. Legacy `word-wrap` as fallback for `overflow-wrap`
- * 3. Add a hyphen where the word breaks
- * 4. Fix `overflow-wrap` which doesn't work with table cells in Chrome, Opera, IE11 and Edge
+ * 3. Fix `overflow-wrap` which doesn't work with table cells in Chrome, Opera, IE11 and Edge
  *    Must use `break-all` to support IE11 and Edge
+ * Note: Not using `hyphens: auto;` because it hyphenates text even if not needed
  */
 
 .uk-text-break {
@@ -221,14 +223,9 @@ td.uk-text-truncate { max-width: 0; }
     overflow-wrap: break-word;
     /* 2 */
     word-wrap: break-word;
-    /* 3 */
-    -webkit-hyphens: auto;
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    hyphens: auto;
 }
 
-/* 4 */
+/* 3 */
 th.uk-text-break,
 td.uk-text-break { word-break: break-all; }
 

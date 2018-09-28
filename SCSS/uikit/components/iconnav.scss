@@ -34,12 +34,8 @@ $iconnav-item-active-color:                       $global-color !default;
  */
 
 .uk-iconnav {
-    display: -ms-flexbox;
-    display: -webkit-flex;
     display: flex;
     /* 1 */
-    -ms-flex-wrap: wrap;
-    -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
     /* 2 */
     margin: 0;
@@ -51,16 +47,12 @@ $iconnav-item-active-color:                       $global-color !default;
 }
 
 /*
- * 1. Space is allocated solely based on content dimensions: 0 0 auto
- * 2. Gutter
+ * Space is allocated based on content dimensions, but shrinks: 0 1 auto
+ * 1. Gutter
  */
 
 .uk-iconnav > * {
     /* 1 */
-    -ms-flex: none;
-    -webkit-flex: none;
-    flex: none;
-    /* 2 */
     padding-left: $iconnav-margin-horizontal;
 }
 
@@ -69,12 +61,12 @@ $iconnav-item-active-color:                       $global-color !default;
  ========================================================================== */
 
 /*
- * Items
+ * Items must target `a` elements to exclude other elements (e.g. dropdowns)
  * 1. Prevent gap if child element is `inline-block`, e.g. an icon
  * 2. Style
  */
 
-.uk-iconnav > * > * {
+.uk-iconnav > * > a {
     /* 1 */
     display: block;
     /* 2 */
@@ -83,15 +75,15 @@ $iconnav-item-active-color:                       $global-color !default;
 }
 
 /* Hover + Focus */
-.uk-iconnav > * > :hover,
-.uk-iconnav > * > :focus {
+.uk-iconnav > * > a:hover,
+.uk-iconnav > * > a:focus {
     color: $iconnav-item-hover-color;
     outline: none;
     @if(mixin-exists(hook-iconnav-item-hover)) {@include hook-iconnav-item-hover();}
 }
 
 /* Active */
-.uk-iconnav > .uk-active > * {
+.uk-iconnav > .uk-active > a {
     color: $iconnav-item-active-color;
     @if(mixin-exists(hook-iconnav-item-active)) {@include hook-iconnav-item-active();}
 }
@@ -107,8 +99,6 @@ $iconnav-item-active-color:                       $global-color !default;
 
 .uk-iconnav-vertical {
     /* 1 */
-    -ms-flex-direction: column;
-    -webkit-flex-direction: column;
     flex-direction: column;
     /* 2 */
     margin-left: 0;
