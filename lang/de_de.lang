@@ -64,6 +64,3 @@ uikit_collection_modul_benutzung     = Aktuelle Modulbenutzung
 uikit_collection_module_loeschen     = Unbenutze Module löschen
 uikit_collection_modul_geloescht     = Modul gelöscht: ID
 uikit_collection_extras              = Extras
-
-
-perm_general_klxm_login_image[] = Rechte für das BE5 Addon Plugin: Login Image
