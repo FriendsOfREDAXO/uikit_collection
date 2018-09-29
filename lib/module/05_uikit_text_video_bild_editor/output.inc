@@ -117,10 +117,10 @@ if($media == '') {
 	$media_output = '';
 }
 if($plyr->checkYoutube($link) == true) {
-	$media_output = '<div class="rex_video '.$autoplayStandard.' '.$hideControls.' '.$clickToPlay.'" data-type="youtube"  data-video-id="'.$plyr->getYoutubeId($link).'"></div></br>';
+	$media_output = '<div class="'.$bild_schatten.' rex_video '.$autoplayStandard.' '.$hideControls.' '.$clickToPlay.'" data-type="youtube"  data-video-id="'.$plyr->getYoutubeId($link).'"></div></br>';
 }
 if($plyr->checkVimeo($link) == true) {
-    $media_output = '<div class="rex_video '.$hideControls.' '.$autoplayStandard.' '.$clickToPlay.'" data-type="vimeo" data-video-id="'.$plyr->getVimeoId($link).'"></div></br>';
+    $media_output = '<div class="'.$bild_schatten.' rex_video '.$hideControls.' '.$autoplayStandard.' '.$clickToPlay.'" data-type="vimeo" data-video-id="'.$plyr->getVimeoId($link).'"></div></br>';
 }
 if($plyr->checkMedia($media) !== false) {
     if($autoplayStandard == 'Ja') {
@@ -128,7 +128,7 @@ if($plyr->checkMedia($media) !== false) {
     }
     $media_output = '
         <section>
-            <video>
+            <video class="'.$bild_schatten.'">
                 <source src="'.$link.'" type="video/mp4">
             </video>
         </section>
@@ -154,7 +154,8 @@ if($plyr->checkAudio($file) !== false) {
 ###################################################
 ###################################################
 ?>
-
+<section class="uk-section uk-section-default">
+    <div class="uk-container">
 	<div id="topicREX_ARTICLE_ID-REX_SLICE_ID" class="klxm_text_container">
 
 		<div class="klxm_text <?=$columns?>">	
@@ -166,3 +167,5 @@ if($plyr->checkAudio($file) !== false) {
 			<?=$text?>
 		</div>
 	</div>
+</div>
+</section>
