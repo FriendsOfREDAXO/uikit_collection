@@ -723,10 +723,12 @@
 @mixin hook-divider-icon-line-left(){}
 @mixin hook-divider-icon-line-right(){}
 @mixin hook-divider-small(){}
+@mixin hook-divider-vertical(){}
 @mixin hook-divider-misc(){}
 @mixin hook-inverse-divider-icon(){}
 @mixin hook-inverse-divider-icon-line(){}
 @mixin hook-inverse-divider-small(){}
+@mixin hook-inverse-divider-vertical(){}
 @mixin hook-inverse-component-divider(){
 
     .uk-divider-icon {
@@ -743,6 +745,11 @@
     .uk-divider-small::after {
         border-top-color: $inverse-divider-small-border;
         @if(mixin-exists(hook-inverse-divider-small)) {@include hook-inverse-divider-small();}
+    }
+
+    .uk-divider-vertical::after {
+        border-left-color: $inverse-divider-vertical-border;
+        @if(mixin-exists(hook-inverse-divider-vertical)) {@include hook-inverse-divider-vertical();}
     }
 
 }
@@ -1462,6 +1469,7 @@
     }
 
     .uk-text-muted { color: $inverse-text-muted-color !important; }
+    .uk-text-emphasis { color: $inverse-text-emphasis-color !important; }
     .uk-text-primary { color: $inverse-text-primary-color !important; }
 
 }
@@ -1544,18 +1552,6 @@
 @mixin hook-lightbox-button(){}
 @mixin hook-lightbox-button-hover(){}
 @mixin hook-lightbox-misc(){}
-@mixin hook-link-muted(){}
-@mixin hook-link-muted-hover(){}
-@mixin hook-link-text(){}
-@mixin hook-link-text-hover(){}
-@mixin hook-link-heading(){}
-@mixin hook-link-heading-hover(){}
-@mixin hook-link-reset(){}
-@mixin hook-link-misc(){}
-@mixin hook-inverse-link-muted(){}
-@mixin hook-inverse-link-muted-hover(){}
-@mixin hook-inverse-link-text-hover(){}
-@mixin hook-inverse-link-heading-hover(){}
 @mixin hook-list-divider(){}
 @mixin hook-list-striped(){
 
@@ -1578,6 +1574,18 @@
 }
 @mixin hook-inverse-list-bullet(){}
 @mixin hook-margin-misc(){}
+@mixin hook-link-muted(){}
+@mixin hook-link-muted-hover(){}
+@mixin hook-link-text(){}
+@mixin hook-link-text-hover(){}
+@mixin hook-link-heading(){}
+@mixin hook-link-heading-hover(){}
+@mixin hook-link-reset(){}
+@mixin hook-link-misc(){}
+@mixin hook-inverse-link-muted(){}
+@mixin hook-inverse-link-muted-hover(){}
+@mixin hook-inverse-link-text-hover(){}
+@mixin hook-inverse-link-heading-hover(){}
 @mixin hook-marker(){
     border-radius: 500px;
 }
@@ -1781,8 +1789,6 @@
 @mixin hook-section-secondary(){}
 @mixin hook-section-overlap(){}
 @mixin hook-section-misc(){}
-@mixin hook-slider(){}
-@mixin hook-slider-misc(){}
 @mixin hook-slidenav(){ transition: color 0.1s ease-in-out; }
 @mixin hook-slidenav-hover(){}
 @mixin hook-slidenav-active(){}
@@ -1794,6 +1800,8 @@
 @mixin hook-inverse-slidenav(){}
 @mixin hook-inverse-slidenav-hover(){}
 @mixin hook-inverse-slidenav-active(){}
+@mixin hook-slider(){}
+@mixin hook-slider-misc(){}
 @mixin hook-slideshow(){}
 @mixin hook-slideshow-misc(){}
 @mixin hook-sortable(){}

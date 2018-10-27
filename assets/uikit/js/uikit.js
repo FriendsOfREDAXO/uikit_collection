@@ -1,4 +1,4 @@
-/*! UIkit 3.0.0-rc.17 | http://www.getuikit.com | (c) 2014 - 2018 YOOtheme | MIT License */
+/*! UIkit 3.0.0-rc.20 | http://www.getuikit.com | (c) 2014 - 2018 YOOtheme | MIT License */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -232,7 +232,7 @@
         if ( min === void 0 ) min = 0;
         if ( max === void 0 ) max = 1;
 
-        return Math.min(Math.max(number, min), max);
+        return Math.min(Math.max(toNumber(number) || 0, min), max);
     }
 
     function noop() {}
@@ -2101,30 +2101,22 @@
 
     var strats = {};
 
-    // concat strategy
-    strats.args =
     strats.events =
     strats.created =
     strats.beforeConnect =
     strats.connected =
     strats.beforeDisconnect =
     strats.disconnected =
-    strats.destroy = function (parentVal, childVal) {
+    strats.destroy = concatStrat;
 
-        parentVal = parentVal && !isArray(parentVal) ? [parentVal] : parentVal;
-
-        return childVal
-            ? parentVal
-                ? parentVal.concat(childVal)
-                : isArray(childVal)
-                    ? childVal
-                    : [childVal]
-            : parentVal;
+    // args strategy
+    strats.args = function (parentVal, childVal) {
+        return concatStrat(childVal || parentVal);
     };
 
     // update strategy
     strats.update = function (parentVal, childVal) {
-        return sortBy(strats.args(parentVal, isFunction(childVal) ? {read: childVal} : childVal), 'order');
+        return sortBy(concatStrat(parentVal, isFunction(childVal) ? {read: childVal} : childVal), 'order');
     };
 
     // property strategy
@@ -2183,10 +2175,24 @@
         );
     }
 
+    // concat strategy
+    function concatStrat(parentVal, childVal) {
+
+        parentVal = parentVal && !isArray(parentVal) ? [parentVal] : parentVal;
+
+        return childVal
+            ? parentVal
+                ? parentVal.concat(childVal)
+                : isArray(childVal)
+                    ? childVal
+                    : [childVal]
+            : parentVal;
+    }
+
     // default strategy
-    var defaultStrat = function (parentVal, childVal) {
+    function defaultStrat(parentVal, childVal) {
         return isUndefined(childVal) ? parentVal : childVal;
-    };
+    }
 
     function mergeOptions(parent, child, vm) {
 
@@ -2579,6 +2585,7 @@
         isInView: isInView,
         scrolledOver: scrolledOver,
         scrollTop: scrollTop,
+        offsetPosition: offsetPosition,
         isReady: isReady,
         ready: ready,
         index: index,
@@ -3554,7 +3561,7 @@
     var Class = {
 
         connected: function() {
-            addClass(this.$el, this.$name);
+            !hasClass(this.$el, this.$name) && addClass(this.$el, this.$name);
         }
 
     };
@@ -3693,19 +3700,24 @@
                     return Promise.reject();
                 }
 
-                var promise = (animate$$1 === false || !this.hasAnimation
-                    ? this._toggleImmediate
-                    : this.hasTransition
-                        ? this._toggleHeight
-                        : this._toggleAnimation
+                var promise = (
+                    isFunction(animate$$1)
+                        ? animate$$1
+                        : animate$$1 === false || !this.hasAnimation
+                            ? this._toggle
+                            : this.hasTransition
+                                ? toggleHeight(this)
+                                : toggleAnimation(this)
                 )(el, show);
 
                 trigger(el, show ? 'show' : 'hide', [this]);
 
-                return promise.then(function () {
+                var final = function () {
                     trigger(el, show ? 'shown' : 'hidden', [this$1]);
                     this$1.$update(el);
-                });
+                };
+
+                return promise ? promise.then(final) : Promise.resolve(final());
             },
 
             _toggle: function(el, toggled) {
@@ -3727,59 +3739,66 @@
 
                 this.updateAria(el);
                 changed && this.$update(el);
-            },
-
-            _toggleImmediate: function(el, show) {
-                this._toggle(el, show);
-                return Promise.resolve();
-            },
-
-            _toggleHeight: function(el, show) {
-                var this$1 = this;
-
-
-                var inProgress = Transition.inProgress(el);
-                var inner = el.hasChildNodes ? toFloat(css(el.firstElementChild, 'marginTop')) + toFloat(css(el.lastElementChild, 'marginBottom')) : 0;
-                var currentHeight = isVisible(el) ? height(el) + (inProgress ? 0 : inner) : 0;
-
-                Transition.cancel(el);
-
-                if (!this.isToggled(el)) {
-                    this._toggle(el, true);
-                }
-
-                height(el, '');
-
-                // Update child components first
-                fastdom.flush();
-
-                var endHeight = height(el) + (inProgress ? 0 : inner);
-                height(el, currentHeight);
-
-                return (show
-                    ? Transition.start(el, assign({}, this.initProps, {overflow: 'hidden', height: endHeight}), Math.round(this.duration * (1 - currentHeight / endHeight)), this.transition)
-                    : Transition.start(el, this.hideProps, Math.round(this.duration * (currentHeight / endHeight)), this.transition).then(function () { return this$1._toggle(el, false); })
-                ).then(function () { return css(el, this$1.initProps); });
-
-            },
-
-            _toggleAnimation: function(el, show) {
-                var this$1 = this;
-
-
-                Animation.cancel(el);
-
-                if (show) {
-                    this._toggle(el, true);
-                    return Animation.in(el, this.animation[0], this.duration, this.origin);
-                }
-
-                return Animation.out(el, this.animation[1] || this.animation[0], this.duration, this.origin).then(function () { return this$1._toggle(el, false); });
             }
 
         }
 
     };
+
+    function toggleHeight(ref) {
+        var isToggled = ref.isToggled;
+        var duration = ref.duration;
+        var initProps = ref.initProps;
+        var hideProps = ref.hideProps;
+        var transition$$1 = ref.transition;
+        var _toggle = ref._toggle;
+
+        return function (el, show) {
+
+            var inProgress = Transition.inProgress(el);
+            var inner = el.hasChildNodes ? toFloat(css(el.firstElementChild, 'marginTop')) + toFloat(css(el.lastElementChild, 'marginBottom')) : 0;
+            var currentHeight = isVisible(el) ? height(el) + (inProgress ? 0 : inner) : 0;
+
+            Transition.cancel(el);
+
+            if (!isToggled(el)) {
+                _toggle(el, true);
+            }
+
+            height(el, '');
+
+            // Update child components first
+            fastdom.flush();
+
+            var endHeight = height(el) + (inProgress ? 0 : inner);
+            height(el, currentHeight);
+
+            return (show
+                    ? Transition.start(el, assign({}, initProps, {overflow: 'hidden', height: endHeight}), Math.round(duration * (1 - currentHeight / endHeight)), transition$$1)
+                    : Transition.start(el, hideProps, Math.round(duration * (currentHeight / endHeight)), transition$$1).then(function () { return _toggle(el, false); })
+            ).then(function () { return css(el, initProps); });
+
+        };
+    }
+
+    function toggleAnimation(ref) {
+        var animation = ref.animation;
+        var duration = ref.duration;
+        var origin = ref.origin;
+        var _toggle = ref._toggle;
+
+        return function (el, show) {
+
+            Animation.cancel(el);
+
+            if (show) {
+                _toggle(el, true);
+                return Animation.in(el, animation[0], duration, origin);
+            }
+
+            return Animation.out(el, animation[1] || animation[0], duration, origin).then(function () { return _toggle(el, false); });
+        };
+    }
 
     var Accordion = {
 
@@ -3852,7 +3871,7 @@
             var this$1 = this;
 
 
-            this.items.forEach(function (el) { return this$1._toggleImmediate($(this$1.content, el), hasClass(el, this$1.clsOpen)); });
+            this.items.forEach(function (el) { return this$1._toggle($(this$1.content, el), hasClass(el, this$1.clsOpen)); });
 
             var active = !this.collapsible && !hasClass(this.items, this.clsOpen) && this.items[0];
             if (active) {
@@ -3891,17 +3910,20 @@
                             attr(el._wrapper, 'hidden', state ? '' : null);
                         }
 
-                        this$1._toggleImmediate(content, true);
+                        this$1._toggle(content, true);
                         this$1.toggleElement(el._wrapper, state, animate$$1).then(function () {
-                            if (hasClass(el, this$1.clsOpen) === state) {
 
-                                if (!state) {
-                                    this$1._toggleImmediate(content, false);
-                                }
-
-                                el._wrapper = null;
-                                unwrap(content);
+                            if (hasClass(el, this$1.clsOpen) !== state) {
+                                return;
                             }
+
+                            if (!state) {
+                                this$1._toggle(content, false);
+                            }
+
+                            el._wrapper = null;
+                            unwrap(content);
+
                         });
 
                     });
@@ -4205,6 +4227,7 @@
                 var node;
                 var ref = this;
                 var offset$$1 = ref.offset;
+                var axis = this.getAxis();
 
                 offset$$1 = isNumeric(offset$$1)
                     ? offset$$1
@@ -4212,7 +4235,6 @@
                         ? offset(node)[axis === 'x' ? 'left' : 'top'] - offset(target)[axis === 'x' ? 'right' : 'bottom']
                         : 0;
 
-                var axis = this.getAxis();
                 var ref$1 = positionAt(
                     element,
                     target,
@@ -4880,7 +4902,13 @@
                     break;
                 }
 
-                var leftDim = getOffset(row[0]);
+                var leftDim = (void 0);
+                if (row[0].offsetParent === el.offsetParent) {
+                    leftDim = getOffset(row[0]);
+                } else {
+                    dim = getOffset(el, true);
+                    leftDim = getOffset(row[0], true);
+                }
 
                 if (dim.top >= leftDim.bottom - 1) {
                     rows.push([el]);
@@ -4911,11 +4939,18 @@
 
     }
 
-    function getOffset(element) {
+    function getOffset(element, offset$$1) {
+        var assign$$1;
+
+        if ( offset$$1 === void 0 ) offset$$1 = false;
 
         var offsetTop = element.offsetTop;
         var offsetLeft = element.offsetLeft;
         var offsetHeight = element.offsetHeight;
+
+        if (offset$$1) {
+            (assign$$1 = offsetPosition(element), offsetTop = assign$$1[0], offsetLeft = assign$$1[1]);
+        }
 
         return {
             top: offsetTop,
@@ -4975,7 +5010,7 @@
                         rows = rows.map(function (elements) { return sortBy(elements, 'offsetLeft'); });
                     }
 
-                    var hasStaticContent = rows.some(function (elements) { return elements.some(function (element) { return css(element, 'position') === 'static'; }); });
+                    var transitionInProgress = rows.some(function (elements) { return elements.some(Transition.inProgress); });
                     var translates = false;
                     var elHeight = '';
 
@@ -4996,7 +5031,7 @@
 
                     }
 
-                    return {rows: rows, translates: translates, height: hasStaticContent ? elHeight : false};
+                    return {rows: rows, translates: translates, height: !transitionInProgress ? elHeight : false};
 
                 },
 
@@ -5198,7 +5233,7 @@
             ((assign$$1 = getHeights(elements), heights = assign$$1.heights, max = assign$$1.max));
         }
 
-        heights = elements.map(function (el, i) { return heights[i] === max && toFloat(el.style.minHeight) !== max ? '' : max; }
+        heights = elements.map(function (el, i) { return heights[i] === max && toFloat(el.style.minHeight).toFixed(2) !== max.toFixed(2) ? '' : max; }
         );
 
         return {heights: heights, elements: elements};
@@ -5303,6 +5338,8 @@
     var svgs = {};
 
     var SVG = {
+
+        args: 'src',
 
         props: {
             id: String,
@@ -5786,11 +5823,11 @@
 
             read: function(ref) {
                 var this$1 = this;
-                var delay = ref.delay;
+                var update = ref.update;
                 var image = ref.image;
 
 
-                if (!delay) {
+                if (!update) {
                     return;
                 }
 
@@ -5818,9 +5855,9 @@
             write: function(data$$1) {
 
                 // Give placeholder images time to apply their dimensions
-                if (!data$$1.delay) {
+                if (!data$$1.update) {
                     this.$emit();
-                    return data$$1.delay = true;
+                    return data$$1.update = true;
                 }
 
             },
@@ -5840,8 +5877,8 @@
         } else if (src) {
 
             var change = !includes(el.style.backgroundImage, src);
-            css(el, 'backgroundImage', ("url(" + src + ")"));
             if (change) {
+                css(el, 'backgroundImage', ("url(" + src + ")"));
                 trigger(el, createEvent('load', false));
             }
 
@@ -6087,16 +6124,18 @@
                 return this.panel;
             },
 
-            transitionDuration: function() {
-                return toMs(css(this.transitionElement, 'transitionDuration'));
-            },
-
             bgClose: function(ref) {
                 var bgClose = ref.bgClose;
 
                 return bgClose && this.panel;
             }
 
+        },
+
+        beforeDisconnect: function() {
+            if (this.isToggled()) {
+                this.toggleNow(this.$el, false);
+            }
         },
 
         events: [
@@ -6251,32 +6290,17 @@
                     this._callConnected();
                 }
 
-                return this.toggleNow(this.$el, true);
+                return this.toggleElement(this.$el, true, animate$1(this));
             },
 
             hide: function() {
                 return this.isToggled()
-                    ? this.toggleNow(this.$el, false)
+                    ? this.toggleElement(this.$el, false, animate$1(this))
                     : Promise.resolve();
             },
 
             getActive: function() {
                 return active$1;
-            },
-
-            _toggleImmediate: function(el, show) {
-                var this$1 = this;
-
-                return new Promise(function (resolve) { return requestAnimationFrame(function () {
-                        this$1._toggle(el, show);
-
-                        if (this$1.transitionDuration) {
-                            once(this$1.transitionElement, 'transitionend', resolve, false, function (e) { return e.target === this$1.transitionElement; });
-                        } else {
-                            resolve();
-                        }
-                    }); }
-                );
             }
 
         }
@@ -6312,6 +6336,23 @@
     function deregisterEvents() {
         events && events.forEach(function (unbind) { return unbind(); });
         events = null;
+    }
+
+    function animate$1(ref) {
+        var transitionElement = ref.transitionElement;
+        var _toggle = ref._toggle;
+
+        return function (el, show) { return new Promise(function (resolve) { return requestAnimationFrame(function () {
+
+                    _toggle(el, show);
+
+                    if (toMs(css(transitionElement, 'transitionDuration'))) {
+                        once(transitionElement, 'transitionend', resolve, false, function (e) { return e.target === transitionElement; });
+                    } else {
+                        resolve();
+                    }
+                }); }
+            ); };
     }
 
     var Modal$1 = {
@@ -6685,7 +6726,7 @@
         methods: {
 
             getActive: function() {
-                var ref = this.dropdowns.map(this.getDropdown).filter(function (drop) { return drop.isActive(); });
+                var ref = this.dropdowns.map(this.getDropdown).filter(function (drop) { return drop && drop.isActive(); });
                 var active = ref[0];
                 return active && includes(active.mode, 'hover') && within(active.toggle.$el, this.$el) && active;
             },
@@ -6724,8 +6765,6 @@
 
     };
 
-    var scroll;
-
     var Offcanvas = {
 
         mixins: [Modal],
@@ -6733,14 +6772,12 @@
         args: 'mode',
 
         props: {
-            content: String,
             mode: String,
             flip: Boolean,
             overlay: Boolean
         },
 
         data: {
-            content: '.uk-offcanvas-content',
             mode: 'slide',
             flip: false,
             overlay: false,
@@ -6748,8 +6785,7 @@
             clsContainer: 'uk-offcanvas-container',
             selPanel: '.uk-offcanvas-bar',
             clsFlip: 'uk-offcanvas-flip',
-            clsContent: 'uk-offcanvas-content',
-            clsContentAnimation: 'uk-offcanvas-content-animation',
+            clsContainerAnimation: 'uk-offcanvas-container-animation',
             clsSidebarAnimation: 'uk-offcanvas-bar-animation',
             clsMode: 'uk-offcanvas',
             clsOverlay: 'uk-offcanvas-overlay',
@@ -6757,12 +6793,6 @@
         },
 
         computed: {
-
-            content: function(ref) {
-                var content = ref.content;
-
-                return $(content) || document.body;
-            },
 
             clsFlip: function(ref) {
                 var flip = ref.flip;
@@ -6792,11 +6822,11 @@
                 return mode === 'none' || mode === 'reveal' ? '' : clsSidebarAnimation;
             },
 
-            clsContentAnimation: function(ref) {
+            clsContainerAnimation: function(ref) {
                 var mode = ref.mode;
-                var clsContentAnimation = ref.clsContentAnimation;
+                var clsContainerAnimation = ref.clsContainerAnimation;
 
-                return mode !== 'push' && mode !== 'reveal' ? '' : clsContentAnimation;
+                return mode !== 'push' && mode !== 'reveal' ? '' : clsContainerAnimation;
             },
 
             transitionElement: function(ref) {
@@ -6804,31 +6834,6 @@
 
                 return mode === 'reveal' ? this.panel.parentNode : this.panel;
             }
-
-        },
-
-        update: {
-
-            write: function() {
-
-                if (this.getActive() === this) {
-
-                    if (this.overlay || this.clsContentAnimation) {
-                        width(this.content, width(window) - this.scrollbarWidth);
-                    }
-
-                    if (this.overlay) {
-                        height(this.content, height(window));
-                        if (scroll) {
-                            this.content.scrollTop = scroll.y;
-                        }
-                    }
-
-                }
-
-            },
-
-            events: ['resize']
 
         },
 
@@ -6845,8 +6850,7 @@
                 handler: function(ref) {
                     var current = ref.current;
 
-                    if (current.hash && $(current.hash, this.content)) {
-                        scroll = null;
+                    if (current.hash && $(current.hash, document.body)) {
                         this.hide();
                     }
                 }
@@ -6854,18 +6858,68 @@
             },
 
             {
+                name: 'touchstart',
 
-                name: 'beforescroll',
+                el: function() {
+                    return this.panel;
+                },
+
+                handler: function(ref) {
+                    var targetTouches = ref.targetTouches;
+
+
+                    if (targetTouches.length === 1) {
+                        this.clientY = targetTouches[0].clientY;
+                    }
+
+                }
+
+            },
+
+            {
+                name: 'touchmove',
+
+                self: true,
 
                 filter: function() {
                     return this.overlay;
                 },
 
-                handler: function(e, scroll, target) {
-                    if (scroll && target && this.isToggled() && $(target, this.content)) {
-                        once(this.$el, 'hidden', function () { return scroll.scrollTo(target); });
+                passive: false,
+
+                handler: function(e) {
+                    e.preventDefault();
+                }
+
+            },
+
+            {
+                name: 'touchmove',
+
+                el: function() {
+                    return this.panel;
+                },
+
+                passive: false,
+
+                handler: function(e) {
+
+                    if (e.targetTouches.length !== 1) {
+                        return;
+                    }
+
+                    var clientY = event.targetTouches[0].clientY - this.clientY;
+                    var ref = this.panel;
+                    var scrollTop$$1 = ref.scrollTop;
+                    var scrollHeight = ref.scrollHeight;
+                    var clientHeight = ref.clientHeight;
+
+                    if (scrollTop$$1 === 0 && clientY > 0
+                        || scrollHeight - scrollTop$$1 <= clientHeight && clientY < 0
+                    ) {
                         e.preventDefault();
                     }
+
                 }
 
             },
@@ -6877,17 +6931,15 @@
 
                 handler: function() {
 
-                    scroll = scroll || {x: window.pageXOffset, y: window.pageYOffset};
-
                     if (this.mode === 'reveal' && !hasClass(this.panel, this.clsMode)) {
                         wrapAll(this.panel, '<div>');
                         addClass(this.panel.parentNode, this.clsMode);
                     }
 
-                    css(document.documentElement, 'overflowY', (!this.clsContentAnimation || this.flip) && this.scrollbarWidth && this.overlay ? 'scroll' : '');
-                    addClass(document.body, this.clsContainer, this.clsFlip, this.clsOverlay);
+                    css(document.documentElement, 'overflowY', this.overlay ? 'hidden' : '');
+                    addClass(document.body, this.clsContainer, this.clsFlip);
                     height(document.body); // force reflow
-                    addClass(this.content, this.clsContentAnimation);
+                    addClass(document.body, this.clsContainerAnimation);
                     addClass(this.panel, this.clsSidebarAnimation, this.mode !== 'reveal' ? this.clsMode : '');
                     addClass(this.$el, this.clsOverlay);
                     css(this.$el, 'display', 'block');
@@ -6902,7 +6954,7 @@
                 self: true,
 
                 handler: function() {
-                    removeClass(this.content, this.clsContentAnimation);
+                    removeClass(document.body, this.clsContainerAnimation);
 
                     var active = this.getActive();
                     if (this.mode === 'none' || active && active !== this && active !== this.prev) {
@@ -6922,29 +6974,12 @@
                         unwrap(this.panel);
                     }
 
-                    if (!this.overlay) {
-                        scroll = {x: window.pageXOffset, y: window.pageYOffset};
-                    } else if (!scroll) {
-                        var ref = this.content;
-                        var x = ref.scrollLeft;
-                        var y = ref.scrollTop;
-                        scroll = {x: x, y: y};
-                    }
-
                     removeClass(this.panel, this.clsSidebarAnimation, this.clsMode);
                     removeClass(this.$el, this.clsOverlay);
                     css(this.$el, 'display', '');
-                    removeClass(document.body, this.clsContainer, this.clsFlip, this.clsOverlay);
-                    document.body.scrollTop = scroll.y;
+                    removeClass(document.body, this.clsContainer, this.clsFlip);
 
                     css(document.documentElement, 'overflowY', '');
-
-                    width(this.content, '');
-                    height(this.content, '');
-
-                    window.scroll(scroll.x, scroll.y);
-
-                    scroll = null;
 
                 }
             },
@@ -7046,7 +7081,10 @@
             },
 
             write: function(dim) {
-                height(this.$el, Dimensions.contain({height: this.height, width: this.width}, dim).height);
+                height(this.$el, Dimensions.contain({
+                    height: this.height,
+                    width: this.width
+                }, dim).height);
             },
 
             events: ['load', 'resize']
@@ -7183,7 +7221,7 @@
                     var this$1 = this;
 
 
-                    if (!els.delay) {
+                    if (!els.update) {
                         return;
                     }
 
@@ -7208,9 +7246,9 @@
 
 
                     // Let child components be applied at least once first
-                    if (!els.delay) {
+                    if (!els.update) {
                         this.$emit();
-                        return els.delay = true;
+                        return els.update = true;
                     }
 
                     this.elements.forEach(function (el, i) {
@@ -7533,9 +7571,12 @@
 
             {
 
-                read: function(ref) {
+                read: function(ref, ref$1) {
                     var height$$1 = ref.height;
+                    var type = ref$1.type;
 
+
+                    height$$1 = !this.isActive || type === 'resize' ? this.$el.offsetHeight : height$$1;
 
                     this.topOffset = offset(this.isActive ? this.placeholder : this.$el).top;
                     this.bottomOffset = this.topOffset + height$$1;
@@ -7547,7 +7588,7 @@
                     this.inactive = !this.matchMedia;
 
                     return {
-                        height: !this.isActive ? this.$el.offsetHeight : height$$1,
+                        height: height$$1,
                         margins: css(this.$el, ['marginTop', 'marginBottom', 'marginLeft', 'marginRight'])
                     };
                 },
@@ -8077,7 +8118,7 @@
 
     }
 
-    UIkit.version = '3.0.0-rc.17';
+    UIkit.version = '3.0.0-rc.20';
 
     core(UIkit);
 
@@ -9593,7 +9634,11 @@
 
                 self: true,
 
-                handler: 'showControls'
+                handler: function() {
+                    this.startAutoplay();
+                    this.showControls();
+                }
+
             },
 
             {
@@ -9604,6 +9649,7 @@
 
                 handler: function() {
 
+                    this.stopAutoplay();
                     this.hideControls();
 
                     removeClass(this.slides, this.clsActive);
@@ -10198,52 +10244,41 @@
 
                 data$$1.active = this.matchMedia;
 
-                data$$1.dimEl = {
-                    width: this.$el.offsetWidth,
-                    height: this.$el.offsetHeight
-                };
-
-                if ('image' in data$$1 || !this.covers || !this.bgProps.length) {
+                if (!data$$1.active) {
                     return;
                 }
 
-                var src = css(this.$el, 'backgroundImage').replace(/^none|url\(["']?(.+?)["']?\)$/, '$1');
+                if (!data$$1.image && this.covers && this.bgProps.length) {
+                    var src = css(this.$el, 'backgroundImage').replace(/^none|url\(["']?(.+?)["']?\)$/, '$1');
 
-                if (!src) {
-                    return;
+                    if (src) {
+                        var img = new Image();
+                        img.src = src;
+                        data$$1.image = img;
+
+                        if (!img.naturalWidth) {
+                            img.onload = function () { return this$1.$emit(); };
+                        }
+                    }
+
                 }
 
-                var img = new Image();
-                img.src = src;
-                data$$1.image = img;
-
-                if (!img.naturalWidth) {
-                    img.onload = function () { return this$1.$emit(); };
-                }
-            },
-
-            write: function(ref) {
-                var this$1 = this;
-                var dimEl = ref.dimEl;
-                var image = ref.image;
-                var active = ref.active;
-
+                var image = data$$1.image;
 
                 if (!image || !image.naturalWidth) {
                     return;
                 }
 
-                if (!active) {
-                    css(this.$el, {backgroundSize: '', backgroundRepeat: ''});
-                    return;
-                }
-
-                var imageDim = {
+                var dimEl = {
+                    width: this.$el.offsetWidth,
+                    height: this.$el.offsetHeight
+                };
+                var dimImage = {
                     width: image.naturalWidth,
                     height: image.naturalHeight
                 };
 
-                var dim = Dimensions.cover(imageDim, dimEl);
+                var dim = Dimensions.cover(dimImage, dimEl);
 
                 this.bgProps.forEach(function (prop) {
 
@@ -10269,10 +10304,23 @@
                         }
                     }
 
-                    dim = Dimensions.cover(imageDim, dimEl);
+                    dim = Dimensions.cover(dimImage, dimEl);
                 });
 
-                css(this.$el, {
+                data$$1.dim = dim;
+            },
+
+            write: function(ref) {
+                var dim = ref.dim;
+                var active = ref.active;
+
+
+                if (!active) {
+                    css(this.$el, {backgroundSize: '', backgroundRepeat: ''});
+                    return;
+                }
+
+                dim && css(this.$el, {
                     backgroundSize: ((dim.width) + "px " + (dim.height) + "px"),
                     backgroundRepeat: 'no-repeat'
                 });
@@ -11305,7 +11353,8 @@
 
                 var ref = offset(this.drag);
                 var top = ref.top;
-                var bottom = top + this.drag.offsetHeight;
+                var offsetHeight = ref.height;
+                var bottom = top + offsetHeight;
                 var scroll;
 
                 if (top > 0 && top < this.scrollY) {
@@ -11396,7 +11445,7 @@
 
                 this.$emit();
 
-                var target = e.type === 'mousemove' ? e.target : document.elementFromPoint(this.pos.x - document.body.scrollLeft, this.pos.y - document.body.scrollTop);
+                var target = e.type === 'mousemove' ? e.target : document.elementFromPoint(this.pos.x - window.pageXOffset, this.pos.y - window.pageYOffset);
 
                 var sortable = this.getSortable(target);
                 var previous = this.getSortable(this.placeholder);
@@ -11420,15 +11469,6 @@
                     this.touched.push(sortable);
                 }
 
-            },
-
-            scroll: function() {
-                var scroll = window.pageYOffset;
-                if (scroll !== this.scrollY) {
-                    this.pos.y += scroll - this.scrollY;
-                    this.scrollY = scroll;
-                    this.$emit();
-                }
             },
 
             end: function(e) {
@@ -11469,6 +11509,15 @@
 
                 removeClass(document.documentElement, this.clsDragState);
 
+            },
+
+            scroll: function() {
+                var scroll = window.pageYOffset;
+                if (scroll !== this.scrollY) {
+                    this.pos.y += scroll - this.scrollY;
+                    this.scrollY = scroll;
+                    this.$emit();
+                }
             },
 
             insert: function(element, target) {
