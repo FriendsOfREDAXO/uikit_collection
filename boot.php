@@ -1,7 +1,4 @@
 <?php
-
-$this->setProperty('author', 'klxm');
-
 if (rex::isBackend() && rex::getUser()) {
 
     rex_perm::register('uikit_modul[]');
