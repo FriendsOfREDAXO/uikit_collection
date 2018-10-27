@@ -27,3 +27,5 @@ requires:
     redaxo: '>=5.6.0'
     packages:
          video: '^1.0.0'
+         mblock: '^2.0.0'
+         mform: '^2.0.0'
