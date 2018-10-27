@@ -1,2 +1,3 @@
+- 27.10.2018 rc20 added
 - 15.03.2018 Renaming, corrections 
 - 19.02.2018 Transfer to FOR

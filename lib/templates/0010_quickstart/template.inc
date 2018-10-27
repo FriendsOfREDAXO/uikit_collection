@@ -7,7 +7,6 @@
     <?php
     if(rex_addon::get("yrewrite")->isInstalled() && rex_addon::get("yrewrite")->isAvailable()) {
         $seo = new rex_yrewrite_seo();
-     
         echo $seo->getTitleTag() . PHP_EOL;
         echo $seo->getDescriptionTag() . PHP_EOL;
         echo $seo->getRobotsTag() . PHP_EOL;
@@ -15,15 +14,9 @@
         echo $seo->getCanonicalUrlTag() . PHP_EOL;
     }
     ?>
-
     <link rel="stylesheet" href="<?= rex_url::base('assets/addons/uikit_collection/uikit/css/uikit.css') ?>">
-    <script type="text/javascript"
-            src="<?= rex_url::base('assets/addons/uikit_collection/uikit/js/uikit.min.js') ?>"></script>
-    <script type="text/javascript"
-            src="<?= rex_url::base('assets/addons/uikit_collection/uikit/js/uikit-icons.min.js') ?>"></script>
 </head>
 <body>
-
 <?php
 // NAVIGATION
 
@@ -74,5 +67,7 @@ $navigation .= '<ul>';
         REX_ARTICLE[]
     </div>
 </div>
+    <script type="text/javascript" src="<?= rex_url::base('assets/addons/uikit_collection/uikit/js/uikit.min.js') ?>"></script>
+    <script type="text/javascript" src="<?= rex_url::base('assets/addons/uikit_collection/uikit/js/uikit-icons.min.js') ?>"></script>    
 </body>
 </html>

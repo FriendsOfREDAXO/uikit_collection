@@ -1,21 +1,7 @@
 <?php
-
-$this->setProperty('author', 'klxm');
-
 if (rex::isBackend() && rex::getUser()) {
 
     rex_perm::register('uikit_modul[]');
-
-    // Sortierung Medienpool aufsteigend
-    if (rex::isBackend() && rex::getUser()) {
-
-        rex_extension::register('MEDIA_LIST_QUERY', function (rex_extension_point $ep) {
-            $subject = $ep->getSubject();
-            $subject = str_replace("f.updatedate", "f.filename, f.updatedate", $subject);
-            $subject = str_replace("desc", "asc", $subject);
-            return $subject;
-
-        });
 
         rex_extension::register('PACKAGES_INCLUDED', function () {
             if (rex_request_method() == 'get' && $this->getConfig('check_scss') == '1') {
