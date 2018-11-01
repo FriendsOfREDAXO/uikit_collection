@@ -28,4 +28,4 @@ requires:
     packages:
          video: '^1.0.0'
          mblock: '^2.0.0'
-         mform: '^2.0.0'
+         mform: '^5.1.1'
