@@ -2,7 +2,7 @@
 $auswahl = new Mform();
 $auswahl->addSelectField(20, array(1=>'Accordion',2=>'Tab-Darstellung'), array('class'=>'selectpicker','label'=>'Darstellung','id'=>'uikit_builder'));
 echo $auswahl->show();
-$id = 3;
+$id = 1;
 $mform = new MForm();
 $mform->addFieldset('Accordion');
 $mform->addTextField("$id.0.titel", array('label'=>'Titel'));
