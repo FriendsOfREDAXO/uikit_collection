@@ -3,7 +3,6 @@ $values = rex_var::toArray("REX_VALUE[1]");
 $type = 'REX_VALUE[20]';
 ?>
 
-
 <?php if ($type == 1) : ?>
     <div class="accordion_container">
         <div uk-accordion>
@@ -13,7 +12,7 @@ $type = 'REX_VALUE[20]';
                     <div class="uk-accordion-content">
                         <p><?= $value['text'] ?></p>
                     </div>
-                </div>';
+                </div>
             <?php endforeach ?>
         </div>
     </div>
@@ -22,7 +21,7 @@ $type = 'REX_VALUE[20]';
         <div class="uk-margin-medium-top">
             <div class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
             <?php foreach ($values as $value) : ?>
-               <div><a href="#"><?= $value['title'] ?></a></div>
+               <div><a href="#"><?= $value['titel'] ?></a></div>
             <?php endforeach ?>
             </div>
             <div class="uk-switcher uk-margin">
