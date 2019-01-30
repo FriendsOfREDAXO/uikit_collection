@@ -2,7 +2,7 @@
 
 // settings
 $MForm = new MForm();
-
+$MForm->addFieldset('UiKit Cards:');
 # grids / grid width
 $MForm->addTab('Einstellungen für alle UiKit Cards:');
 $MForm->addSelectField("2.0.gutterWidth");
@@ -13,6 +13,15 @@ $MForm->setOptions(array(
     'large' => 'weit',
     'collapse' => 'entfernen'
 ));
+$MForm->addSelectField("3.0.ukcolor");
+$MForm->setLabel('Hintergrund:');
+$MForm->setOptions(array(
+    'default' => 'Standard',
+    'muted' => 'hellgrau',
+    'primary' => 'Hauptfarbe',
+    'secondary' => 'Zusatzfarbe'
+));
+
 $MForm->addDescription("Abstände zwischen den 'Cards' verändern");
 
 // checkbox
@@ -38,16 +47,17 @@ $MForm->addMediaField(1, array(
 $MForm->addTextField("$id.0.imageTitle", array(
     'label' => 'Bildbeschreibung:'
 ));
+
 $MForm->addTextAreaField("$id.0.content", array(
     'label' => 'Inhalt:',
     'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang() ,
-    'data-profile' => 'light',
+    'data-profile' => 'default',
     'class' => 'cke5-editor'
 ));
-$MForm->addTextField("$id.0.footer", array(
-    'label' => 'Fusszeile:'
+$MForm->addCustomLinkField("$id.0.1",array('label'=>'Link'));
+$MForm->addTextField("$id.0.LinkText", array(
+    'label' => 'Linktext (optional):'
 ));
-
 $MForm->addFieldset("Einstellung für diese UiKit Card");
 
 $MForm->addSelectField("$id.0.ukWidth");
@@ -55,6 +65,7 @@ $MForm->setLabel('Breite:');
 $MForm->setOptions(array(
     'auto@m' => 'automatisch',
     '1-1@m' => '100%',
+    '2-3@m' => '66%',
     '1-2@m' => '50%',
     '1-3@m' => '33%',
     '1-4@m' => '25%',
@@ -66,15 +77,22 @@ $MForm->addSelectField("$id.0.ukColor");
 $MForm->setLabel('Farbe:');
 $MForm->setOptions(array(
     'default' => 'Standard',
-    'muted' => 'hellgrau',
+    'muted' => 'Stummgeschaltet',
     'primary' => 'Hauptfarbe',
     'secondary' => 'Zusatzfarbe'
 ));
 
+$MForm->addSelectField("$id.0.ukFontColor");
+$MForm->setLabel('Schriftarbe:');
+$MForm->setOptions(array(
+    '' => 'Standard',
+    ' uk-light' => 'hell',
+));
+
+
 $MForm->closeFieldset();
 
 echo MBlock::show($id, $MForm->show() , array(
-    'min' => 3,
     'max' => 100
 ));
 ?>
@@ -86,3 +104,5 @@ echo MBlock::show($id, $MForm->show() , array(
     float: left;
 }</style>
 --->
+
+
