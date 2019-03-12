@@ -26,6 +26,6 @@ page:
 requires:
     redaxo: '>=5.6.0'
     packages:
-         video: '>=2.0.0'
+         video: '>=2.0.0-beta1'
          mblock: '>=3.0.0'
          mform: '^5.1.1'
