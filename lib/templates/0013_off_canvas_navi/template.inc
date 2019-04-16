@@ -51,10 +51,10 @@ foreach (rex_category::getRootCategories() as $lev1)
             <a class="uk-navbar-item uk-logo" href="/">LOGO</a>
         </div>
         <div class="uk-navbar-right">
-            <button class="uk-navbar-toggle" uk-icon="icon: menu; ratio: 2" type="button" uk-toggle="target: #sidebar-navi"></button>
+            <button class="uk-navbar-toggle" data-uk-icon="icon: menu; ratio: 2" type="button" uk-toggle="target: #sidebar-navi"></button>
             <div id="sidebar-navi" uk-offcanvas="overlay: true; flip: false;">
                 <div class="uk-offcanvas-bar uk-dark">
-                    <button class="uk-offcanvas-close" type="button" uk-close></button>
+                    <button class="uk-offcanvas-close" type="button" data-uk-close></button>
                     <ul class="uk-nav uk-nav-default">
                         <?=$uk_navigation;?>
                     </ul>
