@@ -2,16 +2,8 @@
 uikit_collection_title = UIKIT Collection
 uikit_collection_general_dummy[] = Rechte für Modulsammlung-Addon
 
-
 uikit_collection_module              = Module
-
 uikit_collection_module_mform_mblock = Module mit MForm / MBlock
-
-uikit_collection_settings				= Einstellungen
-uikit_collection_check_scss			= SCSS kompilieren (experimentell)?
-uikit_collection_config_legend1		= UIKIT Collection
-uikit_collection_config				= Einstellungen
-uikit_collection_config_save			= Speichern
 
 uikit_collection_modul               = Modul
 uikit_collection_moduluebersicht     = UIKIT Modulsammlung
