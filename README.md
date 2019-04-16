@@ -1,6 +1,6 @@
 # UIKIT Collection für REDAXO 5.x
 
-Lifert Module und Templates zur Realisierung von UiKit-Projekten
+Liefert Module und Templates zur Realisierung von UiKit-Projekten
 https://getuikit.com
 
 ## Autoren
