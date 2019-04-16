@@ -12,7 +12,6 @@ page:
     icon: rex-icon fa-times-circle
     subpages:
         module: {title: 'translate:module'}
-        module_mform: {title: 'translate:module_mform_mblock'}
         templates: {title: 'translate:templates', icon: rex-icon fa-file-text-o}
         info:
             title: 'Info'
