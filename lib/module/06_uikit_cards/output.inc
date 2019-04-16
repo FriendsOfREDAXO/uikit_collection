@@ -1,6 +1,8 @@
 <?php 
  // CustomLink-Funktion REX5 / mform / mblock
-   if (!function_exists('infolink')) {
+
+
+    if (!function_exists('infolink')) {
       function infolink($url) {
 
       // Wurde ein Wert für $url übergeben?
@@ -95,7 +97,7 @@ $linkout ='<a class="uk-preserve-color uk-button uk-button-text" href="'.$linkou
     // IMAGE
     if ($image != '')
     {
-        $output[] = '<div class="uk-card-media-top"><div class="uk-overflow-hidden"><img class="dopic uk-animation-kenburns" src="/images/card/' . $image . '" title="' . $title . '" alt="' . $header . '"></div></div>';
+        $output[] = '<div class="uk-card-media-top"><div class="uk-overflow-hidden"><img class="uk-max-image uk-animation-kenburns" src="/images/card/' . $image . '" title="' . $title . '" alt="' . $header . '"></div></div>';
     }
     // header
     $output[] = '<div class="uk-card-header">';

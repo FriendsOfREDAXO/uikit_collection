@@ -7,6 +7,7 @@ $MForm->addFieldset('UiKit Cards:');
 $MForm->addTab('Einstellungen für alle UiKit Cards:');
 $MForm->addSelectField("2.0.gutterWidth");
 $MForm->setLabel('Abstand:');
+$MForm->setAttributes(array('class' => 'selectpicker', 'data-live-search' => 'true'));
 $MForm->setOptions(array(
     'medium' => 'normal',
     'small' => 'eng',
@@ -15,6 +16,7 @@ $MForm->setOptions(array(
 ));
 $MForm->addSelectField("3.0.ukcolor");
 $MForm->setLabel('Hintergrund:');
+$MForm->setAttributes(array('class' => 'selectpicker', 'data-live-search' => 'true'));
 $MForm->setOptions(array(
     'default' => 'Standard',
     'muted' => 'Stumm',
@@ -23,6 +25,7 @@ $MForm->setOptions(array(
 ));
 $MForm->addSelectField("4.0.scrollspy");
 $MForm->setLabel('Scrollspy:');
+$MForm->setAttributes(array('class' => 'selectpicker', 'data-live-search' => 'true'));
 $MForm->setOptions(array(
     '' => 'Nein',
     'scrollspy' => 'Ja',
@@ -73,6 +76,7 @@ $MForm->addFieldset("Einstellung für diese UiKit Card");
 
 $MForm->addSelectField("$id.0.ukWidth");
 $MForm->setLabel('Breite:');
+$MForm->setAttributes(array('class' => 'selectpicker', 'data-live-search' => 'true'));
 $MForm->setOptions(array(
     'auto@m' => 'automatisch',
     '1-1@m' => '100%',
@@ -86,6 +90,7 @@ $MForm->setOptions(array(
 
 $MForm->addSelectField("$id.0.ukColor");
 $MForm->setLabel('Farbe:');
+$MForm->setAttributes(array('class' => 'selectpicker', 'data-live-search' => 'true'));
 $MForm->setOptions(array(
     'default' => 'Standard',
     'muted' => 'Stumm',
@@ -95,9 +100,10 @@ $MForm->setOptions(array(
 
 $MForm->addSelectField("$id.0.ukFontColor");
 $MForm->setLabel('Schriftarbe:');
+$MForm->setAttributes(array('class' => 'selectpicker', 'data-live-search' => 'true'));
 $MForm->setOptions(array(
     '' => 'Standard',
-    ' uk-light' => 'hell',
+    ' uk-light' => 'Invertiert',
 ));
 
 
@@ -107,14 +113,4 @@ echo MBlock::show($id, $MForm->show() , array(
     'max' => 100
 ));
 ?>
-<!----
-<style>
-    .mblock_wrapper > div {
-    zoom: 1;
-    width: 33.3%;
-    float: left;
-}</style>
---->
-
-
 
