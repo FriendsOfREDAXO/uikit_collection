@@ -7,10 +7,9 @@ if(!empty($path[1])) {
 	$path2 = $path[1];
 } 
 ?>
-<div data-uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar"> 
-	<nav class="uk-navbar-container" data-uk-navbar style="position: relative; z-index: 980;">
-	
-	<div class="uk-navbar-left koch_svg_logo">
+<div class="nav" data-uk-sticky="top: 200; animation: uk-animation-slide-top">
+<nav class="uk-navbar-container" data-uk-navbar>
+	<div class="uk-navbar-left">
 		<a class="uk-navbar-item uk-margin-large-left uk-logo uk-padding-remove" href="<?=rex_getUrl(7)?>">
 	    LOGO
 		</a>
