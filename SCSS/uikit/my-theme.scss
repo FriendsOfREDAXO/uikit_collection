@@ -1,9 +1,0 @@
-$global-color: #666;
-$global-font-family: Verdana, Roboto, "Helvetica Neue", Arial, sans-serif;
-
-@import "SCSS/uikit/variables-theme";
-@import "SCSS/uikit/mixins-theme";  
-
-@mixin hook-card() { }
-
-@import "SCSS/uikit/uikit-theme";
