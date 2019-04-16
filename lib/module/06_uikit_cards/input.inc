@@ -17,10 +17,21 @@ $MForm->addSelectField("3.0.ukcolor");
 $MForm->setLabel('Hintergrund:');
 $MForm->setOptions(array(
     'default' => 'Standard',
-    'muted' => 'hellgrau',
+    'muted' => 'Stumm',
     'primary' => 'Hauptfarbe',
     'secondary' => 'Zusatzfarbe'
 ));
+$MForm->addSelectField("4.0.scrollspy");
+$MForm->setLabel('Scrollspy:');
+$MForm->setOptions(array(
+    '' => 'Nein',
+    'scrollspy' => 'Ja',
+));
+
+
+
+
+
 
 $MForm->addDescription("Abstände zwischen den 'Cards' verändern");
 
@@ -77,7 +88,7 @@ $MForm->addSelectField("$id.0.ukColor");
 $MForm->setLabel('Farbe:');
 $MForm->setOptions(array(
     'default' => 'Standard',
-    'muted' => 'Stummgeschaltet',
+    'muted' => 'Stumm',
     'primary' => 'Hauptfarbe',
     'secondary' => 'Zusatzfarbe'
 ));
@@ -104,5 +115,6 @@ echo MBlock::show($id, $MForm->show() , array(
     float: left;
 }</style>
 --->
+
 
 
