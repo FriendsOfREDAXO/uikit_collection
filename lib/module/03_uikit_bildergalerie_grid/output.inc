@@ -8,26 +8,20 @@ $grid_output .= '<div class="uk-grid-match uk-text-center" uk-grid uk-lightbox="
 foreach($values as $value) {
 	$picture = rex_escape($value['REX_MEDIA_1']);
 	$caption = rex_escape($value['caption']);
-	if($caption != '') {
+	  if($caption != '') {
+		  $caption = ' caption="'.$caption.'"';
+	  }
 	    $grid_output .= ' 
 	    <div class="'.$kachelnanzahl.'">
-			<a href="/images/Lightbox_uikit/'.$picture.'" caption="'.$caption.'">
+			<a href="/media/'.$picture.'"'.$caption.'>
 				<div class="uk-card uk-card-default uk-card-hover uk-padding" uk-lightbox>
-					<img src="/images/thumbnail_uikit/'.$picture.'"  alt="">
+					<img src="/media/'.$picture.'"  alt="">
 				</div>
 			</a>
 		</div>';
-	}
-	else {
-	    $grid_output .= ' 
-	    <div class="'.$kachelnanzahl.'">
-			<a href="/images/Lightbox_uikit/'.$picture.'">
-				<div class="uk-card uk-card-default uk-card-hover uk-padding" uk-lightbox>
-					<img src="/images/thumbnail_uikit/'.$picture.'"  alt="">
-				</div>
-			</a>
-		</div>';	
-	}
+	
+	
 }	
 $grid_output .= '</div>';
 echo $grid_output;
+
