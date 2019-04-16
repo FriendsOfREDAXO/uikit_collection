@@ -1,11 +1,10 @@
 # Alle hier gesetzten Werte können über $addon->getProperty($key) abgefragt werden
 
 package: uikit_collection
-version: '2.0.0-dev'
+version: '1.0.0-b11'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/klxm
 info: 'FOR UIKIT Collection'
-compile: 0
 
 page:
     title: 'translate:title'
@@ -15,7 +14,6 @@ page:
         module: {title: 'translate:module'}
         module_mform: {title: 'translate:module_mform_mblock'}
         templates: {title: 'translate:templates', icon: rex-icon fa-file-text-o}
-        settings: {title: translate:settings, icon: rex-icon fa-cog}
         info:
             title: 'Info'
             itemclass: 'pull-right'
