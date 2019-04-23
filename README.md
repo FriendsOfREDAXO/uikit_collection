@@ -12,11 +12,14 @@ Download unter: https://github.com/uikit/uikit/releases
 
 ## Autoren
 
-Thomas Skerbis
+Woflgang Bund
 
 Christian Gehrke
 
 Christian Kolloch
+
+Thomas Skerbis
+
 
 ## Basiert auf
 
