@@ -74,8 +74,17 @@ function structureArray($start = 0, $depth = 0, $ignoreoffline = true, $depth_sa
             // Aktiven Pfad ermitteln
             $active         = false;
             $currentCat     = rex_category::getCurrent();
+            if ($currentCat)
+            {
             $currentCatpath = $currentCat->getPathAsArray();
             $currentCat_id  = $currentCat->getId();
+            }
+            else
+            {
+            $currentCatpath = array();
+            $currentCat_id  = 0;
+            }
+           
             if (in_array($catId, $currentCatpath) or $currentCat_id == $catId) {
                 $active = true;
             }
