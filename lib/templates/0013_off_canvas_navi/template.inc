@@ -34,10 +34,6 @@ function myNavi($data = array())
 }
 
 
-
-// Erstellen des Arrays
-$daten = structureArray($start = 0, $depth = 1, $ignoreoffline = true);
-
 // Navigation erzeugen
 $navigation = '<div>
     <ul class="uk-nav-default uk-nav-parent-icon" uk-nav>'
