@@ -62,12 +62,20 @@ $MForm->addTextField("$id.0.imageTitle", array(
     'label' => 'Bildbeschreibung:'
 ));
 
-$MForm->addTextAreaField("$id.0.content", array(
-    'label' => 'Inhalt:',
-    'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang() ,
-    'data-profile' => 'default',
-    'class' => 'cke5-editor'
-));
+if (rex_addon::exists('Cke5')) {
+    $MForm->addTextAreaField("$id.0.content", array(
+        'label' => 'Inhalt:',
+        'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang() ,
+        'data-profile' => 'default',
+        'class' => 'cke5-editor'
+    ));
+} elseif (rex_addon::exists('tinymce4')) {
+    $MForm->addTextAreaField("$id.0.content", array(
+        'label' => 'Inhalt:',
+        'data-profile' => 'default',
+        'class' => 'tinyMCEEditor'
+    ));
+}
 $MForm->addCustomLinkField("$id.0.1",array('label'=>'Link'));
 $MForm->addTextField("$id.0.LinkText", array(
     'label' => 'Linktext (optional):'
