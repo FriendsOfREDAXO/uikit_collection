@@ -6,9 +6,10 @@ https://getuikit.com
 
 Im Backend wird ein modifiziertes UiKit eingebunden.  
 
-UiKit wird für das Frontend nicht mitgeliefert. 
+Es wird ein UiKit für das Frontend mitgeliefert. 
+Eigene Themes sollten aber entsprechend der Anleitung selbst erstellt werden. 
 
-Download unter: https://github.com/uikit/uikit/releases
+Sie z.B.: https://getuikit.com/docs/less
 
 ## Autoren
 
