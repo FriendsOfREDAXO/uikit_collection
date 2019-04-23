@@ -6,3 +6,7 @@ if (rex::isBackend() && rex::getUser()) {
         rex_view::addJsFile($this->getAssetsUrl('uikit_backend/js/uikit.min.js'));
         rex_view::addJsFile($this->getAssetsUrl('uikit_backend/js/uikit-icons.min.js'));
 }
+
+    rex_extension::register('PACKAGES_INCLUDED', function($ep) {
+        include_once rex_path::addon('uikit_collection/inc').'functions.php';
+    });

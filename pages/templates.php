@@ -196,6 +196,7 @@ if (count($templates_errors) > 0) {
          $mi->setTable('rex_template');
          $mi->setValue('content', $template);
          $mi->setValue('name', $modul_name);
+         $mi->setValue('active', 1);
          $mi->insert();
          $modul_id = (int) $mi->getLastId();
           echo rex_view::success($this->i18n('template_angelegt').' '.$modul_name);
