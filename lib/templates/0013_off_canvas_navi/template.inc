@@ -38,16 +38,12 @@ function myNavi($data = array())
 // Erstellen des Arrays
 $daten = structureArray($start = 0, $depth = 1, $ignoreoffline = true);
 
-// Navigation erzeugen aus Array
-$navigation = '<div class="uk-width-1-2@s uk-width-2-5@m">
+// Navigation erzeugen
+$navigation = '<div>
     <ul class="uk-nav-default uk-nav-parent-icon" uk-nav>'
     .myNavi(structureArray($start = 0, $depth = 4, true)).
     '</ul>
 </div>';
-
-
-
-
 ?>
 <div class="nav" data-uk-sticky="top: 200; animation: uk-animation-slide-top">
     <nav class="uk-navbar-container" data-uk-navbar>
@@ -59,9 +55,7 @@ $navigation = '<div class="uk-width-1-2@s uk-width-2-5@m">
             <div id="sidebar-navi" uk-offcanvas="overlay: true; flip: false;">
                 <div class="uk-offcanvas-bar uk-dark">
                     <button class="uk-offcanvas-close" type="button" uk-close></button>
-                   
-                        <?=$navigation;?>
-                
+                    <?=$navigation;?>
                 </div>
             </div>
         </div>
