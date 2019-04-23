@@ -4,7 +4,7 @@
 Liefert Module und Templates zur Realisierung von UiKit-Projekten
 https://getuikit.com
 
-Im Backend wird UiKit eingebunden. Es ist aber nicht zwingend erforderlich. Nach Installation der Templates und Module kann das AddOn deaktiviert werden. 
+Im Backend wird ein modifiziertes UiKit eingebunden.  
 
 UiKit wird für das Frontend nicht mitgeliefert. 
 
