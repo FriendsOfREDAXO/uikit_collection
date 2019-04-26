@@ -31,11 +31,25 @@ if (!function_exists('infolink')) {
 // Benötigt für den Aufruf werden nur $start,$depth und $ignoreoffline
 // Alle weiteren Angaben dienen der internen Verarbeitung
 // Alle weiteren Informationen aus rex_structure fintet man in catObject
-// DEMO siehe unten
+
 if (!function_exists('structureArray')) {
-function structureArray($start = 0, $depth = 0, $ignoreoffline = true, $depth_saved = 0, $level = 0, $id = 0)
+function structureArray($start = 0, $depth = 0, $ignoreOffline = true, $depth_saved = 0, $level = 0, $id = 0)
 {
     $result = array();
+    // Aktuelle Kategorie ermitteln
+    $currentCat     = rex_category::getCurrent();
+            if ($currentCat)
+            {
+            $currentCatpath = $currentCat->getPathAsArray();
+            $currentCat_id  = $currentCat->getId();
+            }
+            else
+            {
+            $currentCatpath = array();
+            $currentCat_id  = 0;
+            }
+    
+    
     if ($start != 0) {
         $startCat  = rex_category::get($start);
         $startPath = $startCat->getPathAsArray();
@@ -63,33 +77,21 @@ function structureArray($start = 0, $depth = 0, $ignoreoffline = true, $depth_sa
             if ($listlevel <= $depth && $depth != 0 && $cat && $cat->getChildren($ignoreoffline)) {
                 $level++;
                 $hasChildren       = true;
-                // Unterkategorien ermitteln, function rut sich selbst auf
-                $children['child'] = structureArray($catId, $depth, $ignoreoffline = true, $depth_saved, $level);
+                // Unterkategorien ermitteln, function ruft sich selbst auf
+                $children['child'] = structureArray($catId, $depth, $ignoreOffline = true, $depth_saved, $level);
                 $level--;
             }
             // Name der Kategorie
             $catName        = $cat->getName();
-            // Url anhand ID ermitteln
-            $catUrl         = rex_getUrl($catId);
+            // Url ermitteln
+            $catUrl         =  $cat->getUrl();
             // Aktiven Pfad ermitteln
-            $active         = false;
-            $currentCat     = rex_category::getCurrent();
-            if ($currentCat)
-            {
-            $currentCatpath = $currentCat->getPathAsArray();
-            $currentCat_id  = $currentCat->getId();
-            }
-            else
-            {
-            $currentCatpath = array();
-            $currentCat_id  = 0;
-            }
-           
+            $active         = false;          
             if (in_array($catId, $currentCatpath) or $currentCat_id == $catId) {
                 $active = true;
             }
             // Ergebnis speichern
-            $result[$id++] = array(
+            $result[] = array(
                 'catId' => $catId,
                 'parentId' => $start,
                 'level' => $level,
