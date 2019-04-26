@@ -21,18 +21,23 @@ structureArray($start = 0, $depth = 0, $ignoreOffline = true)
 ```
 
 ***$Start***
+
 numerisch
+
 Hier wird die Id der Start-Kategorie anegegben ab der das Array erzeugt wird
 
 ***$depth***
 numerisch
+
 Hier wird die gewünschte Tiefe der Navigation festgelegt
 
 ***$ignoreOffline***
+
 true / false
+
 Bei true werden Offline-Kategirien ignoriert. 
 
-Das Array kann anschließend mit einer eignen Function verarbeitet werden. 
+Das Array kann anschließend mit einer eigenen Function verarbeitet werden. 
 Ein Beispiel findet sich im Template [0013 - Off Canvas Navi mit UIKit](https://github.com/FriendsOfREDAXO/uikit_collection/blob/master/lib/templates/0013_off_canvas_navi/template.inc) 
 
 
