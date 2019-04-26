@@ -17,10 +17,10 @@ page:
             title: 'Info'
             itemclass: 'pull-right'
             subpages:
-                info: { title: 'Info'}
+                info:  { title: 'translate:info', subPath: README.md }
                 lizenz: { title: 'translate:lizenz'}
 requires:
-    redaxo: '>=5.6.0'
+    redaxo: '>=5.7.0'
     packages:
          video: '>=2.0.0-beta1'
          mblock: '>=3.0.0'
