@@ -14,7 +14,7 @@
         echo $seo->getCanonicalUrlTag() . PHP_EOL;
     }
     ?>
-    <link rel="stylesheet" href="<?= rex_url::base('assets/addons/uikit_collection/frontend/css/uikit.css') ?>">
+    <link rel="stylesheet" href="<?= rex_url::addonAssets("uikit_collection", "/uikit-frontend/css/uikit.min.css"); ?>">
 </head>
 <body>
 <?php
@@ -67,7 +67,7 @@ $navigation .= '<ul>';
         REX_ARTICLE[]
     </div>
 </div>
-    <script type="text/javascript" src="<?= rex_url::base('assets/addons/uikit_collection/frontend/js/uikit.min.js') ?>"></script>
-    <script type="text/javascript" src="<?= rex_url::base('assets/addons/uikit_collection/frontend/js/uikit-icons.min.js') ?>"></script>    
-</body>
+    <script type="text/javascript" src="<?= rex_url::addonAssets("uikit_collection", "/uikit-frontend/js/uikit.min.js"); ?>"></script>
+    <script type="text/javascript" src="<?= rex_url::addonAssets("uikit_collection", "/uikit-frontend/js/uikit-icons.min.js"); ?>"></script>
+ </body>
 </html>
