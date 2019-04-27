@@ -47,13 +47,13 @@ foreach (rex_category::getRootCategories() as $lev1) {
         $navigation .= '</li>';
     }
 }
-$navigation .= '<ul>';
+$navigation .= '</ul>';
 
 
 ?>
 <div class="wrapper">
     <div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
-        <nav class="uk-navbar-container uk-margin" style="position: relative; z-index: 980;" uk-navbar="mode: hover" uk-navbar>
+        <nav class="uk-navbar-container uk-margin" style="position: relative; z-index: 980;" uk-navbar="mode: hover">
             <div class="uk-navbar-left">
                 <a class="uk-navbar-item uk-logo" href="#">Logo</a>
             </div>
