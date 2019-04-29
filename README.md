@@ -20,14 +20,6 @@ Das AddOn liefert eine eigene Function zur Generierung eines Navigationsarrays.
 structureArray($start = 0, $depth = 0, $ignoreOffline = true)
 ```
 
-Um z.B. eine Navi ab dem Root einer YRewrite-Domain für 2 Ebenen aufzurufen, gibt man folgenden Code ein: 
-
-```php
-$domain = rex_yrewrite::getCurrentDomain();
-$start =  $domain->getId();
-structureArray($start, $depth = 2, $ignoreOffline = true)
-```
-
 ***$Start***
 
 numerisch
