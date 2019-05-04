@@ -62,7 +62,7 @@ $MForm->addTextField("$id.0.imageTitle", array(
     'label' => 'Bildbeschreibung:'
 ));
 
-if (rex_addon::exists('Cke5')) {
+if (rex_addon::exists('cke5')) {
     $MForm->addTextAreaField("$id.0.content", array(
         'label' => 'Inhalt:',
         'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang() ,
