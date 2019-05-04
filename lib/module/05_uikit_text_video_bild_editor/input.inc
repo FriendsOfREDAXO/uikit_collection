@@ -2,7 +2,7 @@
 $mform = new MForm();
 $mform->addTab('Text');
 // Check Texteditor 
-if (rex_addon::exists('Cke5')) {
+if (rex_addon::exists('cke5')) {
     $mform->addTextAreaField(1, array(
         'label' => 'Text:',
         'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang(),
