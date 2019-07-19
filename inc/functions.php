@@ -25,7 +25,7 @@ if (!function_exists('infolink')) {
 // Function zur Generierung eines Navigationsarrays
 // Benötigt für den Aufruf werden nur $start,$depth und $ignoreoffline
 // Alle weiteren Angaben dienen der internen Verarbeitung
-// Alle weiteren Informationen aus rex_structure fintet man in catObject
+// Alle weiteren Informationen aus rex_structure findet man in catObject
 if (!function_exists('structureArray')) {
     function structureArray($start = 0, $depth = 0, $ignoreOffline = true, $depth_saved = 0, $level = 0)
     {
