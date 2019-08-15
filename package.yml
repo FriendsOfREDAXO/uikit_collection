@@ -22,6 +22,5 @@ page:
 requires:
     redaxo: '>=5.7.0'
     packages:
-         plyr: '>=3.0.0'
          mblock: '>=3.0.0'
          mform: '^5.1.1'
