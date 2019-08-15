@@ -1,7 +1,7 @@
 # Alle hier gesetzten Werte können über $addon->getProperty($key) abgefragt werden
 
 package: uikit_collection
-version: '1.3.0'
+version: '1.4.0'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/klxm
 info: 'FOR UIKIT Collection'
@@ -22,6 +22,6 @@ page:
 requires:
     redaxo: '>=5.7.0'
     packages:
-         video: '>=2.0.0-beta1'
+         plyr: '>=3.0.0'
          mblock: '>=3.0.0'
          mform: '^5.1.1'
