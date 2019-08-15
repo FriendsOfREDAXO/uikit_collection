@@ -115,12 +115,14 @@ if ($mediacheck->checkMedia($media) !== false) {
         </section>
          ';
 }
-if ($mediacheck->checkAudio($file) !== false) {
+
+
+if ($mediacheck->checkAudio($media) !== false) {
     $media_output = '  
-        <section>
-            <audio ' . $autoplay_audio . '>
-                <source src="' . $link . '" type="audio/mp3">
-            </audio>
+        <section>          
+                   <audio class="rex-plyr">
+                            <source src="' . $link . '" type="audio/mp3">
+                        </audio>
         </section>
         ';
 }
