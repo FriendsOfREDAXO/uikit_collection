@@ -25,8 +25,8 @@ $poster  = 'REX_MEDIA[1]';
 if ($poster != "") {
     $poster = 'poster="/images/poster/REX_MEDIA[1]"';
 }
-$mediacheck                 = new rex_video();
-$link                       = $mediacheck->getVideoType($media);
+$mediacheck                 = new rex_plyr();
+$link                       = $mediacheck->checkUrl($media);
 $position_bild              = 'REX_VALUE[2]';
 $groesse_bild               = 'REX_VALUE[3]';
 $uk_show_caption            = 'REX_VALUE[4]';
@@ -36,9 +36,7 @@ $uk_img_shadow              = 'REX_VALUE[9]';
 $bild_als_kreis             = 'REX_VALUE[10]';
 $animiere_bild              = 'REX_VALUE[11]';
 $repeat_animation           = 'REX_VALUE[12]';
-$autoplayStandart           = rex_config::get('video', 'autoplay_plyr');
-$hideControls               = rex_config::get('video', 'controls_plyr');
-$clickToPlay                = rex_config::get('video', 'click_plyr');
+
 if (empty($caption_bild) == true) {
     $caption_bild = ' ';
 }
@@ -102,10 +100,10 @@ if ($media == '') {
     $media_output = '';
 }
 if ($mediacheck->checkYoutube($link) == true) {
-    $media_output = '<div class="' . $uk_img_shadow . ' rex_video ' . $autoplayStandard . ' ' . $hideControls . ' ' . $clickToPlay . '" data-type="youtube"  data-video-id="' . $mediacheck->getYoutubeId($link) . '"></div></br>';
+    $media_output = '<div class="' . $uk_img_shadow . ' rex_plyr" data-type="youtube"  data-video-id="' . $mediacheck->getYoutubeId($link) . '"></div></br>';
 }
 if ($mediacheck->checkVimeo($link) == true) {
-    $media_output = '<div class="' . $uk_img_shadow . ' rex_video ' . $hideControls . ' ' . $autoplayStandard . ' ' . $clickToPlay . '" data-type="vimeo" data-video-id="' . $mediacheck->getVimeoId($link) . '"></div></br>';
+    $media_output = '<div class="' . $uk_img_shadow . ' rex_plyr" data-type="vimeo" data-video-id="' . $mediacheck->getVimeoId($link) . '"></div></br>';
 }
 if ($mediacheck->checkMedia($media) !== false) {
     if ($autoplayStandard == 'Ja') {
@@ -122,7 +120,7 @@ if ($mediacheck->checkMedia($media) !== false) {
 if ($mediacheck->checkAudio($file) !== false) {
     $media_output = '  
         <section>
-            <audio ' . $autoplay_audio . ' ' . $loop_audio . '>
+            <audio ' . $autoplay_audio . '>
                 <source src="' . $link . '" type="audio/mp3">
             </audio>
         </section>
