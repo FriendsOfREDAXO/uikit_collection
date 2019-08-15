@@ -25,6 +25,7 @@ $poster  = 'REX_MEDIA[1]';
 if ($poster != "") {
     $poster = 'poster="/images/poster/REX_MEDIA[1]"';
 }
+
 $mediacheck                 = new rex_plyr();
 $link                       = $mediacheck->checkUrl($media);
 $position_bild              = 'REX_VALUE[2]';
@@ -98,20 +99,17 @@ if ($uk_lightbox != ' ') {
 ## Wenn Video dann wird Bild überschrieben ##
 if ($media == '') {
     $media_output = '';
-}
+} 
 if ($mediacheck->checkYoutube($link) == true) {
-    $media_output = '<div class="' . $uk_img_shadow . ' rex_plyr" data-type="youtube"  data-video-id="' . $mediacheck->getYoutubeId($link) . '"></div></br>';
+    $media_output = '<div class="' . $uk_img_shadow . ' rex-plyr" data-plyr-provider="youtube" data-plyr-embed-id="' . $mediacheck->getYoutubeId($link) . '"></div>';
 }
-if ($mediacheck->checkVimeo($link) == true) {
-    $media_output = '<div class="' . $uk_img_shadow . ' rex_plyr" data-type="vimeo" data-video-id="' . $mediacheck->getVimeoId($link) . '"></div></br>';
+if ($mediacheck->checkVimeo($link) == true) {  
+$media_output = '<div class="' . $uk_img_shadow . ' rex-plyr" data-plyr-provider="vimeo" data-plyr-embed-id="' . $mediacheck->getVimeoId($link) . '"></div>';
 }
 if ($mediacheck->checkMedia($media) !== false) {
-    if ($autoplayStandard == 'Ja') {
-        $localAutoplay = "autoplay";
-    }
     $media_output = '
         <section>
-            <video ' . $poster . ' class="' . $uk_img_shadow . '">
+            <video ' . $poster . ' class="rex-plyr ' . $uk_img_shadow . '">
                 <source src="' . $link . '" type="video/mp4">
             </video>
         </section>
