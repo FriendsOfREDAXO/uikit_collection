@@ -37,7 +37,7 @@ function myNavi($data = array())
 // Navigation erzeugen
 $navigation = '<div>
     <ul class="uk-nav-default uk-nav-parent-icon" uk-nav>'
-    .myNavi(structureArray($start = 0, $depth = 4, true)).
+    .myNavi(navArray($start = 0, $depth = 4, true)).
     '</ul>
 </div>';
 ?>
