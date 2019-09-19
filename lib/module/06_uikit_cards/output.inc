@@ -1,34 +1,25 @@
-<?php 
- // CustomLink-Funktion REX5 / mform / mblock
-
-$footer = $scollsettings = '';        
+<?php
+$footer = '';        
 $rexInputVars = rex_var::toArray("REX_VALUE[1]");
 $rexSettingVars = rex_var::toArray("REX_VALUE[2]") [0];
 $rexColorVars = rex_var::toArray("REX_VALUE[3]") [0];
-$rexScrollSetting = rex_var::toArray("REX_VALUE[4]") [0];
-if ($rexScrollSetting!=''){
-$scrollspy = 'uk-scrollspy="target: > div; cls:uk-animation-fade; delay: 500" class=" ';    
-}
 ?>
-<section class="uk-section uk-preserve-color uk-section-<?=$rexColorVars['ukcolor']?>">
+<section class="uk-section uk-preserve-color uk-section-<?=$rexColorVars['ukcolor']?>REX_VALUE[14]">
 <?php echo '<div class="uk-container">'; ?>
 
 <?php
  $footer = '';        
-
+$rexInputVars = rex_var::toArray("REX_VALUE[1]");
+$rexSettingVars = rex_var::toArray("REX_VALUE[2]") [0];
 
 
 // settings vars
 $ukGutterWidth = 'uk-grid-' . $rexSettingVars['gutterWidth'];
 $ukMatchHeight = isset($rexSettingVars['matchHeight']) ? ' uk-grid-match' : '';
 
-    
 // start output
 $output = array();
-$output[] = '<div uk-height-match=".uk-card" ' . $scrollspy . $ukGutterWidth . $ukMatchHeight . ' uk-child-width-expand@m" uk-grid>';
-    
-  
-    
+$output[] = '<div uk-height-match=".uk-card" uk-scrollspy="target: > div; cls:uk-animation-fade; delay: 500" class="' . $ukGutterWidth . $ukMatchHeight . ' uk-child-width-expand@m uk-flex-center" uk-grid>';
 
 foreach ($rexInputVars as $rexVar)
 {
@@ -60,22 +51,25 @@ $linkout ='<a class="uk-preserve-color uk-button uk-button-text" href="'.$linkou
     // wrapper
     $output[] = '<div class="' . $ukWidth . '">';
 
-    $output[] = '<div class="uk-card uk-card-default uk-preserve-color ' . $ukColor .  $ukFontColor .'">';
+    $output[] = '<div class="uk-card uk-card-default ' . $ukColor .  $ukFontColor .'">';
 
 
     
     // IMAGE
     if ($image != '')
     {
-        $output[] = '<div class="uk-card-media-top"><div class="uk-overflow-hidden"><img class="uk-max-image uk-animation-kenburns" src="/images/card/' . $image . '" title="' . $title . '" alt="' . $header . '"></div></div>';
+        $output[] = '<div class="uk-card-media-top"><div class="uk-overflow-hidden"><img class="dopic uk-animation-kenburns" src="/images/card/' . $image . '" title="' . $title . '" alt="' . $header . '"></div></div>';
     }
     // header
-    $output[] = '<div class="uk-card-header">';
-    $output[] = '<div class="uk-card-title'.$ukFontColor.'">' . $header . '</div>';
+    if ($header!='')
+    {
+    $output[] = '<div class="uk-card-header'.$ukFontColor.'">';
+    $output[] = '<div class="uk-card-title">' . $header . '</div>';
     $output[] = '</div>';
+    }
     
     // body / content
-    $output[] = '<div class="uk-dropcap uk-card-body">';
+    $output[] = '<div class="uk-card-body">';
     $output[] = $content;
     $output[] = '</div>';
     // footer
@@ -98,6 +92,8 @@ echo join("\n", $output);
 ?>
 <?php echo '</div>'; ?>
 </section>
+
+
 
 
 
