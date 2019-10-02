@@ -1,20 +1,19 @@
-# UIKIT Collection für REDAXO 5.x
+# UIkit Collection // REDAXO AddOn
 
 ## Einleitung
-Liefert Module und Templates zur Realisierung von UiKit-Projekten
+Liefert Demo-Module und -Templates zur Realisierung von UiKit-Projekten
 https://getuikit.com
 
-Im Backend wird ein modifiziertes UiKit eingebunden.  
+Im Backend wird ein modifiziertes UIkit eingebunden, so dass die Frontendausgaben auch im Backend funktionieren.   
 
-Es wird ein UiKit für das Frontend mitgeliefert. 
-Eigene Themes sollten aber entsprechend der Anleitung selbst erstellt werden. 
+Es wird zwar ein Basis-UIkit für das Frontend mitgeliefert, eigene Themes sollten jedoch besser entsprechend der Anleitung selbst entwickelt werden. 
 
 Siehe z.B.: https://getuikit.com/docs/less
 
 
 ## Autoren
 
-Woflgang Bund
+Wolfgang Bund
 
 Christian Gehrke
 
@@ -25,13 +24,9 @@ Thomas Skerbis
 
 ## Basiert auf
 
-Modulsammlung 
+Modulsammlung von Oliver Kreischer
 
 **Friends Of REDAXO**
 
 * http://www.redaxo.org
 * https://github.com/FriendsOfREDAXO
-
-**Projekt-Lead**
-
-[Thomas Skerbis](https://github.com/KLXM)
