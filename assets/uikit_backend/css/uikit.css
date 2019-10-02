@@ -79,13 +79,6 @@ strong {
 :not(pre) > samp {
   /* 1 */
   font-family: Consolas, monaco, monospace;
-  /* 2 */
-  font-size: 0.875rem;
-  /* 3 */
-  color: #f0506e;
-  white-space: nowrap;
-  padding: 2px 6px;
-  background: #f8f8f8;
 }
 /*
  * Emphasize
