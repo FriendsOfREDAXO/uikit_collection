@@ -1,4 +1,4 @@
-/*! UIkit 3.1.3 | http://www.getuikit.com | (c) 2014 - 2018 YOOtheme | MIT License */
+/*! UIkit 3.2.0 | http://www.getuikit.com | (c) 2014 - 2019 YOOtheme | MIT License */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('uikit-util')) :
@@ -200,7 +200,7 @@
             children: {
 
                 get: function() {
-                    return uikitUtil.toNodes(this.target.children);
+                    return uikitUtil.toNodes(this.target && this.target.children);
                 },
 
                 watch: function(list, old) {
@@ -366,17 +366,10 @@
         var sort = ref$1.sort;
         var order = ref$1.order; if ( order === void 0 ) order = 'asc';
 
-        if (uikitUtil.isUndefined(sort)) {
-            return group in stateFilter && filter === stateFilter[group]
-                || !filter && group && !(group in stateFilter) && !stateFilter[''];
-        } else {
-            return stateSort === sort && stateOrder === order;
-        }
-        // filter = isUndefined(sort) ? filter || '' : filter;
-        // sort = isUndefined(filter) ? sort || '' : sort;
-        //
-        // return (isUndefined(filter) || group in stateFilter && filter === stateFilter[group])
-        //     && (isUndefined(sort) || stateSort === sort && stateOrder === order);
+        return uikitUtil.isUndefined(sort)
+            ? group in stateFilter && filter === stateFilter[group]
+                || !filter && group && !(group in stateFilter) && !stateFilter['']
+            : stateSort === sort && stateOrder === order;
     }
 
     function isEqualList(listA, listB) {

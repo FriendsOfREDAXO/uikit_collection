@@ -1,17 +1,10 @@
-/*! UIkit 3.1.3 | http://www.getuikit.com | (c) 2014 - 2018 YOOtheme | MIT License */
+/*! UIkit 3.2.0 | http://www.getuikit.com | (c) 2014 - 2019 YOOtheme | MIT License */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define('uikit', factory) :
     (global = global || self, global.UIkit = factory());
 }(this, function () { 'use strict';
-
-    function bind(fn, context) {
-        return function (a) {
-            var l = arguments.length;
-            return l ? l > 1 ? fn.apply(context, arguments) : fn.call(context, a) : fn.call(context);
-        };
-    }
 
     var objPrototype = Object.prototype;
     var hasOwnProperty = objPrototype.hasOwnProperty;
@@ -96,8 +89,9 @@
         return obj !== null && typeof obj === 'object';
     }
 
+    var toString = objPrototype.toString;
     function isPlainObject(obj) {
-        return isObject(obj) && Object.getPrototypeOf(obj) === objPrototype;
+        return toString.call(obj) === '[object Object]';
     }
 
     function isWindow(obj) {
@@ -116,7 +110,6 @@
         return obj instanceof Node || isObject(obj) && obj.nodeType >= 1;
     }
 
-    var toString = objPrototype.toString;
     function isNodeCollection(obj) {
         return toString.call(obj).match(/^\[object (NodeList|HTMLCollection)\]$/);
     }
@@ -240,6 +233,10 @@
         }
         return target;
     };
+
+    function last(array) {
+        return array[array.length - 1];
+    }
 
     function each(obj, cb) {
         for (var key in obj) {
@@ -386,6 +383,24 @@
         }
     }
 
+    /* global DocumentTouch */
+
+    var isIE = /msie|trident/i.test(window.navigator.userAgent);
+    var isRtl = attr(document.documentElement, 'dir') === 'rtl';
+
+    var hasTouchEvents = 'ontouchstart' in window;
+    var hasPointerEvents = window.PointerEvent;
+    var hasTouch = hasTouchEvents
+        || window.DocumentTouch && document instanceof DocumentTouch
+        || navigator.maxTouchPoints; // IE >=11
+
+    var pointerDown = hasPointerEvents ? 'pointerdown' : hasTouchEvents ? 'touchstart' : 'mousedown';
+    var pointerMove = hasPointerEvents ? 'pointermove' : hasTouchEvents ? 'touchmove' : 'mousemove';
+    var pointerUp = hasPointerEvents ? 'pointerup' : hasTouchEvents ? 'touchend' : 'mouseup';
+    var pointerEnter = hasPointerEvents ? 'pointerenter' : hasTouchEvents ? '' : 'mouseenter';
+    var pointerLeave = hasPointerEvents ? 'pointerleave' : hasTouchEvents ? '' : 'mouseleave';
+    var pointerCancel = hasPointerEvents ? 'pointercancel' : 'touchcancel';
+
     function query(selector, context) {
         return toNode(selector) || find(selector, getContext(selector, context));
     }
@@ -488,7 +503,7 @@
         return isString(selector) && selector.match(contextSelectorRe);
     }
 
-    var selectorRe = /.*?[^\\](?:,|$)/;
+    var selectorRe = /.*?[^\\](?:,|$)/g;
 
     function splitSelector(selector) {
         return selector.match(selectorRe).map(function (selector) { return selector.replace(/,$/, '').trim(); });
@@ -522,21 +537,18 @@
         }
 
         return isNode(element)
-            ? element.parentNode && closestFn.call(element, selector)
+            ? closestFn.call(element, selector)
             : toNodes(element).map(function (element) { return closest(element, selector); }).filter(Boolean);
     }
 
     function parents(element, selector) {
         var elements = [];
-        var parent = toNode(element).parentNode;
+        element = toNode(element);
 
-        while (parent && parent.nodeType === 1) {
-
-            if (matches(parent, selector)) {
-                elements.push(parent);
+        while ((element = element.parentNode) && element.nodeType === 1) {
+            if (matches(element, selector)) {
+                elements.push(element);
             }
-
-            parent = parent.parentNode;
         }
 
         return elements;
@@ -604,13 +616,19 @@
 
         targets = toEventTargets(targets);
 
+        if (listener.length > 1) {
+            listener = detail(listener);
+        }
+
         if (selector) {
             listener = delegate(targets, selector, listener);
         }
 
-        if (listener.length > 1) {
-            listener = detail(listener);
+        if (useCapture && useCapture.self) {
+            listener = selfFilter(listener);
         }
+
+        useCapture = useCaptureFilter(useCapture);
 
         type.split(' ').forEach(function (type) { return targets.forEach(function (target) { return target.addEventListener(type, listener, useCapture); }
             ); }
@@ -621,6 +639,7 @@
     function off(targets, type, listener, useCapture) {
         if ( useCapture === void 0 ) useCapture = false;
 
+        useCapture = useCaptureFilter(useCapture);
         targets = toEventTargets(targets);
         type.split(' ').forEach(function (type) { return targets.forEach(function (target) { return target.removeEventListener(type, listener, useCapture); }
             ); }
@@ -702,6 +721,20 @@
         return function (e) { return isArray(e.detail) ? listener.apply(void 0, [e].concat(e.detail)) : listener(e); };
     }
 
+    function selfFilter(listener) {
+        return function (e) {
+            if (e.target === e.currentTarget || e.target === e.current) {
+                return listener.call(null, e);
+            }
+        };
+    }
+
+    function useCaptureFilter(options) {
+        return options && isIE && !isBoolean(options)
+            ? !!options.capture
+            : options;
+    }
+
     function isEventTarget(target) {
         return target && 'addEventListener' in target;
     }
@@ -721,7 +754,7 @@
     }
 
     function isTouch(e) {
-        return e.pointerType === 'touch' || e.touches;
+        return e.pointerType === 'touch' || !!e.touches;
     }
 
     function getEventPos(e, prop) {
@@ -1001,24 +1034,6 @@
 
     }
 
-    /* global DocumentTouch */
-
-    var isIE = /msie|trident/i.test(window.navigator.userAgent);
-    var isRtl = attr(document.documentElement, 'dir') === 'rtl';
-
-    var hasTouchEvents = 'ontouchstart' in window;
-    var hasPointerEvents = window.PointerEvent;
-    var hasTouch = hasTouchEvents
-        || window.DocumentTouch && document instanceof DocumentTouch
-        || navigator.maxTouchPoints; // IE >=11
-
-    var pointerDown = hasPointerEvents ? 'pointerdown' : hasTouchEvents ? 'touchstart' : 'mousedown';
-    var pointerMove = hasPointerEvents ? 'pointermove' : hasTouchEvents ? 'touchmove' : 'mousemove';
-    var pointerUp = hasPointerEvents ? 'pointerup' : hasTouchEvents ? 'touchend' : 'mouseup';
-    var pointerEnter = hasPointerEvents ? 'pointerenter' : hasTouchEvents ? '' : 'mouseenter';
-    var pointerLeave = hasPointerEvents ? 'pointerleave' : hasTouchEvents ? '' : 'mouseleave';
-    var pointerCancel = hasPointerEvents ? 'pointercancel' : 'touchcancel';
-
     function ready(fn) {
 
         if (document.readyState !== 'loading') {
@@ -1243,7 +1258,7 @@
 
         args = getArgs$1(args);
 
-        var force = !isString(args[args.length - 1]) ? args.pop() : []; // in iOS 9.3 force === undefined evaluates to false
+        var force = !isString(last(args)) ? args.pop() : []; // in iOS 9.3 force === undefined evaluates to false
 
         args = args.filter(Boolean);
 
@@ -1454,11 +1469,7 @@
                         'transition-timing-function': ''
                     });
                     type === 'transitioncanceled' ? reject() : resolve();
-                }, false, function (ref) {
-                    var target = ref.target;
-
-                    return element === target;
-                });
+                }, {self: true});
 
                 addClass(element, 'uk-transition');
                 css(element, assign({
@@ -1549,11 +1560,7 @@
                         }
                     });
 
-                }, false, function (ref) {
-                    var target = ref.target;
-
-                    return element === target;
-                });
+                }, {self: true});
 
                 css(element, 'animationDuration', (duration + "ms"));
                 addClass(element, cls);
@@ -1724,6 +1731,10 @@
     function getDimensions(element) {
 
         element = toNode(element);
+
+        if (!element) {
+            return {};
+        }
 
         var ref = getWindow(element);
         var top = ref.pageYOffset;
@@ -2038,25 +2049,31 @@
             return remove$1(this.reads, task) || remove$1(this.writes, task);
         },
 
-        flush: function() {
-
-            runTasks(this.reads);
-            runTasks(this.writes.splice(0, this.writes.length));
-
-            this.scheduled = false;
-
-            if (this.reads.length || this.writes.length) {
-                scheduleFlush();
-            }
-
-        }
+        flush: flush
 
     };
 
-    function scheduleFlush() {
+    function flush() {
+        runTasks(fastdom.reads);
+        runTasks(fastdom.writes.splice(0, fastdom.writes.length));
+
+        fastdom.scheduled = false;
+
+        if (fastdom.reads.length || fastdom.writes.length) {
+            scheduleFlush(true);
+        }
+    }
+
+    function scheduleFlush(microtask) {
+        if ( microtask === void 0 ) microtask = false;
+
         if (!fastdom.scheduled) {
             fastdom.scheduled = true;
-            requestAnimationFrame(fastdom.flush.bind(fastdom));
+            if (microtask) {
+                Promise.resolve().then(flush);
+            } else {
+                requestAnimationFrame(flush);
+            }
         }
     }
 
@@ -2130,7 +2147,7 @@
             }
 
             var p = offset(target);
-            var position = this.positions[this.positions.length - 1];
+            var position = last(this.positions);
             var ref = this.positions;
             var prevPos = ref[0];
 
@@ -2175,7 +2192,7 @@
 
     // args strategy
     strats.args = function (parentVal, childVal) {
-        return concatStrat(childVal || parentVal);
+        return childVal !== false && concatStrat(childVal || parentVal);
     };
 
     // update strategy
@@ -2619,7 +2636,6 @@
         isInput: isInput,
         filter: filter,
         within: within,
-        bind: bind,
         hasOwn: hasOwn,
         hyphenate: hyphenate,
         camelize: camelize,
@@ -2653,6 +2669,7 @@
         isEqual: isEqual,
         swap: swap,
         assign: assign,
+        last: last,
         each: each,
         sortBy: sortBy,
         uniqueBy: uniqueBy,
@@ -2918,7 +2935,7 @@
 
             if (methods) {
                 for (var key in methods) {
-                    this[key] = bind(methods[key], this);
+                    this[key] = methods[key].bind(this);
                 }
             }
         };
@@ -3135,12 +3152,6 @@
                 return;
             }
 
-            handler = detail(isString(handler) ? component[handler] : bind(handler, component));
-
-            if (self) {
-                handler = selfFilter(handler);
-            }
-
             component._events.push(
                 on(
                     el,
@@ -3150,29 +3161,15 @@
                         : isString(delegate)
                             ? delegate
                             : delegate.call(component),
-                    handler,
-                    isBoolean(passive)
-                        ? {passive: passive, capture: capture}
-                        : capture
+                    isString(handler) ? component[handler] : handler.bind(component),
+                    {passive: passive, capture: capture, self: self}
                 )
             );
 
         }
 
-        function selfFilter(handler) {
-            return function selfHandler(e) {
-                if (e.target === e.currentTarget || e.target === e.current) {
-                    return handler.call(null, e);
-                }
-            };
-        }
-
         function notIn(options, key) {
             return options.every(function (arr) { return !arr || !hasOwn(arr, key); });
-        }
-
-        function detail(listener) {
-            return function (e) { return isArray(e.detail) ? listener.apply(void 0, [e].concat(e.detail)) : listener(e); };
         }
 
         function coerce(type, value) {
@@ -3212,7 +3209,7 @@
                     if (isUndefined(data[key])) {
                         delete data[key];
                     } else {
-                        data[key] = props[key] ? coerce(props[key], data[key], el) : data[key];
+                        data[key] = props[key] ? coerce(props[key], data[key]) : data[key];
                     }
                 }
             }
@@ -3905,38 +3902,47 @@
                 }
             }, true);
 
-        });
+            var off;
+            on(document, pointerDown, function (e) {
 
-        var off;
+                off && off();
 
-        on(document, pointerDown, function (e) {
-
-            off && off();
-
-            if (!isTouch(e)) {
-                return;
-            }
-
-            var pos = getEventPos(e);
-            var target = 'tagName' in e.target ? e.target : e.target.parentNode;
-            off = once(document, pointerUp, function (e) {
-
-                var ref = getEventPos(e);
-                var x = ref.x;
-                var y = ref.y;
-
-                // swipe
-                if (target && x && Math.abs(pos.x - x) > 100 || y && Math.abs(pos.y - y) > 100) {
-
-                    setTimeout(function () {
-                        trigger(target, 'swipe');
-                        trigger(target, ("swipe" + (swipeDirection(pos.x, pos.y, x, y))));
-                    });
-
+                if (!isTouch(e)) {
+                    return;
                 }
 
-            });
-        }, {passive: true});
+                // Handle Swipe Gesture
+                var pos = getEventPos(e);
+                var target = 'tagName' in e.target ? e.target : e.target.parentNode;
+                off = once(document, (pointerUp + " " + pointerCancel), function (e) {
+
+                    var ref = getEventPos(e);
+                    var x = ref.x;
+                    var y = ref.y;
+
+                    // swipe
+                    if (target && x && Math.abs(pos.x - x) > 100 || y && Math.abs(pos.y - y) > 100) {
+
+                        setTimeout(function () {
+                            trigger(target, 'swipe');
+                            trigger(target, ("swipe" + (swipeDirection(pos.x, pos.y, x, y))));
+                        });
+
+                    }
+
+                });
+
+                // Force click event anywhere on iOS < 13
+                if (pointerDown === 'touchstart') {
+                    css(document.body, 'cursor', 'pointer');
+                    once(document, (pointerUp + " " + pointerCancel), function () { return setTimeout(function () { return css(document.body, 'cursor', ''); }
+                        , 50); }
+                    );
+                }
+
+            }, {passive: true});
+
+        });
 
     }
 
@@ -4037,42 +4043,32 @@
             read: function() {
 
                 var el = this.$el;
-
-                if (!isVisible(el)) {
-                    return false;
-                }
-
                 var ref = el.parentNode;
                 var height = ref.offsetHeight;
                 var width = ref.offsetWidth;
+                var dim = Dimensions.cover(
+                    {
+                        width: this.width || el.naturalWidth || el.videoWidth || el.clientWidth,
+                        height: this.height || el.naturalHeight || el.videoHeight || el.clientHeight
+                    },
+                    {
+                        width: width + (width % 2 ? 1 : 0),
+                        height: height + (height % 2 ? 1 : 0)
+                    }
+                );
 
-                return {height: height, width: width};
+                if (!dim.width || !dim.height) {
+                    return false;
+                }
+
+                return dim;
             },
 
             write: function(ref) {
                 var height = ref.height;
                 var width = ref.width;
 
-
-                var el = this.$el;
-                var elWidth = this.width || el.naturalWidth || el.videoWidth || el.clientWidth;
-                var elHeight = this.height || el.naturalHeight || el.videoHeight || el.clientHeight;
-
-                if (!elWidth || !elHeight) {
-                    return;
-                }
-
-                css(el, Dimensions.cover(
-                    {
-                        width: elWidth,
-                        height: elHeight
-                    },
-                    {
-                        width: width + (width % 2 ? 1 : 0),
-                        height: height + (height % 2 ? 1 : 0)
-                    }
-                ));
-
+                css(this.$el, {height: height, width: width});
             },
 
             events: ['resize']
@@ -4258,19 +4254,11 @@
                     return 'a[href^="#"]';
                 },
 
-                handler: function(e) {
+                handler: function(ref) {
+                    var defaultPrevented = ref.defaultPrevented;
+                    var hash = ref.current.hash;
 
-                    if (e.defaultPrevented) {
-                        return;
-                    }
-
-                    var id = e.target.hash;
-
-                    if (!id) {
-                        e.preventDefault();
-                    }
-
-                    if (!id || !within(id, this.$el)) {
+                    if (!defaultPrevented && hash && !within(hash, this.$el)) {
                         this.hide(false);
                     }
                 }
@@ -4392,9 +4380,22 @@
                 self: true,
 
                 handler: function() {
+                    var this$1 = this;
+
                     this.tracker.init();
                     trigger(this.$el, 'updatearia');
-                    registerEvent();
+
+                    // If triggered from an click event handler, delay adding the click handler
+                    var off = delayOn(document, 'click', function (ref) {
+                        var defaultPrevented = ref.defaultPrevented;
+                        var target = ref.target;
+
+                        if (!defaultPrevented && !within(target, this$1.$el) && !(this$1.toggle && within(target, this$1.toggle.$el))) {
+                            this$1.hide(false);
+                        }
+                    });
+
+                    once(this.$el, 'hide', off, {self: true});
                 }
 
             },
@@ -4444,7 +4445,7 @@
                     this.updateAria(this.$el);
 
                     if (toggle || this.toggle) {
-                        attr((toggle || this.toggle).$el, 'aria-expanded', this.isToggled() ? 'true' : 'false');
+                        attr((toggle || this.toggle).$el, 'aria-expanded', this.isToggled());
                         toggleClass(this.toggle.$el, this.cls, this.isToggled());
                     }
                 }
@@ -4493,7 +4494,7 @@
                             return;
                         }
 
-                    } else if (active && this$1.isChildOf(active)) {
+                    } else if (this$1.isChildOf(active)) {
 
                         active.clearTimers();
 
@@ -4592,30 +4593,10 @@
 
     };
 
-    var registered;
-
-    function registerEvent() {
-
-        if (registered) {
-            return;
-        }
-
-        registered = true;
-        on(document, pointerUp, function (ref) {
-            var target = ref.target;
-            var defaultPrevented = ref.defaultPrevented;
-
-            var prev;
-
-            if (defaultPrevented) {
-                return;
-            }
-
-            while (active && active !== prev && !within(target, active.$el) && !(active.toggle && within(target, active.toggle.$el))) {
-                prev = active;
-                active.hide(false);
-            }
-        });
+    function delayOn(el, type, fn) {
+        var off = once(el, type, function () { return off = on(el, type, fn); }
+        , true);
+        return function () { return off(); };
     }
 
     var Dropdown = {
@@ -4674,7 +4655,7 @@
             var prev = target[prop];
             var value = input.files && input.files[0]
                 ? input.files[0].name
-                : matches(input, 'select') && (option = $$('option', input).filter(function (el) { return el.selected; })[0])
+                : matches(input, 'select') && (option = $$('option', input).filter(function (el) { return el.selected; })[0]) // eslint-disable-line prefer-destructuring
                     ? option.textContent
                     : input.value;
 
@@ -4684,13 +4665,29 @@
 
         },
 
-        events: {
+        events: [
 
-            change: function() {
-                this.$emit();
+            {
+                name: 'change',
+
+                handler: function() {
+                    this.$emit();
+                }
+            },
+
+            {
+                name: 'reset',
+
+                el: function() {
+                    return closest(this.$el, 'form');
+                },
+
+                handler: function() {
+                    this.$emit();
+                }
             }
 
-        }
+        ]
 
     };
 
@@ -4795,7 +4792,7 @@
                     leftDim = getOffset(row[0], true);
                 }
 
-                if (dim.top >= leftDim.bottom - 1) {
+                if (dim.top >= leftDim.bottom - 1 && dim.top !== leftDim.top) {
                     rows.push([el]);
                     break;
                 }
@@ -4921,18 +4918,21 @@
 
                     }
 
-                    return {rows: rows, translates: translates, height: !transitionInProgress ? elHeight : false};
+                    var padding = this.parallax && getPaddingBottom(this.parallax, rows, translates);
+
+                    return {padding: padding, rows: rows, translates: translates, height: !transitionInProgress ? elHeight : false};
 
                 },
 
                 write: function(ref) {
                     var stacks = ref.stacks;
                     var height = ref.height;
+                    var padding = ref.padding;
 
 
                     toggleClass(this.$el, this.clsStack, stacks);
 
-                    css(this.$el, 'paddingBottom', this.parallax);
+                    css(this.$el, 'paddingBottom', padding);
                     height !== false && css(this.$el, 'height', height);
 
                 },
@@ -4977,6 +4977,22 @@
 
     };
 
+    function getPaddingBottom(distance, rows, translates) {
+        var column = 0;
+        var max = 0;
+        var maxScrolled = 0;
+        for (var i = rows.length - 1; i >= 0; i--) {
+            for (var j = column; j < rows[i].length; j++) {
+                var el = rows[i][j];
+                var bottom = el.offsetTop + height(el) + (translates && -translates[i][j]);
+                max = Math.max(max, bottom);
+                maxScrolled = Math.max(maxScrolled, bottom + (j % 2 ? distance : distance / 8));
+                column++;
+            }
+        }
+        return maxScrolled - max;
+    }
+
     function getMarginTop(root, cls) {
 
         var nodes = toNodes(root.children);
@@ -4997,6 +5013,10 @@
 
     // IE 11 fix (min-height on a flex container won't apply to its flex items)
     var FlexBug = isIE ? {
+
+        props: {
+            selMinHeight: String
+        },
 
         data: {
             selMinHeight: false,
@@ -5156,12 +5176,24 @@
 
         update: {
 
-            read: function() {
+            read: function(ref) {
+                var prev = ref.minHeight;
+
+
+                if (!isVisible(this.$el)) {
+                    return false;
+                }
 
                 var minHeight = '';
                 var box = boxModelAdjust('height', this.$el, 'content-box');
 
                 if (this.expand) {
+
+                    this.$el.dataset.heightExpand = '';
+
+                    if ($('[data-height-expand]') !== this.$el) {
+                        return false;
+                    }
 
                     minHeight = height(window) - (offsetHeight(document.documentElement) - offsetHeight(this.$el)) - box || '';
 
@@ -5172,9 +5204,9 @@
 
                     if (this.offsetTop) {
 
-                        var ref = offset(this.$el);
-                        var top = ref.top;
-                        minHeight += top < height(window) / 2 ? (" - " + top + "px") : '';
+                        var ref$1 = offset(this.$el);
+                        var top = ref$1.top;
+                        minHeight += top > 0 && top < height(window) / 2 ? (" - " + top + "px") : '';
 
                     }
 
@@ -5200,14 +5232,19 @@
 
                 }
 
-                return {minHeight: minHeight};
+                return {minHeight: minHeight, prev: prev};
             },
 
             write: function(ref) {
                 var minHeight = ref.minHeight;
+                var prev = ref.prev;
 
 
                 css(this.$el, {minHeight: minHeight});
+
+                if (minHeight !== prev) {
+                    this.$update(this.$el, 'resize');
+                }
 
                 if (this.minHeight && toFloat(css(this.$el, 'minHeight')) < this.minHeight) {
                     css(this.$el, 'minHeight', this.minHeight);
@@ -5222,7 +5259,7 @@
     };
 
     function offsetHeight(el) {
-        return el && el.offsetHeight || 0;
+        return el && offset(el).height || 0;
     }
 
     var Svg = {
@@ -5237,19 +5274,20 @@
             width: Number,
             height: Number,
             ratio: Number,
-            'class': String,
+            class: String,
             strokeAnimation: Boolean,
+            focusable: Boolean, // IE 11
             attributes: 'list'
         },
 
         data: {
             ratio: 1,
-            include: ['style', 'class'],
-            'class': '',
+            include: ['style', 'class', 'focusable'],
+            class: '',
             strokeAnimation: false
         },
 
-        connected: function() {
+        beforeConnect: function() {
             var this$1 = this;
             var assign;
 
@@ -5516,17 +5554,19 @@
 
         install: install,
 
-        mixins: [Class, Svg],
+        extends: Svg,
 
         args: 'icon',
 
         props: ['icon'],
 
-        data: {include: []},
+        data: {
+            include: ['focusable']
+        },
 
         isIcon: true,
 
-        connected: function() {
+        beforeConnect: function() {
             addClass(this.$el, 'uk-icon');
         },
 
@@ -5549,11 +5589,17 @@
 
     var IconComponent = {
 
+        args: false,
+
         extends: Icon,
 
         data: function (vm) { return ({
             icon: hyphenate(vm.constructor.options.name)
-        }); }
+        }); },
+
+        beforeConnect: function() {
+            addClass(this.$el, this.$name);
+        }
 
     };
 
@@ -5561,7 +5607,7 @@
 
         extends: IconComponent,
 
-        connected: function() {
+        beforeConnect: function() {
             addClass(this.$el, 'uk-slidenav');
         },
 
@@ -5812,7 +5858,8 @@
                 var this$1 = this;
 
 
-                if (!entries.some(function (entry) { return entry.isIntersecting; })) {
+                // Old chromium based browsers (UC Browser) did not implement `isIntersecting`
+                if (!entries.some(function (entry) { return isUndefined(entry.isIntersecting) || entry.isIntersecting; })) {
                     return;
                 }
 
@@ -6053,7 +6100,7 @@
 
     };
 
-    var active$1;
+    var active$1 = [];
 
     var Modal = {
 
@@ -6143,36 +6190,16 @@
 
                 handler: function(e) {
 
-                    var prev = active$1 && active$1 !== this && active$1;
-
-                    active$1 = this;
-
-                    if (prev) {
-                        if (this.stack) {
-                            this.prev = prev;
-                        } else {
-
-                            active$1 = prev;
-
-                            if (prev.isToggled()) {
-                                prev.hide().then(this.show);
-                            } else {
-                                once(prev.$el, 'beforeshow hidden', this.show, false, function (ref) {
-                                    var target = ref.target;
-                                    var type = ref.type;
-
-                                    return type === 'hidden' && target === prev.$el;
-                                });
-                            }
-                            e.preventDefault();
-
-                        }
-
-                        return;
+                    if (includes(active$1, this)) {
+                        return false;
                     }
 
-                    registerEvents();
-
+                    if (!this.stack && active$1.length) {
+                        Promise.all(active$1.map(function (modal) { return modal.hide(); })).then(this.show);
+                        e.preventDefault();
+                    } else {
+                        active$1.push(this);
+                    }
                 }
 
             },
@@ -6184,27 +6211,39 @@
                 self: true,
 
                 handler: function() {
+                    var this$1 = this;
 
-                    if (!hasClass(document.documentElement, this.clsPage)) {
-                        this.scrollbarWidth = width(window) - width(document);
-                        css(document.body, 'overflowY', this.scrollbarWidth && this.overlay ? 'scroll' : '');
+
+                    if (width(window) - width(document) && this.overlay) {
+                        css(document.body, 'overflowY', 'scroll');
                     }
 
                     addClass(document.documentElement, this.clsPage);
 
-                }
+                    if (this.bgClose) {
+                        once(this.$el, 'hide', delayOn(document, 'click', function (ref) {
+                            var defaultPrevented = ref.defaultPrevented;
+                            var target = ref.target;
 
-            },
+                            var current = last(active$1);
+                            if (!defaultPrevented
+                                && current === this$1
+                                && (!current.overlay || within(target, current.$el))
+                                && !within(target, current.panel)
+                            ) {
+                                current.hide();
+                            }
+                        }), {self: true});
+                    }
 
-            {
-
-                name: 'hide',
-
-                self: true,
-
-                handler: function() {
-                    if (!active$1 || active$1 === this && !this.prev) {
-                        deregisterEvents();
+                    if (this.escClose) {
+                        once(this.$el, 'hide', on(document, 'keydown', function (e) {
+                            var current = last(active$1);
+                            if (e.keyCode === 27 && current === this$1) {
+                                e.preventDefault();
+                                current.hide();
+                            }
+                        }), {self: true});
                     }
                 }
 
@@ -6217,32 +6256,16 @@
                 self: true,
 
                 handler: function() {
+                    var this$1 = this;
 
-                    var found;
-                    var ref = this;
-                    var prev = ref.prev;
 
-                    active$1 = active$1 && active$1 !== this && active$1 || prev;
+                    active$1.splice(active$1.indexOf(this), 1);
 
-                    if (!active$1) {
-
+                    if (!active$1.length) {
                         css(document.body, 'overflowY', '');
-
-                    } else {
-                        while (prev) {
-
-                            if (prev.clsPage === this.clsPage) {
-                                found = true;
-                                break;
-                            }
-
-                            prev = prev.prev;
-
-                        }
-
                     }
 
-                    if (!found) {
+                    if (!active$1.some(function (modal) { return modal.clsPage === this$1.clsPage; })) {
                         removeClass(document.documentElement, this.clsPage);
                     }
 
@@ -6262,10 +6285,6 @@
                 var this$1 = this;
 
 
-                if (this.isToggled()) {
-                    return Promise.resolve();
-                }
-
                 if (this.container && this.$el.parentNode !== this.container) {
                     append(this.container, this.$el);
                     return new Promise(function (resolve) { return requestAnimationFrame(function () { return this$1.show().then(resolve); }
@@ -6277,49 +6296,12 @@
             },
 
             hide: function() {
-                return this.isToggled()
-                    ? this.toggleElement(this.$el, false, animate$1(this))
-                    : Promise.resolve();
-            },
-
-            getActive: function() {
-                return active$1;
+                return this.toggleElement(this.$el, false, animate$1(this));
             }
 
         }
 
     };
-
-    var events;
-
-    function registerEvents() {
-
-        if (events) {
-            return;
-        }
-
-        events = [
-            on(document, pointerUp, function (ref) {
-                var target = ref.target;
-                var defaultPrevented = ref.defaultPrevented;
-
-                if (active$1 && active$1.bgClose && !defaultPrevented && (!active$1.overlay || within(target, active$1.$el)) && !within(target, active$1.panel)) {
-                    active$1.hide();
-                }
-            }),
-            on(document, 'keydown', function (e) {
-                if (e.keyCode === 27 && active$1 && active$1.escClose) {
-                    e.preventDefault();
-                    active$1.hide();
-                }
-            })
-        ];
-    }
-
-    function deregisterEvents() {
-        events && events.forEach(function (unbind) { return unbind(); });
-        events = null;
-    }
 
     function animate$1(ref) {
         var transitionElement = ref.transitionElement;
@@ -6331,11 +6313,16 @@
 
                     _toggle(el, show);
 
-                    if (toMs(css(transitionElement, 'transitionDuration'))) {
-                        once(transitionElement, 'transitionend', resolve, false, function (e) { return e.target === transitionElement; });
-                    } else {
+                    var off = once(transitionElement, 'transitionstart', function () {
+                        once(transitionElement, 'transitionend transitioncancel', resolve, {self: true});
+                        clearTimeout(timer);
+                    }, {self: true});
+
+                    var timer = setTimeout(function () {
+                        off();
                         resolve();
-                    }
+                    }, toMs(css(transitionElement, 'transitionDuration')));
+
                 }); }
             ); };
     }
@@ -6396,14 +6383,7 @@
 
             dialog.show();
 
-            on(dialog.$el, 'hidden', function (ref) {
-                var target = ref.target;
-                var currentTarget = ref.currentTarget;
-
-                if (target === currentTarget) {
-                    Promise.resolve(function () { return dialog.$destroy(true); });
-                }
-            });
+            on(dialog.$el, 'hidden', function () { return Promise.resolve(function () { return dialog.$destroy(true); }); }, {self: true});
 
             return dialog;
         };
@@ -6622,7 +6602,7 @@
                 handler: function() {
                     var active = this.getActive();
 
-                    if (active && !matches(this.dropbar, ':hover')) {
+                    if (active && !this.dropdowns.some(function (el) { return matches(el, ':hover'); })) {
                         active.hide();
                     }
                 }
@@ -6774,7 +6754,8 @@
             clsSidebarAnimation: 'uk-offcanvas-bar-animation',
             clsMode: 'uk-offcanvas',
             clsOverlay: 'uk-offcanvas-overlay',
-            selClose: '.uk-offcanvas-close'
+            selClose: '.uk-offcanvas-close',
+            container: false
         },
 
         computed: {
@@ -6833,9 +6814,10 @@
                 },
 
                 handler: function(ref) {
-                    var current = ref.current;
+                    var hash = ref.current.hash;
+                    var defaultPrevented = ref.defaultPrevented;
 
-                    if (current.hash && $(current.hash, document.body)) {
+                    if (!defaultPrevented && hash && $(hash, document.body)) {
                         this.hide();
                     }
                 }
@@ -6874,7 +6856,7 @@
                 },
 
                 handler: function(e) {
-                    e.preventDefault();
+                    e.cancelable && e.preventDefault();
                 }
 
             },
@@ -6904,7 +6886,7 @@
                         || scrollTop === 0 && clientY > 0
                         || scrollHeight - scrollTop <= clientHeight && clientY < 0
                     ) {
-                        e.preventDefault();
+                        e.cancelable && e.preventDefault();
                     }
 
                 }
@@ -6925,6 +6907,7 @@
 
                     css(document.documentElement, 'overflowY', this.overlay ? 'hidden' : '');
                     addClass(document.body, this.clsContainer, this.clsFlip);
+                    css(document.body, 'touch-action', 'pan-y pinch-zoom');
                     css(this.$el, 'display', 'block');
                     addClass(this.$el, this.clsOverlay);
                     addClass(this.panel, this.clsSidebarAnimation, this.mode !== 'reveal' ? this.clsMode : '');
@@ -6933,6 +6916,7 @@
                     addClass(document.body, this.clsContainerAnimation);
 
                     this.clsContainerAnimation && suppressUserScale();
+
 
                 }
             },
@@ -6944,11 +6928,7 @@
 
                 handler: function() {
                     removeClass(document.body, this.clsContainerAnimation);
-
-                    var active = this.getActive();
-                    if (this.mode === 'none' || active && active !== this && active !== this.prev) {
-                        trigger(this.panel, 'transitionend');
-                    }
+                    css(document.body, 'touch-action', '');
                 }
             },
 
@@ -7453,7 +7433,7 @@
         props: {
             top: null,
             bottom: Boolean,
-            offset: Number,
+            offset: String,
             animation: String,
             clsActive: String,
             clsInactive: String,
@@ -7481,6 +7461,12 @@
         },
 
         computed: {
+
+            offset: function(ref) {
+                var offset = ref.offset;
+
+                return toPx(offset);
+            },
 
             selTarget: function(ref, $el) {
                 var selTarget = ref.selTarget;
@@ -7779,21 +7765,13 @@
             return;
         }
 
-        if (isNumeric(value)) {
+        if (isNumeric(value) && isString(value) && value.match(/^-?\d/)) {
 
-            return propOffset + toFloat(value);
-
-        } else if (isString(value) && value.match(/^-?\d+vh$/)) {
-
-            return height(window) * toFloat(value) / 100;
+            return propOffset + toPx(value);
 
         } else {
 
-            var el = value === true ? $el.parentNode : query(value, $el);
-
-            if (el) {
-                return offset(el).top + el.offsetHeight;
-            }
+            return offset(value === true ? $el.parentNode : query(value, $el)).bottom;
 
         }
     }
@@ -7900,6 +7878,8 @@
             var ref = this.$el;
             var children = ref.children;
             this.show(filter(children, ("." + (this.cls)))[0] || children[this.active] || children[0]);
+
+            this.swiping && css(this.connects, 'touch-action', 'pan-y pinch-zoom');
 
         },
 
@@ -8048,7 +8028,7 @@
 
                     // TODO better isToggled handling
                     var link;
-                    if (closest(e.target, 'a[href="#"], a[href=""], button')
+                    if (closest(e.target, 'a[href="#"], a[href=""]')
                         || (link = closest(e.target, 'a[href]')) && (
                             this.cls
                             || !isVisible(this.target)
@@ -8162,7 +8142,7 @@
 
         if (document.body) {
 
-            init();
+            fastdom.read(init);
 
         } else {
 
@@ -8181,6 +8161,7 @@
 
             apply(document.body, connect);
 
+            // Safari renders prior to first animation frame
             fastdom.flush();
 
             (new MutationObserver(function (mutations) { return mutations.forEach(applyMutation); })).observe(document, {
@@ -8268,7 +8249,7 @@
 
     }
 
-    UIkit.version = '3.1.3';
+    UIkit.version = '3.2.0';
 
     core(UIkit);
 

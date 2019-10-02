@@ -1,4 +1,4 @@
-/*! UIkit 3.1.3 | http://www.getuikit.com | (c) 2014 - 2018 YOOtheme | MIT License */
+/*! UIkit 3.2.0 | http://www.getuikit.com | (c) 2014 - 2019 YOOtheme | MIT License */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('uikit-util')) :
@@ -386,7 +386,7 @@
                 var this$1 = this;
 
 
-                if (this.isActive()) {
+                if (this.isActive() || !this.title) {
                     return;
                 }
 
@@ -410,7 +410,7 @@
 
             hide: function() {
 
-                if (!this.isActive() || uikitUtil.matches(this.$el, 'input') && this.$el === document.activeElement) {
+                if (!this.isActive() || uikitUtil.matches(this.$el, 'input:focus')) {
                     return;
                 }
 

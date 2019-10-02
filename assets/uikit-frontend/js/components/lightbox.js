@@ -1,4 +1,4 @@
-/*! UIkit 3.1.3 | http://www.getuikit.com | (c) 2014 - 2018 YOOtheme | MIT License */
+/*! UIkit 3.2.0 | http://www.getuikit.com | (c) 2014 - 2019 YOOtheme | MIT License */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('uikit-util')) :
@@ -40,7 +40,8 @@
         if ( value === void 0 ) value = 0;
         if ( unit === void 0 ) unit = '%';
 
-        return ("translateX(" + value + (value ? unit : '') + ")"); // currently not translate3d to support IE, translate3d within translate3d does not work while transitioning
+        value += value ? unit : '';
+        return uikitUtil.isIE ? ("translateX(" + value + ")") : ("translate3d(" + value + ", 0, 0)"); // currently not translate3d in IE, translate3d within translate3d does not work while transitioning
     }
 
     function scale3d(value) {
@@ -361,7 +362,13 @@
         };
     }
 
-    var active;
+    function delayOn(el, type, fn) {
+        var off = uikitUtil.once(el, type, function () { return off = uikitUtil.on(el, type, fn); }
+        , true);
+        return function () { return off(); };
+    }
+
+    var active = [];
 
     var Modal = {
 
@@ -451,36 +458,16 @@
 
                 handler: function(e) {
 
-                    var prev = active && active !== this && active;
-
-                    active = this;
-
-                    if (prev) {
-                        if (this.stack) {
-                            this.prev = prev;
-                        } else {
-
-                            active = prev;
-
-                            if (prev.isToggled()) {
-                                prev.hide().then(this.show);
-                            } else {
-                                uikitUtil.once(prev.$el, 'beforeshow hidden', this.show, false, function (ref) {
-                                    var target = ref.target;
-                                    var type = ref.type;
-
-                                    return type === 'hidden' && target === prev.$el;
-                                });
-                            }
-                            e.preventDefault();
-
-                        }
-
-                        return;
+                    if (uikitUtil.includes(active, this)) {
+                        return false;
                     }
 
-                    registerEvents();
-
+                    if (!this.stack && active.length) {
+                        uikitUtil.Promise.all(active.map(function (modal) { return modal.hide(); })).then(this.show);
+                        e.preventDefault();
+                    } else {
+                        active.push(this);
+                    }
                 }
 
             },
@@ -492,27 +479,39 @@
                 self: true,
 
                 handler: function() {
+                    var this$1 = this;
 
-                    if (!uikitUtil.hasClass(document.documentElement, this.clsPage)) {
-                        this.scrollbarWidth = uikitUtil.width(window) - uikitUtil.width(document);
-                        uikitUtil.css(document.body, 'overflowY', this.scrollbarWidth && this.overlay ? 'scroll' : '');
+
+                    if (uikitUtil.width(window) - uikitUtil.width(document) && this.overlay) {
+                        uikitUtil.css(document.body, 'overflowY', 'scroll');
                     }
 
                     uikitUtil.addClass(document.documentElement, this.clsPage);
 
-                }
+                    if (this.bgClose) {
+                        uikitUtil.once(this.$el, 'hide', delayOn(document, 'click', function (ref) {
+                            var defaultPrevented = ref.defaultPrevented;
+                            var target = ref.target;
 
-            },
+                            var current = uikitUtil.last(active);
+                            if (!defaultPrevented
+                                && current === this$1
+                                && (!current.overlay || uikitUtil.within(target, current.$el))
+                                && !uikitUtil.within(target, current.panel)
+                            ) {
+                                current.hide();
+                            }
+                        }), {self: true});
+                    }
 
-            {
-
-                name: 'hide',
-
-                self: true,
-
-                handler: function() {
-                    if (!active || active === this && !this.prev) {
-                        deregisterEvents();
+                    if (this.escClose) {
+                        uikitUtil.once(this.$el, 'hide', uikitUtil.on(document, 'keydown', function (e) {
+                            var current = uikitUtil.last(active);
+                            if (e.keyCode === 27 && current === this$1) {
+                                e.preventDefault();
+                                current.hide();
+                            }
+                        }), {self: true});
                     }
                 }
 
@@ -525,32 +524,16 @@
                 self: true,
 
                 handler: function() {
+                    var this$1 = this;
 
-                    var found;
-                    var ref = this;
-                    var prev = ref.prev;
 
-                    active = active && active !== this && active || prev;
+                    active.splice(active.indexOf(this), 1);
 
-                    if (!active) {
-
+                    if (!active.length) {
                         uikitUtil.css(document.body, 'overflowY', '');
-
-                    } else {
-                        while (prev) {
-
-                            if (prev.clsPage === this.clsPage) {
-                                found = true;
-                                break;
-                            }
-
-                            prev = prev.prev;
-
-                        }
-
                     }
 
-                    if (!found) {
+                    if (!active.some(function (modal) { return modal.clsPage === this$1.clsPage; })) {
                         uikitUtil.removeClass(document.documentElement, this.clsPage);
                     }
 
@@ -570,10 +553,6 @@
                 var this$1 = this;
 
 
-                if (this.isToggled()) {
-                    return uikitUtil.Promise.resolve();
-                }
-
                 if (this.container && this.$el.parentNode !== this.container) {
                     uikitUtil.append(this.container, this.$el);
                     return new uikitUtil.Promise(function (resolve) { return requestAnimationFrame(function () { return this$1.show().then(resolve); }
@@ -585,49 +564,12 @@
             },
 
             hide: function() {
-                return this.isToggled()
-                    ? this.toggleElement(this.$el, false, animate(this))
-                    : uikitUtil.Promise.resolve();
-            },
-
-            getActive: function() {
-                return active;
+                return this.toggleElement(this.$el, false, animate(this));
             }
 
         }
 
     };
-
-    var events;
-
-    function registerEvents() {
-
-        if (events) {
-            return;
-        }
-
-        events = [
-            uikitUtil.on(document, uikitUtil.pointerUp, function (ref) {
-                var target = ref.target;
-                var defaultPrevented = ref.defaultPrevented;
-
-                if (active && active.bgClose && !defaultPrevented && (!active.overlay || uikitUtil.within(target, active.$el)) && !uikitUtil.within(target, active.panel)) {
-                    active.hide();
-                }
-            }),
-            uikitUtil.on(document, 'keydown', function (e) {
-                if (e.keyCode === 27 && active && active.escClose) {
-                    e.preventDefault();
-                    active.hide();
-                }
-            })
-        ];
-    }
-
-    function deregisterEvents() {
-        events && events.forEach(function (unbind) { return unbind(); });
-        events = null;
-    }
 
     function animate(ref) {
         var transitionElement = ref.transitionElement;
@@ -639,11 +581,16 @@
 
                     _toggle(el, show);
 
-                    if (uikitUtil.toMs(uikitUtil.css(transitionElement, 'transitionDuration'))) {
-                        uikitUtil.once(transitionElement, 'transitionend', resolve, false, function (e) { return e.target === transitionElement; });
-                    } else {
+                    var off = uikitUtil.once(transitionElement, 'transitionstart', function () {
+                        uikitUtil.once(transitionElement, 'transitionend transitioncancel', resolve, {self: true});
+                        clearTimeout(timer);
+                    }, {self: true});
+
+                    var timer = setTimeout(function () {
+                        off();
                         resolve();
-                    }
+                    }, uikitUtil.toMs(uikitUtil.css(transitionElement, 'transitionDuration')));
+
                 }); }
             ); };
     }
@@ -783,34 +730,6 @@
                     }
                 }
 
-            },
-
-            {
-
-                name: 'mouseenter',
-
-                filter: function() {
-                    return this.autoplay && this.pauseOnHover;
-                },
-
-                handler: function() {
-                    this.isHovering = true;
-                }
-
-            },
-
-            {
-
-                name: 'mouseleave',
-
-                filter: function() {
-                    return this.autoplay && this.pauseOnHover;
-                },
-
-                handler: function() {
-                    this.isHovering = false;
-                }
-
             }
 
         ],
@@ -824,8 +743,8 @@
                 this.stopAutoplay();
 
                 this.interval = setInterval(
-                    function () { return !uikitUtil.within(document.activeElement, this$1.$el)
-                        && !this$1.isHovering
+                    function () { return (!this$1.draggable || !uikitUtil.$(':focus', this$1.$el))
+                        && (!this$1.pauseOnHover || !uikitUtil.matches(this$1.$el, ':hover'))
                         && !this$1.stack.length
                         && this$1.show('next'); },
                     this.autoplayInterval
@@ -887,6 +806,7 @@
 
                     if (!this.draggable
                         || !uikitUtil.isTouch(e) && hasTextNodesOnly(e.target)
+                        || uikitUtil.closest(e.target, uikitUtil.selInput)
                         || e.button > 0
                         || this.length < 2
                     ) {
@@ -1188,7 +1108,8 @@
             easing: String,
             index: Number,
             finite: Boolean,
-            velocity: Number
+            velocity: Number,
+            selSlides: String
         },
 
         data: function () { return ({
@@ -1196,6 +1117,7 @@
             finite: false,
             velocity: 1,
             index: 0,
+            prevIndex: -1,
             stack: [],
             percent: 0,
             clsActive: 'uk-active',
@@ -1204,16 +1126,22 @@
             transitionOptions: {}
         }); },
 
+        connected: function() {
+            this.prevIndex = -1;
+            this.index = this.getValidIndex(this.index);
+            this.stack = [];
+        },
+
+        disconnected: function() {
+            uikitUtil.removeClass(this.slides, this.clsActive);
+        },
+
         computed: {
 
             duration: function(ref, $el) {
                 var velocity = ref.velocity;
 
                 return speedUp($el.offsetWidth / velocity);
-            },
-
-            length: function() {
-                return this.slides.length;
             },
 
             list: function(ref, $el) {
@@ -1228,12 +1156,25 @@
 
             selSlides: function(ref) {
                 var selList = ref.selList;
+                var selSlides = ref.selSlides;
 
-                return (selList + " > *");
+                return (selList + " " + (selSlides || '> *'));
             },
 
-            slides: function() {
-                return uikitUtil.toNodes(this.list.children);
+            slides: {
+
+                get: function() {
+                    return uikitUtil.$$(this.selSlides, this.$el);
+                },
+
+                watch: function() {
+                    this.$reset();
+                }
+
+            },
+
+            length: function() {
+                return this.slides.length;
             }
 
         },
@@ -1367,7 +1308,7 @@
             },
 
             _getDistance: function(prev, next) {
-                return new this._getTransitioner(prev, prev !== next && next).getDistance();
+                return this._getTransitioner(prev, prev !== next && next).getDistance();
             },
 
             _translate: function(percent, prev, next) {
@@ -1449,10 +1390,6 @@
                 this.$update(target);
             },
 
-            itemshow: function() {
-                uikitUtil.isNumber(this.prevIndex) && uikitUtil.fastdom.flush(); // iOS 10+ will honor the video.play only if called from a gesture handler
-            },
-
             beforeitemshow: function(ref) {
                 var target = ref.target;
 
@@ -1498,6 +1435,7 @@
             selList: '.uk-lightbox-items',
             attrItem: 'uk-lightbox-item',
             selClose: '.uk-close-large',
+            selCaption: '.uk-lightbox-caption',
             pauseOnHover: false,
             velocity: 2,
             Animations: Animations$1,
@@ -1505,14 +1443,22 @@
         }); },
 
         created: function() {
-            var this$1 = this;
 
+            var $el = uikitUtil.$(this.template);
+            var list = uikitUtil.$(this.selList, $el);
+            this.items.forEach(function () { return uikitUtil.append(list, '<li></li>'); });
 
-            this.$mount(uikitUtil.append(this.container, this.template));
+            this.$mount(uikitUtil.append(this.container, $el));
 
-            this.caption = uikitUtil.$('.uk-lightbox-caption', this.$el);
+        },
 
-            this.items.forEach(function () { return uikitUtil.append(this$1.list, '<li></li>'); });
+        computed: {
+
+            caption: function(ref, $el) {
+                var selCaption = ref.selCaption;
+
+                return uikitUtil.$('.uk-lightbox-caption', $el);
+            }
 
         },
 

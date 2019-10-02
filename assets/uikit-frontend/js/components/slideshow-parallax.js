@@ -2,8 +2,8 @@
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('uikit-util')) :
-    typeof define === 'function' && define.amd ? define('uikitslider_parallax', ['uikit-util'], factory) :
-    (global = global || self, global.UIkitSlider_parallax = factory(global.UIkit.util));
+    typeof define === 'function' && define.amd ? define('uikitslideshow_parallax', ['uikit-util'], factory) :
+    (global = global || self, global.UIkitSlideshow_parallax = factory(global.UIkit.util));
 }(this, function (uikitUtil) { 'use strict';
 
     var Media = {
@@ -525,10 +525,10 @@
                 : percent;
     }
 
-    /* global UIkit, 'sliderParallax' */
+    /* global UIkit, 'slideshowParallax' */
 
     if (typeof window !== 'undefined' && window.UIkit) {
-        window.UIkit.component('sliderParallax', Component);
+        window.UIkit.component('slideshowParallax', Component);
     }
 
     return Component;

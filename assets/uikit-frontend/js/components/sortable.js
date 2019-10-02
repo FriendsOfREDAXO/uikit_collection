@@ -1,4 +1,4 @@
-/*! UIkit 3.1.3 | http://www.getuikit.com | (c) 2014 - 2018 YOOtheme | MIT License */
+/*! UIkit 3.2.0 | http://www.getuikit.com | (c) 2014 - 2019 YOOtheme | MIT License */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('uikit-util')) :
@@ -231,25 +231,21 @@
 
                 uikitUtil.css(this.handle ? uikitUtil.$$(this.handle, this.$el) : this.$el.children, {touchAction: 'none', userSelect: 'none'});
 
-                if (!this.drag) {
-                    return;
+                if (this.drag) {
+
+                    // clamp to viewport
+                    var ref = uikitUtil.offset(window);
+                    var right = ref.right;
+                    var bottom = ref.bottom;
+                    uikitUtil.offset(this.drag, {
+                        top: uikitUtil.clamp(this.pos.y + this.origin.top, 0, bottom - this.drag.offsetHeight),
+                        left: uikitUtil.clamp(this.pos.x + this.origin.left, 0, right - this.drag.offsetWidth)
+                    });
+
+                    trackScroll(this.pos);
+
                 }
 
-                uikitUtil.offset(this.drag, {top: this.pos.y + this.origin.top, left: this.pos.x + this.origin.left});
-
-                var ref = uikitUtil.offset(this.drag);
-                var top = ref.top;
-                var offsetHeight = ref.height;
-                var bottom = top + offsetHeight;
-                var scroll;
-
-                if (top > 0 && top < this.scrollY) {
-                    scroll = this.scrollY - 5;
-                } else if (bottom < uikitUtil.height(document) && bottom > uikitUtil.height(window) + this.scrollY) {
-                    scroll = this.scrollY + 5;
-                }
-
-                scroll && setTimeout(function () { return uikitUtil.scrollTop(window, scroll); }, 5);
             }
 
         },
@@ -297,7 +293,8 @@
                 uikitUtil.css(this.drag, uikitUtil.assign({
                     boxSizing: 'border-box',
                     width: this.placeholder.offsetWidth,
-                    height: this.placeholder.offsetHeight
+                    height: this.placeholder.offsetHeight,
+                    overflow: 'hidden'
                 }, uikitUtil.css(this.placeholder, ['paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom'])));
                 uikitUtil.attr(this.drag, 'uk-no-boot', '');
                 uikitUtil.addClass(this.drag, this.clsDrag, this.clsCustom);
@@ -308,8 +305,6 @@
                 var left = ref.left;
                 var top = ref.top;
                 uikitUtil.assign(this.origin, {left: left - this.pos.x, top: top - this.pos.y});
-
-                uikitUtil.css(this.origin.target, 'pointerEvents', 'none');
 
                 uikitUtil.addClass(this.placeholder, this.clsPlaceholder);
                 uikitUtil.addClass(this.$el.children, this.clsItem);
@@ -365,8 +360,6 @@
                 uikitUtil.off(document, uikitUtil.pointerUp, this.end);
                 uikitUtil.off(window, 'scroll', this.scroll);
 
-                uikitUtil.css(this.origin.target, 'pointerEvents', '');
-
                 if (!this.drag) {
                     if (e.type === 'touchend') {
                         e.target.click();
@@ -374,6 +367,8 @@
 
                     return;
                 }
+
+                untrackScroll();
 
                 var sortable = this.getSortable(this.placeholder);
 
@@ -463,6 +458,70 @@
 
     function isPredecessor(element, target) {
         return element.parentNode === target.parentNode && uikitUtil.index(element) > uikitUtil.index(target);
+    }
+
+    var trackTimer;
+    function trackScroll(ref) {
+        var x = ref.x;
+        var y = ref.y;
+
+
+        clearTimeout(trackTimer);
+
+        scrollParents(document.elementFromPoint(x - window.pageXOffset, y - window.pageYOffset)).some(function (scrollEl) {
+
+            var scroll = scrollEl.scrollTop;
+            var scrollHeight = scrollEl.scrollHeight;
+
+            if (getScrollingElement() === scrollEl) {
+                scrollEl = window;
+                scrollHeight -= window.innerHeight;
+            }
+
+            var ref = uikitUtil.offset(scrollEl);
+            var top = ref.top;
+            var bottom = ref.bottom;
+
+            if (top < y && top + 30 > y) {
+                scroll -= 5;
+            } else if (bottom > y && bottom - 20 < y) {
+                scroll += 5;
+            }
+
+            if (scroll > 0 && scroll < scrollHeight) {
+                return trackTimer = setTimeout(function () {
+                    uikitUtil.scrollTop(scrollEl, scroll);
+                    trackScroll({x: x, y: y});
+                }, 10);
+            }
+
+        });
+
+    }
+
+    function untrackScroll() {
+        clearTimeout(trackTimer);
+    }
+
+    var overflowRe = /auto|scroll/;
+
+    function scrollParents(element) {
+        var scrollEl = getScrollingElement();
+        return parents(element, function (parent) { return parent === scrollEl || overflowRe.test(uikitUtil.css(parent, 'overflow')); });
+    }
+
+    function parents(element, fn) {
+        var parents = [];
+        do {
+            if (fn(element)) {
+                parents.unshift(element);
+            }
+        } while (element && (element = element.parentElement));
+        return parents;
+    }
+
+    function getScrollingElement() {
+        return document.scrollingElement || document.documentElement;
     }
 
     /* global UIkit, 'sortable' */
