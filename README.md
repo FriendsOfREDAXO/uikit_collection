@@ -10,6 +10,7 @@ Es wird zwar ein Basis-UIkit für das Frontend mitgeliefert, eigene Themes sollt
 
 Siehe z.B.: https://getuikit.com/docs/less
 
+![Screenshot](https://raw.githubusercontent.com/FriendsOfREDAXO/uikit_collection/assets/screenshot.png)
 
 ## Autoren
 
