@@ -60,8 +60,7 @@ $navigation = '
     <link rel="stylesheet" href="<?= rex_url::addonAssets("uikit_collection", "/uikit-frontend/css/uikit.min.css"); ?>">
 </head>
 <body>
-<div class="wrapper">
-     <!--- NAVI-BAR --->
+<!--- NAVI-BAR --->
     <div class="nav" data-uk-sticky="top: 200; animation: uk-animation-slide-top">
         <nav class="uk-navbar-container" uk-navbar>
             <div class="uk-navbar-left">
@@ -72,7 +71,8 @@ $navigation = '
             </div>
         </nav>
     </div>
-    <!--- ENDE NAVI-BAR --->
+<!--- ENDE NAVI-BAR --->
+<div class="uk-container">      
     <div class="article_container">
         REX_ARTICLE[]
     </div>
