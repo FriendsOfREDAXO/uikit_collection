@@ -18,52 +18,65 @@
 </head>
 <body>
 <?php
-// NAVIGATION
-
-$path = rex_article::getCurrent()->getPathAsArray();
-$path1 = ((!empty($path[0])) ? $path[0] : '');
-$navigation = '';
-$navigation .= '<ul class="uk-navbar-nav">';
-foreach (rex_category::getRootCategories() as $lev1) {
-    if ($lev1->isOnline(true)) {
-        $active = ($lev1->getId() == $path1) ? ' class="uk-active"' : '';
-        $navigation .= '<li' . $active . '>';
-        $navigation .= '<a href="' . $lev1->getUrl() . '">' . htmlspecialchars($lev1->getValue('name')) . '</a>';
-        $lev1Size = sizeof($lev1->getChildren());
-        if ($lev1Size != "0") {
-            $navigation .= '<div class="uk-navbar-dropdown">';
-            $navigation .= '<ul class="uk-nav uk-navbar-dropdown-nav">';
-            foreach ($lev1->getChildren() as $lev2) {
-                if ($lev2->isOnline(true)) {
-                    $active = ($lev2->getId() == $path2) ? ' class="uk-active"' : '';
-                    $navigation .= '<li' . $active . '>';
-                    $navigation .= '<a href="' . $lev2->getUrl() . '">' . htmlspecialchars($lev2->getValue('name')) . '</a>';
-                    $navigation .= '</li>';
-                }
+// NAVIGATION uses navigation_array
+function myNavi_demo($data = array())
+{
+    foreach ($data as $cat) {
+        $subnavi = $liclass = $ul = "";
+        if ($cat['level'] == 0 && $cat['hasChildren'] == true)
+         {
+            $liclass = 'uk-parent';
+            $ul = ' class="uk-nav uk-navbar-dropdown-nav"';
+         }
+        if ($cat['hasChildren'] == true) {
+            $sub = [];
+            if ($cat['level'] < 1)
+            {    
+            $sub[] = '<div class="uk-navbar-dropdown">'; 
             }
-            $navigation .= '</ul>';
-            $navigation .= '</div>';
+            $sub[] = '<ul'.$ul.'>';
+            $sub[] = myNavi_demo($cat['children']);
+            $sub[] = '</ul>';
+            if ($cat['level'] < 1)
+            { 
+            $sub[] = '</div>';
+            }    
+            $subnavi = join("\n", $sub);
+        }       
+        $catname = $cat['catName'];
+        if ($cat['active'] == true) {
+            $catname = '<strong>' . $catname . '</strong>';
+            $liclass .= ' uk-active';
         }
-        $navigation .= '</li>';
+        if ($liclass!='')
+        {
+        $liclass =  ' class=" '.$liclass.'" ';
+        }
+        $catname = '<a href="'.$cat['url'].'">'.$catname.'</a>';     
+        $output[] = '<li'.$liclass.'>' . $catname . $subnavi . '</li>';
     }
-}
-$navigation .= '</ul>';
-
-
-?>
+    return join("\n", $output);
+}?>
 <div class="wrapper">
-    <div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
-        <nav class="uk-navbar-container uk-margin" style="position: relative; z-index: 980;" uk-navbar="mode: hover">
-            <div class="uk-navbar-left">
-                <a class="uk-navbar-item uk-logo" href="#">Logo</a>
-            </div>
-            <div class="uk-navbar-center">
-
-                <?php echo $navigation; ?>
-            </div>
-        </nav>
-    </div>
-    <div class="article_container">
+<?php    
+    // Navigation erzeugen
+$navigation = '
+    <ul class="uk-navbar-nav">'
+    .myNavi_demo(navArray($start = 0, $depth = 4, true)).
+    '</ul>
+';
+?>
+<div class="nav" data-uk-sticky="top: 200; animation: uk-animation-slide-top">
+    <nav class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <a class="uk-navbar-item uk-logo" href="/">LOGO</a>
+        </div>
+        <div class="uk-navbar-right">
+              <?=$navigation;?>
+        </div>
+    </nav>
+</div>
+<div class="article_container">
         REX_ARTICLE[]
     </div>
 </div>
