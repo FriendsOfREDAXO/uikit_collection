@@ -1,22 +1,3 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php
-    if(rex_addon::get("yrewrite")->isInstalled() && rex_addon::get("yrewrite")->isAvailable()) {
-        $seo = new rex_yrewrite_seo();
-        echo $seo->getTitleTag() . PHP_EOL;
-        echo $seo->getDescriptionTag() . PHP_EOL;
-        echo $seo->getRobotsTag() . PHP_EOL;
-        echo $seo->getHreflangTags() . PHP_EOL;
-        echo $seo->getCanonicalUrlTag() . PHP_EOL;
-    }
-    ?>
-    <link rel="stylesheet" href="<?= rex_url::addonAssets("uikit_collection", "/uikit-frontend/css/uikit.min.css"); ?>">
-</head>
-<body>
 <?php
 // NAVIGATION uses navigation_array
 function myNavi_demo($data = array())
@@ -64,8 +45,26 @@ $navigation = '
     <ul class="uk-navbar-nav">'
     .myNavi_demo(navArray($start = 0, $depth = 4, true)).
     '</ul>
-';
-?>
+';?><!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php
+    if(rex_addon::get("yrewrite")->isInstalled() && rex_addon::get("yrewrite")->isAvailable()) {
+        $seo = new rex_yrewrite_seo();
+        echo $seo->getTitleTag() . PHP_EOL;
+        echo $seo->getDescriptionTag() . PHP_EOL;
+        echo $seo->getRobotsTag() . PHP_EOL;
+        echo $seo->getHreflangTags() . PHP_EOL;
+        echo $seo->getCanonicalUrlTag() . PHP_EOL;
+    }
+    ?>
+    <link rel="stylesheet" href="<?= rex_url::addonAssets("uikit_collection", "/uikit-frontend/css/uikit.min.css"); ?>">
+</head>
+<body>
+<div class="wrapper">    
 <div class="nav" data-uk-sticky="top: 200; animation: uk-animation-slide-top">
     <nav class="uk-navbar-container" uk-navbar>
         <div class="uk-navbar-left">
@@ -76,7 +75,8 @@ $navigation = '
         </div>
     </nav>
 </div>
-<div class="article_container">
+
+    <div class="article_container">
         REX_ARTICLE[]
     </div>
 </div>
@@ -84,3 +84,4 @@ $navigation = '
     <script type="text/javascript" src="<?= rex_url::addonAssets("uikit_collection", "/uikit-frontend/js/uikit-icons.min.js"); ?>"></script>
  </body>
 </html>
+
