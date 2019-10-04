@@ -1,12 +1,14 @@
 # UIkit Collection // REDAXO AddOn
 
 ## Einleitung
-Liefert Demo-Module und -Templates zur Realisierung von UiKit-Projekten
+Liefert Module und Templates für den Start eines UIkit-Projektes. 
 https://getuikit.com
 
-Im Backend wird ein modifiziertes UIkit eingebunden, so dass die Frontendausgaben auch im Backend funktionieren.   
+- Die Navigation des Quickstart-Templates ist mit dem navigation_array gebaut worden. 
 
-Es wird zwar ein Basis-UIkit für das Frontend mitgeliefert, eigene Themes sollten jedoch besser entsprechend der Anleitung selbst entwickelt werden. 
+- Im Backend wird ein modifiziertes UIkit eingebunden, so dass die Frontendausgaben auch im Backend funktionieren.   
+
+> Es wird zwar ein Basis-UIkit für das Frontend mitgeliefert, eigene Themes sollten jedoch besser entsprechend der Anleitung selbst entwickelt werden. 
 
 Siehe z.B.: https://getuikit.com/docs/less
 
