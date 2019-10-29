@@ -3,8 +3,8 @@
 //INIT VARIABLES//
 /////////////////
 
-$set_autoplay = $picture = $autoplay = $type = $values = $id = $text = $title = $animation_type = $nav = $show_navi = '';
-
+$gallery_output = $set_autoplay = $picture = $autoplay = $type = $values = $id = $text = $title = $animation_type = $nav = $show_navi = '';
+$i = 0;
 //////////////////
 //SET VARIABLES//
 ////////////////
