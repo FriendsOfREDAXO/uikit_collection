@@ -21,7 +21,7 @@ $id = 1;
 $mform = new MForm();
 $mform->addFieldset('Bilder');
 //$mform->addTextField("$id.0.titel", array('label'=>'Titel'));
-$mform->addMediaField(1, array('label'=>'Bild'));
+$mform->addMediaField(1, array('label'=>'Bild / oder Video (MP4)'));
 $mform->addTextField("$id.0.title", array('label'=>'Titel', 'class'=>'uikit_textfield'));
 $mform->addTextField("$id.0.text", array('label'=>'Text', 'class'=>'uikit_textfield'));
 $mform->addSelectField("$id.0.posText", array('uk-position-bottom'=>'Unten','uk-position-bottom-left'=>'Unten Links','uk-position-bottom-right'=>'Unten Rechts','uk-position-top'=>'Oben','uk-position-top-left'=>'Oben Links','uk-position-top-right'=>'Oben Rechts','uk-position-center'=>'Mittig','uk-position-center-left'=>'Mittig Links','uk-position-center-right'=>'Mittig Rechts'), array('label'=>'Position des Text', 'class'=>'uikit_textfield'));
