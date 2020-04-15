@@ -1,6 +1,6 @@
 # UIkit Collection // REDAXO AddOn
 
-⚠️ Dieses REPO hätte gerne einen neuen Lead. Bitte im Slack Channel melden oder ein Issue anlegen. 
+⚠️ Entwicklung eingestellt. 
 
 ## Einleitung
 Liefert Module und Templates für den Start eines UIkit-Projektes. 
