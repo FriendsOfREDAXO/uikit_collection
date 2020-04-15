@@ -3,32 +3,6 @@
    Component: Base
  ========================================================================== */
 /*
- * 1. Set `font-size` to support `rem` units
- *    Not using `font` property because a leading hyphen (e.g. -apple-system) causes the font to break in IE11 and Edge
- * 2. Prevent adjustments of font size after orientation changes in iOS.
- * 3. Style
- */
-html {
-  /* 1 */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 16px;
-  font-weight: normal;
-  line-height: 1.5;
-  /* 2 */
-  -webkit-text-size-adjust: 100%;
-  /* 3 */
-  background: #fff;
-  color: #666;
-}
-/*
- * Remove the margin in all browsers.
- */
-body {
-  margin: 0;
-}
-/* Links
- ========================================================================== */
-/*
  * Remove the outline on focused links when they are also active or hovered
  */
 a:active,
@@ -84,9 +58,7 @@ strong {
   font-size: 0.875rem;
   /* 3 */
   color: #f0506e;
-  white-space: nowrap;
-  padding: 2px 6px;
-  background: #f8f8f8;
+    padding: 2px 6px;
 }
 /*
  * Emphasize
