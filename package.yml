@@ -22,7 +22,7 @@ requires:
     packages:
          mblock: '>=3.0.0'
          navigation_array: '>=1.0.0-beta1'
-         mform: '^5.1.1'
+         mform: '>=5.1.1'
          yrewrite: '>=2.3.0'
          cke5: '>=1.0.0'
          plyr: '>=2.0.0'
