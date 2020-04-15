@@ -1,4 +1,4 @@
-/*! UIkit 3.2.0 | http://www.getuikit.com | (c) 2014 - 2019 YOOtheme | MIT License */
+/*! UIkit 3.4.0 | https://www.getuikit.com | (c) 2014 - 2020 YOOtheme | MIT License */
 /* ========================================================================
    Component: Base
  ========================================================================== */
@@ -10,6 +10,7 @@
  */
 html {
   /* 1 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 16px;
   font-weight: normal;
   line-height: 1.5;
@@ -79,6 +80,13 @@ strong {
 :not(pre) > samp {
   /* 1 */
   font-family: Consolas, monaco, monospace;
+  /* 2 */
+  font-size: 0.875rem;
+  /* 3 */
+  color: #f0506e;
+  white-space: nowrap;
+  padding: 2px 6px;
+  background: #f8f8f8;
 }
 /*
  * Emphasize
@@ -2324,6 +2332,9 @@ select.uk-form-width-xsmall {
   max-width: 900px;
 }
 .uk-container-large {
+  max-width: 1400px;
+}
+.uk-container-xlarge {
   max-width: 1600px;
 }
 .uk-container-expand {
@@ -2367,6 +2378,10 @@ select.uk-form-width-xsmall {
   }
   .uk-container-expand-left.uk-container-large,
   .uk-container-expand-right.uk-container-large {
+    max-width: calc(50% + (1400px / 2) - 40px);
+  }
+  .uk-container-expand-left.uk-container-xlarge,
+  .uk-container-expand-right.uk-container-xlarge {
     max-width: calc(50% + (1600px / 2) - 40px);
   }
 }
@@ -4399,23 +4414,32 @@ ul.uk-nav-sub {
 /* Divider modifier
  ========================================================================== */
 /*
- * 1. Align items and divider vertically
+ * Set gutter 
+ */
+.uk-subnav-divider {
+  margin-left: -41px;
+}
+/*
+ * Align items and divider vertically
  */
 .uk-subnav-divider > * {
-  /* 1 */
   display: flex;
   align-items: center;
 }
 /*
  * Divider
- * `nth-child` makes it also work without JS if it's only one row
+ * 1. `nth-child` makes it also work without JS if it's only one row
  */
-.uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before {
+.uk-subnav-divider > ::before {
   content: "";
   height: 1.5em;
   margin-left: 0px;
   margin-right: 20px;
-  border-left: 1px solid #e5e5e5;
+  border-left: 1px solid transparent;
+}
+/* 1 */
+.uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before {
+  border-left-color: #e5e5e5;
 }
 /* Pill modifier
  ========================================================================== */
@@ -4482,7 +4506,8 @@ ul.uk-nav-sub {
 }
 /* Disabled */
 /* Active */
-.uk-breadcrumb > :last-child > * {
+.uk-breadcrumb > :last-child > span,
+.uk-breadcrumb > :last-child > a:not([href]) {
   color: #666;
 }
 /*
@@ -4493,6 +4518,7 @@ ul.uk-nav-sub {
   content: "/";
   display: inline-block;
   margin: 0 20px;
+  font-size: 0.875rem;
   color: #999;
 }
 /* ========================================================================
@@ -5308,6 +5334,7 @@ ul.uk-nav-sub {
  * 4. Horizontal padding
  * 5. Mask the background page
  * 6. Fade-in transition
+ * 7. Prevent cancellation of pointer events while dragging
  */
 .uk-lightbox {
   /* 1 */
@@ -5324,6 +5351,8 @@ ul.uk-nav-sub {
   /* 6 */
   opacity: 0;
   transition: opacity 0.15s linear;
+  /* 7 */
+  touch-action: pinch-zoom;
 }
 /*
  * Open
@@ -5433,6 +5462,9 @@ ul.uk-nav-sub {
 }
 /* Caption
  ========================================================================== */
+.uk-lightbox-caption:empty {
+  display: none;
+}
 /* Iframe
  ========================================================================== */
 .uk-lightbox-iframe {
@@ -6045,8 +6077,9 @@ ul.uk-nav-sub {
 /*
  * 1. Hide by default
  * 2. Position
- * 3. Dimensions
- * 4. Style
+ * 3. Remove tooltip from document flow to keep the UIkit container from changing its size when injected into the document initially
+ * 4. Dimensions
+ * 5. Style
  */
 .uk-tooltip {
   /* 1 */
@@ -6055,10 +6088,12 @@ ul.uk-nav-sub {
   position: absolute;
   z-index: 1030;
   /* 3 */
+  top: 0;
+  /* 4 */
   box-sizing: border-box;
   max-width: 200px;
   padding: 3px 6px;
-  /* 4 */
+  /* 5 */
   background: #666;
   border-radius: 2px;
   color: #fff;
@@ -6193,7 +6228,7 @@ ul.uk-nav-sub {
 /* Drag
  ========================================================================== */
 .uk-sortable-drag {
-  position: absolute !important;
+  position: fixed !important;
   z-index: 1050 !important;
   pointer-events: none;
 }
@@ -6219,18 +6254,18 @@ ul.uk-nav-sub {
  ========================================================================== */
 /* Item
  ========================================================================== */
-/*
- * 1. Center numbers and separators vertically
- */
-.uk-countdown-number,
-.uk-countdown-separator {
-  /* 1 */
-  line-height: 0.8;
-}
 /* Number
  ========================================================================== */
+/*
+ * 1. Make numbers all of the same size to prevent jumping. Must be supported by the font.
+ * 2. Style
+ */
 .uk-countdown-number {
+  /* 1 */
+  font-variant-numeric: tabular-nums;
+  /* 2 */
   font-size: 2rem;
+  line-height: 0.8;
 }
 /* Phone landscape and bigger */
 @media (min-width: 640px) {
@@ -6248,6 +6283,7 @@ ul.uk-nav-sub {
  ========================================================================== */
 .uk-countdown-separator {
   font-size: 1rem;
+  line-height: 1.6;
 }
 /* Phone landscape and bigger */
 @media (min-width: 640px) {
@@ -7288,7 +7324,6 @@ ul.uk-nav-sub {
 .uk-text-background {
   /* 1 */
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   /* 2 */
   display: inline-block;
   /* 3 */
@@ -7297,6 +7332,7 @@ ul.uk-nav-sub {
 @supports (-webkit-background-clip: text) {
   .uk-text-background {
     background-color: #1e87f0;
+    color: transparent !important;
   }
 }
 /* Alignment modifiers
@@ -8862,12 +8898,17 @@ iframe.uk-cover {
  ========================================================================== */
 /* Directions
  ========================================================================== */
+/*
+ * 1. Prevent content overflow if `max-width: 100%` is used inside position container.
+ */
 [class*='uk-position-top'],
 [class*='uk-position-bottom'],
 [class*='uk-position-left'],
 [class*='uk-position-right'],
 [class*='uk-position-center'] {
   position: absolute !important;
+  /* 1 */
+  max-width: 100%;
 }
 /* Edges
  ========================================================================== */
