@@ -1,7 +1,5 @@
 # UIkit Collection // REDAXO AddOn
 
-⚠️ Entwicklung eingestellt. 
-
 ## Einleitung
 Liefert Module und Templates für den Start eines UIkit-Projektes. 
 https://getuikit.com
