@@ -1,7 +1,7 @@
 # UIkit Collection // REDAXO AddOn
 
 ## Einleitung
-Liefert Module und Templates für den Start eines UIkit-Projektes. 
+Liefert Demo-Module und -Templates für den Start eines UIkit-Projektes. 
 https://getuikit.com
 
 - Die Navigation des Quickstart-Templates ist mit dem navigation_array gebaut worden. 
