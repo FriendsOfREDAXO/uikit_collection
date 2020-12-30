@@ -9,8 +9,7 @@ echo $auswahl->show();
 $id = 1;
 $mform = new MForm();
 $mform->addFieldset('Bilder');
-//$mform->addTextField("$id.0.titel", array('label'=>'Titel'));
-$mform->addMediaField(1, array('label'=>'Bild'));
+$mform->addImagelistField(1,array('types'=>'gif,jpg,png','preview'=>0,'category'=>0,'label'=>'Auswahl'));
 $mform->addTextAreaField("$id.0.caption", array('label'=>'Caption', 'class'=>'ckeditor', 'data-ckeditor-profile'=>'lite'));
 
 echo MBlock::show($id, $mform->show()); 
