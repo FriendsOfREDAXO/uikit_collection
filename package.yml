@@ -1,7 +1,7 @@
 package: uikit_collection
 version: '2.3.0'
 author: 'Friends Of REDAXO'
-supportpage: https://github.com/klxm
+supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
 
 page:
