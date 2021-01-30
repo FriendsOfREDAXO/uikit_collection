@@ -1,4 +1,9 @@
 <?php
+if (rex_plugin::get('yform', 'manager')->isAvailable()) {
+    rex_yform::addTemplatePath($this->getPath('ytemplates'));
+}
+
+
 if (rex::isBackend() && rex::getUser()) {
     rex_perm::register('uikit_modul[]');
     rex_view::addCssFile($this->getAssetsUrl('css/styles.css'));
