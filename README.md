@@ -14,6 +14,22 @@ Siehe z.B.: https://getuikit.com/docs/less
 
 ![Screenshot](https://raw.githubusercontent.com/FriendsOfREDAXO/uikit_collection/assets/screenshot.png)
 
+## YForm Template
+
+Verwendung: 
+
+PHP
+```php 
+$yform->setObjectparams('form_ytemplate', 'uikit3,bootstrap');
+```
+
+PIPE
+```
+objparams|form_ytemplate|uikit3,bootstrap
+```
+Bootstrap wird als Fallback verwendet. 
+
+
 ## Autoren
 
 Wolfgang Bund
