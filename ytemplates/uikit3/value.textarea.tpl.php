@@ -41,7 +41,7 @@ if (!$rows) {
 }
 
 $attributes = [
-    'class' => 'form-control uk-textarea',
+    'class' => 'uk-textarea',
     'name' => $this->getFieldName(),
     'id' => $this->getFieldId(),
     'rows' => $rows,
