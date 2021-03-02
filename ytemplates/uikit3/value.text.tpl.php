@@ -39,7 +39,7 @@ if (trim($this->getElement('grid')) != '') {
 }
 
 $attributes = [
-    'class' => 'form-control uk-input',
+    'class' => 'uk-input',
     'name' => $this->getFieldName(),
     'type' => $type,
     'id' => $this->getFieldId(),
