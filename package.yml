@@ -1,6 +1,6 @@
 package: uikit_collection
-version: '2.4.2'
-vendor: '3.6.16'
+version: '2.5.0'
+vendor: '3.6.21'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
@@ -20,7 +20,7 @@ page:
                 lizenz: { title: 'translate:lizenz'}
 requires:
     redaxo: '>=5.7.0'
-    php: '>=7.1'
+    php: '>=7.2'
     packages:
          mblock: '>=3.0.0'
          navigation_array: '>=1.0.0'
