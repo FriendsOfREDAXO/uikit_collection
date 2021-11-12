@@ -14,3 +14,4 @@ if (rex::isBackend() && rex::getUser()) {
     rex_extension::register('PACKAGES_INCLUDED', function($ep) {
         include_once rex_path::addon('uikit_collection/inc').'infolink_func.php';
     });
+ 
