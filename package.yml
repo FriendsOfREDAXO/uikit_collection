@@ -1,6 +1,6 @@
 package: uikit_collection
-version: '2.5.0'
-vendor: '3.6.21'
+version: '2.6.0'
+vendor: '3.9.2'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
