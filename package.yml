@@ -1,28 +1,11 @@
 package: uikit_collection
-version: '3.0.0-dev'
+version: '3.0.0'
 vendor: '3.10.1'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
 
-page:
-    title: 'translate:title'
-    perm: uikit[]
-    icon: rex-icon fa-times-circle
-    subpages:
-        module: {title: 'translate:module'}
-        templates: {title: 'translate:templates', icon: rex-icon fa-file-text-o}
-        info:
-            title: 'Info'
-            itemclass: 'pull-right'
-            subpages:
-                info:  { title: 'translate:info', subPath: README.md }
-                lizenz: { title: 'translate:lizenz'}
 requires:
-    redaxo: '>=5.7.0'
+    redaxo: '>=5.13.0'
     php: '>=7.2'
-    packages:
-         mblock: '>=3.0.0'
-         navigation_array: '>=1.0.0'
-         mform: '>=5.3.0'
          
