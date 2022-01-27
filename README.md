@@ -1,18 +1,11 @@
 # UIkit Collection // REDAXO AddOn
 
 ## Einleitung
-Liefert Demo-Module und -Templates für den Start eines UIkit-Projektes. 
+
+Das Addon liefert das UIKit 3 Standard-Theme sowie ein Template für YForm. Zudem liefert es Hilfsfunktionen für die UIKit 3 Demo.
+
 https://getuikit.com
 
-- Die Navigation des Quickstart-Templates ist mit dem navigation_array gebaut worden. 
-
-- Im Backend wird UIkit eingebunden, so dass die Frontendausgaben auch im Backend funktionieren.   
-
-> Es wird UIkit für das Frontend mitgeliefert, eigene Themes sollten jedoch besser entsprechend der Anleitung selbst entwickelt werden. 
-
-Siehe z.B.: https://getuikit.com/docs/less
-
-![Screenshot](https://raw.githubusercontent.com/FriendsOfREDAXO/uikit_collection/assets/screenshot.png)
 
 ## YForm Template
 
