@@ -53,3 +53,4 @@ if (!function_exists('infolink')) {
  {
  uikit_checklink($url);
 }
+}
