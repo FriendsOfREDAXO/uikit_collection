@@ -1,4 +1,4 @@
-/*! UIkit 3.13.1 | https://www.getuikit.com | (c) 2014 - 2022 YOOtheme | MIT License */
+/*! UIkit 3.13.7 | https://www.getuikit.com | (c) 2014 - 2022 YOOtheme | MIT License */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -767,21 +767,22 @@
           property = propName(property);
 
           if (isUndefined(value)) {
-            return getStyle(element, property);
-          } else if (!value && !isNumber(value)) {
-            element.style.removeProperty(property);
+            return getComputedStyle(element).getPropertyValue(property);
           } else {
             element.style.setProperty(
             property,
-            isNumeric(value) && !cssNumber[property] ? value + "px" : value,
+            isNumeric(value) && !cssNumber[property] ?
+            value + "px" :
+            value || isNumber(value) ?
+            value :
+            '',
             priority);
 
           }
         } else if (isArray(property)) {
-          const styles = getStyles(element);
           const props = {};
           for (const prop of property) {
-            props[prop] = styles[propName(prop)];
+            props[prop] = css(element, prop);
           }
           return props;
         } else if (isObject(property)) {
@@ -792,19 +793,9 @@
       return elements[0];
     }
 
-    function getStyles(element, pseudoElt) {
-      return toWindow(element).getComputedStyle(element, pseudoElt);
-    }
-
-    function getStyle(element, property, pseudoElt) {
-      return getStyles(element, pseudoElt)[property];
-    }
-
     const propertyRe = /^\s*(["'])?(.*?)\1\s*$/;
-    function getCssVar(name) {
-      return getStyles(document.documentElement).
-      getPropertyValue("--uk-" + name).
-      replace(propertyRe, '$2');
+    function getCssVar(name, element) {if (element === void 0) {element = document.documentElement;}
+      return css(element, "--uk-" + name).replace(propertyRe, '$2');
     }
 
     // https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-setproperty
@@ -813,6 +804,10 @@
     const cssPrefixes = ['webkit', 'moz'];
 
     function vendorPropName(name) {
+      if (name[0] === '-') {
+        return name;
+      }
+
       name = hyphenate(name);
 
       const { style } = document.documentElement;
@@ -1019,8 +1014,8 @@
         const offsetBy = { height: scrollY, width: scrollX };
 
         for (const dir in dirs$1) {
-          for (const i in dirs$1[dir]) {
-            currentOffset[dirs$1[dir][i]] += offsetBy[dir];
+          for (const prop of dirs$1[dir]) {
+            currentOffset[prop] += offsetBy[dir];
           }
         }
       }
@@ -1464,9 +1459,7 @@
     }
 
     function observeIntersection(targets, cb, options, intersecting) {if (intersecting === void 0) {intersecting = true;}
-      return observe(
-      IntersectionObserver,
-      targets,
+      const observer = new IntersectionObserver(
       intersecting ?
       (entries, observer) => {
         if (entries.some((entry) => entry.isIntersecting)) {
@@ -1476,9 +1469,14 @@
       cb,
       options);
 
+      for (const el of toNodes(targets)) {
+        observer.observe(el);
+      }
+
+      return observer;
     }
 
-    const hasResizeObserver = window.ResizeObserver;
+    const hasResizeObserver = inBrowser && window.ResizeObserver;
     function observeResize(targets, cb, options) {if (options === void 0) {options = { box: 'border-box' };}
       if (hasResizeObserver) {
         return observe(ResizeObserver, targets, cb, options);
@@ -2894,7 +2892,7 @@
     UIkit.data = '__uikit__';
     UIkit.prefix = 'uk-';
     UIkit.options = {};
-    UIkit.version = '3.13.1';
+    UIkit.version = '3.13.7';
 
     globalAPI(UIkit);
     hooksAPI(UIkit);
@@ -3386,7 +3384,7 @@
           mute(this.$el);
         }
 
-        this.registerObserver(observeIntersection(this.$el, () => this.$emit('scroll'), {}, false));
+        this.registerObserver(observeIntersection(this.$el, () => this.$emit(), {}, false));
       },
 
       update: {
@@ -3431,7 +3429,7 @@
 
 
       events: {
-        load() {
+        'load loadedmetadata'() {
           this.$emit('resize');
         } },
 
@@ -3497,15 +3495,13 @@
       props: {
         pos: String,
         offset: null,
-        flip: Boolean,
-        clsPos: String },
+        flip: Boolean },
 
 
       data: {
         pos: "bottom-" + (isRtl ? 'right' : 'left'),
         flip: true,
-        offset: false,
-        clsPos: '' },
+        offset: false },
 
 
       connected() {
@@ -3516,13 +3512,11 @@
 
       methods: {
         positionAt(element, target, boundary) {
-          removeClasses(element, this.clsPos + "-(top|bottom|left|right)(-[a-z]+)?");
-
-          let { offset: offset$1 } = this;
           const axis = this.getAxis();
           const dir = this.pos[0];
           const align = this.pos[1];
 
+          let { offset: offset$1 } = this;
           if (!isNumeric(offset$1)) {
             const node = $(offset$1);
             offset$1 = node ?
@@ -3530,6 +3524,7 @@
             offset(target)[axis === 'x' ? 'right' : 'bottom'] :
             0;
           }
+          offset$1 = toPx(offset$1) + toPx(getCssVar('position-offset', element));
 
           const { x, y } = positionAt(
           element,
@@ -3546,8 +3541,6 @@
 
           this.dir = axis === 'x' ? x : y;
           this.align = axis === 'x' ? y : x;
-
-          toggleClass(element, this.clsPos + "-" + this.dir + "-" + this.align, this.offset === false);
         },
 
         getAxis() {
@@ -3589,7 +3582,7 @@
       },
 
       connected() {
-        this.clsPos = this.clsDrop = this.$props.clsDrop || "uk-" + this.$options.name;
+        this.clsDrop = this.$props.clsDrop || "uk-" + this.$options.name;
         addClass(this.$el, this.clsDrop);
 
         if (this.toggle && !this.target) {
@@ -3655,7 +3648,7 @@
           if (this.isToggled()) {
             this.hide(false);
           } else {
-            this.show(toggle.$el, false);
+            this.show(toggle == null ? void 0 : toggle.$el, false);
           }
         } },
 
@@ -3667,7 +3660,7 @@
 
         handler(e, toggle) {
           e.preventDefault();
-          this.show(toggle.$el);
+          this.show(toggle == null ? void 0 : toggle.$el);
         } },
 
 
@@ -3878,23 +3871,20 @@
         },
 
         position() {
-          const boundary = this.boundary === true ? window : query(this.boundary, this.$el);
+          const boundary = query(this.boundary, this.$el) || window;
           removeClass(this.$el, this.clsDrop + "-stack");
           toggleClass(this.$el, this.clsDrop + "-boundary", this.boundaryAlign);
 
           const boundaryOffset = offset(boundary);
-          const alignTo = this.boundaryAlign ? boundaryOffset : offset(this.target);
+          const targetOffset = offset(this.target);
+          const alignTo = this.boundaryAlign ? boundaryOffset : targetOffset;
 
-          if (this.align === 'justify') {
+          if (this.pos[1] === 'justify') {
             const prop = this.getAxis() === 'y' ? 'width' : 'height';
             css(this.$el, prop, alignTo[prop]);
           } else if (
-          boundary &&
           this.$el.offsetWidth >
-          Math.max(
-          boundaryOffset.right - alignTo.left,
-          alignTo.right - boundaryOffset.left))
-
+          Math.max(boundaryOffset.right - alignTo.left, alignTo.right - boundaryOffset.left))
           {
             addClass(this.$el, this.clsDrop + "-stack");
           }
@@ -4287,6 +4277,8 @@
     }
 
     var heightMatch = {
+      mixins: [Resize],
+
       args: 'target',
 
       props: {
@@ -4404,11 +4396,13 @@
           const box = boxModelAdjust(this.$el, 'height', 'content-box');
 
           if (this.expand) {
-            minHeight =
+            minHeight = Math.max(
             height(window) - (
             dimensions$1(document.documentElement).height -
             dimensions$1(this.$el).height) -
-            box || '';
+            box,
+            0);
+
           } else {
             // on mobile devices (iOS and Android) window.innerHeight !== 100vh
             minHeight = 'calc(100vh';
@@ -4829,7 +4823,7 @@
       return isRtl ? swap(swap(icon, 'left', 'right'), 'previous', 'next') : icon;
     }
 
-    const nativeLazyLoad = ('loading' in HTMLImageElement.prototype);
+    const nativeLazyLoad = inBrowser && 'loading' in HTMLImageElement.prototype;
 
     var img = {
       args: 'dataSrc',
@@ -4893,25 +4887,6 @@
           this._data.image.onload = '';
         }
       },
-
-      update: {
-        write(store) {
-          if (!this.observer || isImg(this.$el)) {
-            return false;
-          }
-
-          const srcset = data(this.$el, 'data-srcset');
-          if (srcset && window.devicePixelRatio !== 1) {
-            const bgSize = css(this.$el, 'backgroundSize');
-            if (bgSize.match(/^(auto\s?)+$/) || toFloat(bgSize) === store.bgSize) {
-              store.bgSize = getSourceSize(srcset, data(this.$el, 'sizes'));
-              css(this.$el, 'backgroundSize', store.bgSize + "px");
-            }
-          }
-        },
-
-        events: ['resize'] },
-
 
       methods: {
         load() {
@@ -5000,43 +4975,6 @@
       }
 
       return sources.filter((source) => !isEmpty(source));
-    }
-
-    const sizesRe = /\s*(.*?)\s*(\w+|calc\(.*?\))\s*(?:,|$)/g;
-    function sizesToPixel(sizes) {
-      let matches;
-
-      sizesRe.lastIndex = 0;
-
-      while (matches = sizesRe.exec(sizes)) {
-        if (!matches[1] || window.matchMedia(matches[1]).matches) {
-          matches = evaluateSize(matches[2]);
-          break;
-        }
-      }
-
-      return matches || '100vw';
-    }
-
-    const sizeRe = /\d+(?:\w+|%)/g;
-    const additionRe = /[+-]?(\d+)/g;
-    function evaluateSize(size) {
-      return startsWith(size, 'calc') ?
-      size.
-      slice(5, -1).
-      replace(sizeRe, (size) => toPx(size)).
-      replace(/ /g, '').
-      match(additionRe).
-      reduce((a, b) => a + +b, 0) :
-      size;
-    }
-
-    const srcSetRe = /\s+\d+w\s*(?:,|$)/g;
-    function getSourceSize(srcset, sizes) {
-      const srcSize = toPx(sizesToPixel(sizes));
-      const descriptors = (srcset.match(srcSetRe) || []).map(toFloat).sort((a, b) => a - b);
-
-      return descriptors.filter((size) => size >= srcSize)[0] || descriptors.pop() || '';
     }
 
     function ensureSrcAttribute(el) {
@@ -5556,7 +5494,6 @@
         delayShow: Number,
         delayHide: Number,
         dropbar: Boolean,
-        dropbarMode: String,
         dropbarAnchor: Boolean,
         duration: Number },
 
@@ -5573,7 +5510,6 @@
         flip: 'x',
         boundary: true,
         dropbar: false,
-        dropbarMode: 'slide',
         dropbarAnchor: false,
         duration: 200,
         forceHeight: true,
@@ -5582,8 +5518,8 @@
 
 
       computed: {
-        boundary(_ref, $el) {let { boundary, boundaryAlign } = _ref;
-          return boundary === true || boundaryAlign ? $el : boundary;
+        boundary(_ref, $el) {let { boundary } = _ref;
+          return boundary === true ? $el : boundary;
         },
 
         dropbarAnchor(_ref2, $el) {let { dropbarAnchor } = _ref2;
@@ -5790,10 +5726,16 @@
           return this.dropbar;
         },
 
-        handler() {
+        handler(_, _ref9) {let { $el } = _ref9;
+          if (!hasClass($el, this.clsDrop)) {
+            return;
+          }
+
           if (!parent(this.dropbar)) {
             after(this.dropbarAnchor || this.$el, this.dropbar);
           }
+
+          addClass($el, this.clsDrop + "-dropbar");
         } },
 
 
@@ -5808,21 +5750,15 @@
           return this.dropbar;
         },
 
-        handler(_, _ref9) {let { $el, dir } = _ref9;
+        handler(_, _ref10) {let { $el, dir } = _ref10;
           if (!hasClass($el, this.clsDrop)) {
             return;
           }
 
-          if (this.dropbarMode === 'slide') {
-            addClass(this.dropbar, 'uk-navbar-dropbar-slide');
-          }
-
-          this.clsDrop && addClass($el, this.clsDrop + "-dropbar");
-
           if (dir === 'bottom') {
             this.transitionTo(
-            $el.offsetHeight +
-            toFloat(css($el, 'marginTop')) +
+            offset($el).bottom -
+            offset(this.dropbar).top +
             toFloat(css($el, 'marginBottom')),
             $el);
 
@@ -5841,7 +5777,7 @@
           return this.dropbar;
         },
 
-        handler(e, _ref10) {let { $el } = _ref10;
+        handler(e, _ref11) {let { $el } = _ref11;
           const active = this.getActive();
 
           if (
@@ -5865,7 +5801,7 @@
           return this.dropbar;
         },
 
-        handler(_, _ref11) {let { $el } = _ref11;
+        handler(_, _ref12) {let { $el } = _ref12;
           if (!hasClass($el, this.clsDrop)) {
             return;
           }
@@ -6289,7 +6225,7 @@
         events: ['resize'] } };
 
     var responsive = {
-      mixin: [Resize],
+      mixins: [Resize],
 
       props: ['width', 'height'],
 
@@ -7057,27 +6993,21 @@
 
         show(item) {
           const prev = this.index();
-          const next = getIndex(
-          this.children[getIndex(item, this.toggles, prev)],
-          children(this.$el));
-
-
-          if (prev === next) {
-            return;
-          }
-
+          const next = getIndex(item, this.toggles, prev);
+          const active = getIndex(this.children[next], children(this.$el));
           children(this.$el).forEach((child, i) => {
-            toggleClass(child, this.cls, next === i);
-            attr(this.toggles[i], 'aria-expanded', next === i);
+            toggleClass(child, this.cls, active === i);
+            attr(this.toggles[i], 'aria-expanded', active === i);
           });
 
+          const animate = prev >= 0 && prev !== next;
           this.connects.forEach(async (_ref4) => {let { children } = _ref4;
             await this.toggleElement(
             toNodes(children).filter((child) => hasClass(child, this.cls)),
             false,
-            prev >= 0);
+            animate);
 
-            await this.toggleElement(children[next], true, prev >= 0);
+            await this.toggleElement(children[active], true, animate);
           });
         } } };
 
@@ -10092,7 +10022,7 @@
         selItem: '!li' },
 
 
-      connected() {
+      beforeConnect() {
         this.item = query(this.selItem, this.$el);
       },
 
@@ -10732,8 +10662,7 @@
         delay: 0,
         animation: ['uk-animation-scale-up'],
         duration: 100,
-        cls: 'uk-active',
-        clsPos: 'uk-tooltip' },
+        cls: 'uk-active' },
 
 
       beforeConnect() {
@@ -10788,9 +10717,9 @@
 
         _show() {
           this.tooltip = append(
-          this.container, "<div class=\"" +
-          this.clsPos + "\"> <div class=\"" +
-          this.clsPos + "-inner\">" + this.title + "</div> </div>");
+          this.container, "<div class=\"uk-" +
+          this.$options.name + "\"> <div class=\"uk-" +
+          this.$options.name + "-inner\">" + this.title + "</div> </div>");
 
 
 
@@ -10935,6 +10864,8 @@
 
       methods: {
         async upload(files) {
+          files = toArray(files);
+
           if (!files.length) {
             return;
           }
@@ -11021,7 +10952,6 @@
     }
 
     function chunk(files, size) {
-      files = toArray(files);
       const chunks = [];
       for (let i = 0; i < files.length; i += size) {
         chunks.push(files.slice(i, i + size));
