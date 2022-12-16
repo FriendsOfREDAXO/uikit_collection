@@ -1,12 +1,12 @@
 package: uikit_collection
 
-version: '3.1.0'
-vendor: '3.15.10'
+version: '3.1.1'
+vendor: '3.15.18'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
 
 requires:
     redaxo: '>=5.13.0'
-    php: '>=7.2'
+    php: '>=7.4'
          
