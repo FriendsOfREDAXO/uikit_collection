@@ -18,7 +18,8 @@
     $to = $lastPage - 2 == $to ? $lastPage - 1 : $to;
 ?>
         <?php if ($pager->getRowCount() > $pager->getRowsPerPage()): ?>
-                <ul class="uk-pagination uk-padding-small uk-flex-center">
+              <div>  
+              <ul class="uk-pagination uk-padding-small uk-flex-center">
                     <li class="rex-prev<?= $pager->isActivePage($firstPage) ? ' disabled' : ''; ?>">
                         <a href="<?= $urlProvider->getUrl([$pager->getCursorName() => $pager->getCursor($pager->getPrevPage())]) ?>" uk-tooltip title="<?= $this->i18n('list_previous') ?>">
                             <span title="<?= $this->i18n('list_next') ?>" uk-icon="icon: chevron-left "></span> 
@@ -63,5 +64,6 @@
                         </a>
                     </li>
                 </ul>
-                <div class="rex-pagination-count"><?= $this->i18n('list_rows_found', $pager->getRowCount()) ?></div>
+</div>
+           <div class="rex-pagination-count uk-flex-center"><?= $this->i18n('list_rows_found', $pager->getRowCount()) ?></div>
         <?php endif;
