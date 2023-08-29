@@ -35,11 +35,6 @@ Thomas Skerbis
 
 Markus Wottrich
 
-
-## Basiert auf
-
-Modulsammlung von Oliver Kreischer
-
 **Friends Of REDAXO**
 
 * http://www.redaxo.org
