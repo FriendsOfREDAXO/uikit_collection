@@ -2,7 +2,7 @@
 
 ## Einleitung
 
-Das Addon liefert das UIKit 3 Standard-Theme sowie ein Template für YForm. Zudem liefert es Hilfsfunktionen für die UIKit 3 Demo.
+Das Addon liefert das UIKit 3 Standard-Theme sowie ein Template für YForm.
 
 https://getuikit.com
 
