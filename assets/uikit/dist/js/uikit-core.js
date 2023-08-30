@@ -308,7 +308,7 @@
       var _a;
       return (_a = toNode(element)) == null ? void 0 : _a.parentElement;
     }
-    function filter$1(element, selector) {
+    function filter(element, selector) {
       return toNodes(element).filter((element2) => matches(element2, selector));
     }
     function matches(element, selector) {
@@ -332,7 +332,7 @@
     function children(element, selector) {
       element = toNode(element);
       const children2 = element ? toArray(element.children) : [];
-      return selector ? filter$1(children2, selector) : children2;
+      return selector ? filter(children2, selector) : children2;
     }
     function index(element, ref) {
       return ref ? toNodes(element).indexOf(toNode(ref)) : children(parent(element)).indexOf(element);
@@ -786,7 +786,7 @@
       width: ["left", "right"],
       height: ["top", "bottom"]
     };
-    function dimensions$1(element) {
+    function dimensions(element) {
       const rect = isElement(element) ? toNode(element).getBoundingClientRect() : { height: height(element), width: width(element), top: 0, left: 0 };
       return {
         height: rect.height,
@@ -801,7 +801,7 @@
       if (coordinates) {
         css(element, { left: 0, top: 0 });
       }
-      const currentOffset = dimensions$1(element);
+      const currentOffset = dimensions(element);
       if (element) {
         const { scrollY, scrollX } = toWindow(element);
         const offsetBy = { height: scrollY, width: scrollX };
@@ -902,15 +902,15 @@
       return sumBy(parseCalc(value), (value2) => {
         const unit = parseUnit(value2);
         return unit ? percent(
-          unit === "vh" ? getViewportHeight() : unit === "vw" ? width(toWindow(element)) : offsetDim ? element[`offset${ucfirst(property)}`] : dimensions$1(element)[property],
+          unit === "vh" ? getViewportHeight() : unit === "vw" ? width(toWindow(element)) : offsetDim ? element[`offset${ucfirst(property)}`] : dimensions(element)[property],
           value2
         ) : value2;
       });
     }
     const calcRe = /-?\d+(?:\.\d+)?(?:v[wh]|%|px)?/g;
     const parseCalc = memoize((calc) => calc.toString().replace(/\s/g, "").match(calcRe) || []);
-    const unitRe$1 = /(?:v[hw]|%)$/;
-    const parseUnit = memoize((str) => (str.match(unitRe$1) || [])[0]);
+    const unitRe = /(?:v[hw]|%)$/;
+    const parseUnit = memoize((str) => (str.match(unitRe) || [])[0]);
     function percent(base, value) {
       return base * toFloat(value) / 100;
     }
@@ -938,9 +938,9 @@
     const isRtl = inBrowser && document.dir === "rtl";
     const hasTouch = inBrowser && "ontouchstart" in window;
     const hasPointerEvents = inBrowser && window.PointerEvent;
-    const pointerDown$1 = hasPointerEvents ? "pointerdown" : hasTouch ? "touchstart" : "mousedown";
-    const pointerMove$1 = hasPointerEvents ? "pointermove" : hasTouch ? "touchmove" : "mousemove";
-    const pointerUp$1 = hasPointerEvents ? "pointerup" : hasTouch ? "touchend" : "mouseup";
+    const pointerDown = hasPointerEvents ? "pointerdown" : hasTouch ? "touchstart" : "mousedown";
+    const pointerMove = hasPointerEvents ? "pointermove" : hasTouch ? "touchmove" : "mousemove";
+    const pointerUp = hasPointerEvents ? "pointerup" : hasTouch ? "touchend" : "mouseup";
     const pointerEnter = hasPointerEvents ? "pointerenter" : hasTouch ? "" : "mouseenter";
     const pointerLeave = hasPointerEvents ? "pointerleave" : hasTouch ? "" : "mouseleave";
     const pointerCancel = hasPointerEvents ? "pointercancel" : "touchcancel";
@@ -1515,13 +1515,13 @@
         createEvent: createEvent,
         css: css,
         data: data,
-        dimensions: dimensions$1,
+        dimensions: dimensions,
         each: each,
         empty: empty,
         endsWith: endsWith,
         escape: escape,
         fastdom: fastdom,
-        filter: filter$1,
+        filter: filter,
         find: find,
         findAll: findAll,
         findIndex: findIndex,
@@ -1589,11 +1589,11 @@
         play: play,
         pointInRect: pointInRect,
         pointerCancel: pointerCancel,
-        pointerDown: pointerDown$1,
+        pointerDown: pointerDown,
         pointerEnter: pointerEnter,
         pointerLeave: pointerLeave,
-        pointerMove: pointerMove$1,
-        pointerUp: pointerUp$1,
+        pointerMove: pointerMove,
+        pointerUp: pointerUp,
         position: position,
         positionAt: positionAt,
         prepend: prepend,
@@ -1635,1512 +1635,6 @@
         wrapAll: wrapAll,
         wrapInner: wrapInner
     });
-
-    var Class = {
-      connected() {
-        addClass(this.$el, this.$options.id);
-      }
-    };
-
-    const units = ["days", "hours", "minutes", "seconds"];
-    var countdown = {
-      mixins: [Class],
-      props: {
-        date: String,
-        clsWrapper: String,
-        role: String
-      },
-      data: {
-        date: "",
-        clsWrapper: ".uk-countdown-%unit%",
-        role: "timer"
-      },
-      connected() {
-        attr(this.$el, "role", this.role);
-        this.date = toFloat(Date.parse(this.$props.date));
-        this.end = false;
-        this.start();
-      },
-      disconnected() {
-        this.stop();
-      },
-      events: {
-        name: "visibilitychange",
-        el() {
-          return document;
-        },
-        handler() {
-          if (document.hidden) {
-            this.stop();
-          } else {
-            this.start();
-          }
-        }
-      },
-      methods: {
-        start() {
-          this.stop();
-          this.update();
-          if (!this.timer) {
-            trigger(this.$el, "countdownstart");
-            this.timer = setInterval(this.update, 1e3);
-          }
-        },
-        stop() {
-          if (this.timer) {
-            clearInterval(this.timer);
-            trigger(this.$el, "countdownstop");
-            this.timer = null;
-          }
-        },
-        update() {
-          const timespan = getTimeSpan(this.date);
-          if (!timespan.total) {
-            this.stop();
-            if (!this.end) {
-              trigger(this.$el, "countdownend");
-              this.end = true;
-            }
-          }
-          for (const unit of units) {
-            const el = $(this.clsWrapper.replace("%unit%", unit), this.$el);
-            if (!el) {
-              continue;
-            }
-            let digits = String(Math.trunc(timespan[unit]));
-            digits = digits.length < 2 ? `0${digits}` : digits;
-            if (el.textContent !== digits) {
-              digits = digits.split("");
-              if (digits.length !== el.children.length) {
-                html(el, digits.map(() => "<span></span>").join(""));
-              }
-              digits.forEach((digit, i) => el.children[i].textContent = digit);
-            }
-          }
-        }
-      }
-    };
-    function getTimeSpan(date) {
-      const total = Math.max(0, date - Date.now()) / 1e3;
-      return {
-        total,
-        seconds: total % 60,
-        minutes: total / 60 % 60,
-        hours: total / 60 / 60 % 24,
-        days: total / 60 / 60 / 24
-      };
-    }
-
-    const strats = {};
-    strats.events = strats.watch = strats.observe = strats.created = strats.beforeConnect = strats.connected = strats.beforeDisconnect = strats.disconnected = strats.destroy = concatStrat;
-    strats.args = function(parentVal, childVal) {
-      return childVal !== false && concatStrat(childVal || parentVal);
-    };
-    strats.update = function(parentVal, childVal) {
-      return sortBy$1(
-        concatStrat(parentVal, isFunction(childVal) ? { read: childVal } : childVal),
-        "order"
-      );
-    };
-    strats.props = function(parentVal, childVal) {
-      if (isArray(childVal)) {
-        const value = {};
-        for (const key of childVal) {
-          value[key] = String;
-        }
-        childVal = value;
-      }
-      return strats.methods(parentVal, childVal);
-    };
-    strats.computed = strats.methods = function(parentVal, childVal) {
-      return childVal ? parentVal ? { ...parentVal, ...childVal } : childVal : parentVal;
-    };
-    strats.i18n = strats.data = function(parentVal, childVal, vm) {
-      if (!vm) {
-        if (!childVal) {
-          return parentVal;
-        }
-        if (!parentVal) {
-          return childVal;
-        }
-        return function(vm2) {
-          return mergeFnData(parentVal, childVal, vm2);
-        };
-      }
-      return mergeFnData(parentVal, childVal, vm);
-    };
-    function mergeFnData(parentVal, childVal, vm) {
-      return strats.computed(
-        isFunction(parentVal) ? parentVal.call(vm, vm) : parentVal,
-        isFunction(childVal) ? childVal.call(vm, vm) : childVal
-      );
-    }
-    function concatStrat(parentVal, childVal) {
-      parentVal = parentVal && !isArray(parentVal) ? [parentVal] : parentVal;
-      return childVal ? parentVal ? parentVal.concat(childVal) : isArray(childVal) ? childVal : [childVal] : parentVal;
-    }
-    function defaultStrat(parentVal, childVal) {
-      return isUndefined(childVal) ? parentVal : childVal;
-    }
-    function mergeOptions(parent, child, vm) {
-      const options = {};
-      if (isFunction(child)) {
-        child = child.options;
-      }
-      if (child.extends) {
-        parent = mergeOptions(parent, child.extends, vm);
-      }
-      if (child.mixins) {
-        for (const mixin of child.mixins) {
-          parent = mergeOptions(parent, mixin, vm);
-        }
-      }
-      for (const key in parent) {
-        mergeKey(key);
-      }
-      for (const key in child) {
-        if (!hasOwn(parent, key)) {
-          mergeKey(key);
-        }
-      }
-      function mergeKey(key) {
-        options[key] = (strats[key] || defaultStrat)(parent[key], child[key], vm);
-      }
-      return options;
-    }
-    function parseOptions(options, args = []) {
-      try {
-        return options ? startsWith(options, "{") ? JSON.parse(options) : args.length && !includes(options, ":") ? { [args[0]]: options } : options.split(";").reduce((options2, option) => {
-          const [key, value] = option.split(/:(.*)/);
-          if (key && !isUndefined(value)) {
-            options2[key.trim()] = value.trim();
-          }
-          return options2;
-        }, {}) : {};
-      } catch (e) {
-        return {};
-      }
-    }
-    function coerce$1(type, value) {
-      if (type === Boolean) {
-        return toBoolean(value);
-      } else if (type === Number) {
-        return toNumber(value);
-      } else if (type === "list") {
-        return toList(value);
-      } else if (type === Object && isString(value)) {
-        return parseOptions(value);
-      }
-      return type ? type(value) : value;
-    }
-    function toList(value) {
-      return isArray(value) ? value : isString(value) ? value.split(/,(?![^(]*\))/).map((value2) => isNumeric(value2) ? toNumber(value2) : toBoolean(value2.trim())) : [value];
-    }
-
-    function resize(options) {
-      return observe(observeResize, options, "resize");
-    }
-    function intersection(options) {
-      return observe(observeIntersection, options);
-    }
-    function mutation(options) {
-      return observe(observeMutation, options);
-    }
-    function lazyload(options = {}) {
-      return intersection({
-        handler: function(entries, observer) {
-          const { targets = this.$el, preload = 5 } = options;
-          for (const el of toNodes(isFunction(targets) ? targets(this) : targets)) {
-            $$('[loading="lazy"]', el).slice(0, preload - 1).forEach((el2) => removeAttr(el2, "loading"));
-          }
-          for (const el of entries.filter(({ isIntersecting }) => isIntersecting).map(({ target }) => target)) {
-            observer.unobserve(el);
-          }
-        },
-        ...options
-      });
-    }
-    function viewport(options) {
-      return observe((target, handler) => observeViewportResize(handler), options);
-    }
-    function scroll$1(options) {
-      return observe(
-        (target, handler) => ({
-          disconnect: on(toScrollTargets(target), "scroll", handler, {
-            passive: true,
-            capture: true
-          })
-        }),
-        options,
-        "scroll"
-      );
-    }
-    function swipe(options) {
-      return {
-        observe(target, handler) {
-          return {
-            observe: noop,
-            unobserve: noop,
-            disconnect: on(target, pointerDown$1, handler, { passive: true })
-          };
-        },
-        handler(e) {
-          if (!isTouch(e)) {
-            return;
-          }
-          const pos = getEventPos(e);
-          const target = "tagName" in e.target ? e.target : parent(e.target);
-          once(document, `${pointerUp$1} ${pointerCancel} scroll`, (e2) => {
-            const { x, y } = getEventPos(e2);
-            if (e2.type !== "scroll" && target && x && Math.abs(pos.x - x) > 100 || y && Math.abs(pos.y - y) > 100) {
-              setTimeout(() => {
-                trigger(target, "swipe");
-                trigger(target, `swipe${swipeDirection(pos.x, pos.y, x, y)}`);
-              });
-            }
-          });
-        },
-        ...options
-      };
-    }
-    function observe(observe2, options, emit) {
-      return {
-        observe: observe2,
-        handler() {
-          this.$emit(emit);
-        },
-        ...options
-      };
-    }
-    function swipeDirection(x1, y1, x2, y2) {
-      return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? x1 - x2 > 0 ? "Left" : "Right" : y1 - y2 > 0 ? "Up" : "Down";
-    }
-    function toScrollTargets(elements) {
-      return toNodes(elements).map((node) => {
-        const { ownerDocument } = node;
-        const parent2 = scrollParent(node, true);
-        return parent2 === ownerDocument.scrollingElement ? ownerDocument : parent2;
-      });
-    }
-
-    var Margin = {
-      props: {
-        margin: String,
-        firstColumn: Boolean
-      },
-      data: {
-        margin: "uk-margin-small-top",
-        firstColumn: "uk-first-column"
-      },
-      observe: [
-        mutation({
-          options: {
-            childList: true,
-            attributes: true,
-            attributeFilter: ["style"]
-          }
-        }),
-        resize({
-          target: ({ $el }) => [$el, ...children($el)]
-        })
-      ],
-      update: {
-        read() {
-          const rows = getRows(this.$el.children);
-          return {
-            rows,
-            columns: getColumns(rows)
-          };
-        },
-        write({ columns, rows }) {
-          for (const row of rows) {
-            for (const column of row) {
-              toggleClass(column, this.margin, rows[0] !== row);
-              toggleClass(column, this.firstColumn, columns[0].includes(column));
-            }
-          }
-        },
-        events: ["resize"]
-      }
-    };
-    function getRows(items) {
-      return sortBy(items, "top", "bottom");
-    }
-    function getColumns(rows) {
-      const columns = [];
-      for (const row of rows) {
-        const sorted = sortBy(row, "left", "right");
-        for (let j = 0; j < sorted.length; j++) {
-          columns[j] = columns[j] ? columns[j].concat(sorted[j]) : sorted[j];
-        }
-      }
-      return isRtl ? columns.reverse() : columns;
-    }
-    function sortBy(items, startProp, endProp) {
-      const sorted = [[]];
-      for (const el of items) {
-        if (!isVisible(el)) {
-          continue;
-        }
-        let dim = getOffset(el);
-        for (let i = sorted.length - 1; i >= 0; i--) {
-          const current = sorted[i];
-          if (!current[0]) {
-            current.push(el);
-            break;
-          }
-          let startDim;
-          if (current[0].offsetParent === el.offsetParent) {
-            startDim = getOffset(current[0]);
-          } else {
-            dim = getOffset(el, true);
-            startDim = getOffset(current[0], true);
-          }
-          if (dim[startProp] >= startDim[endProp] - 1 && dim[startProp] !== startDim[startProp]) {
-            sorted.push([el]);
-            break;
-          }
-          if (dim[endProp] - 1 > startDim[startProp] || dim[startProp] === startDim[startProp]) {
-            current.push(el);
-            break;
-          }
-          if (i === 0) {
-            sorted.unshift([el]);
-            break;
-          }
-        }
-      }
-      return sorted;
-    }
-    function getOffset(element, offset = false) {
-      let { offsetTop, offsetLeft, offsetHeight, offsetWidth } = element;
-      if (offset) {
-        [offsetTop, offsetLeft] = offsetPosition(element);
-      }
-      return {
-        top: offsetTop,
-        left: offsetLeft,
-        bottom: offsetTop + offsetHeight,
-        right: offsetLeft + offsetWidth
-      };
-    }
-
-    const clsLeave = "uk-transition-leave";
-    const clsEnter = "uk-transition-enter";
-    function fade(action, target, duration, stagger = 0) {
-      const index = transitionIndex(target, true);
-      const propsIn = { opacity: 1 };
-      const propsOut = { opacity: 0 };
-      const wrapIndexFn = (fn) => () => index === transitionIndex(target) ? fn() : Promise.reject();
-      const leaveFn = wrapIndexFn(async () => {
-        addClass(target, clsLeave);
-        await Promise.all(
-          getTransitionNodes(target).map(
-            (child, i) => new Promise(
-              (resolve) => setTimeout(
-                () => Transition.start(child, propsOut, duration / 2, "ease").then(
-                  resolve
-                ),
-                i * stagger
-              )
-            )
-          )
-        );
-        removeClass(target, clsLeave);
-      });
-      const enterFn = wrapIndexFn(async () => {
-        const oldHeight = height(target);
-        addClass(target, clsEnter);
-        action();
-        css(children(target), { opacity: 0 });
-        await awaitFrame$1();
-        const nodes = children(target);
-        const newHeight = height(target);
-        css(target, "alignContent", "flex-start");
-        height(target, oldHeight);
-        const transitionNodes = getTransitionNodes(target);
-        css(nodes, propsOut);
-        const transitions = transitionNodes.map(async (child, i) => {
-          await awaitTimeout(i * stagger);
-          await Transition.start(child, propsIn, duration / 2, "ease");
-        });
-        if (oldHeight !== newHeight) {
-          transitions.push(
-            Transition.start(
-              target,
-              { height: newHeight },
-              duration / 2 + transitionNodes.length * stagger,
-              "ease"
-            )
-          );
-        }
-        await Promise.all(transitions).then(() => {
-          removeClass(target, clsEnter);
-          if (index === transitionIndex(target)) {
-            css(target, { height: "", alignContent: "" });
-            css(nodes, { opacity: "" });
-            delete target.dataset.transition;
-          }
-        });
-      });
-      return hasClass(target, clsLeave) ? waitTransitionend(target).then(enterFn) : hasClass(target, clsEnter) ? waitTransitionend(target).then(leaveFn).then(enterFn) : leaveFn().then(enterFn);
-    }
-    function transitionIndex(target, next) {
-      if (next) {
-        target.dataset.transition = 1 + transitionIndex(target);
-      }
-      return toNumber(target.dataset.transition) || 0;
-    }
-    function waitTransitionend(target) {
-      return Promise.all(
-        children(target).filter(Transition.inProgress).map(
-          (el) => new Promise((resolve) => once(el, "transitionend transitioncanceled", resolve))
-        )
-      );
-    }
-    function getTransitionNodes(target) {
-      return getRows(children(target)).reduce(
-        (nodes, row) => nodes.concat(
-          sortBy$1(
-            row.filter((el) => isInView(el)),
-            "offsetLeft"
-          )
-        ),
-        []
-      );
-    }
-    function awaitFrame$1() {
-      return new Promise((resolve) => requestAnimationFrame(resolve));
-    }
-    function awaitTimeout(timeout) {
-      return new Promise((resolve) => setTimeout(resolve, timeout));
-    }
-
-    async function slide(action, target, duration) {
-      await awaitFrame();
-      let nodes = children(target);
-      const currentProps = nodes.map((el) => getProps$1(el, true));
-      const targetProps = { ...css(target, ["height", "padding"]), display: "block" };
-      await Promise.all(nodes.concat(target).map(Transition.cancel));
-      action();
-      nodes = nodes.concat(children(target).filter((el) => !includes(nodes, el)));
-      await Promise.resolve();
-      fastdom.flush();
-      const targetStyle = attr(target, "style");
-      const targetPropsTo = css(target, ["height", "padding"]);
-      const [propsTo, propsFrom] = getTransitionProps(target, nodes, currentProps);
-      const attrsTo = nodes.map((el) => ({ style: attr(el, "style") }));
-      nodes.forEach((el, i) => propsFrom[i] && css(el, propsFrom[i]));
-      css(target, targetProps);
-      trigger(target, "scroll");
-      fastdom.flush();
-      await awaitFrame();
-      const transitions = nodes.map((el, i) => parent(el) === target && Transition.start(el, propsTo[i], duration, "ease")).concat(Transition.start(target, targetPropsTo, duration, "ease"));
-      try {
-        await Promise.all(transitions);
-        nodes.forEach((el, i) => {
-          attr(el, attrsTo[i]);
-          if (parent(el) === target) {
-            css(el, "display", propsTo[i].opacity === 0 ? "none" : "");
-          }
-        });
-        attr(target, "style", targetStyle);
-      } catch (e) {
-        attr(nodes, "style", "");
-        resetProps(target, targetProps);
-      }
-    }
-    function getProps$1(el, opacity) {
-      const zIndex = css(el, "zIndex");
-      return isVisible(el) ? {
-        display: "",
-        opacity: opacity ? css(el, "opacity") : "0",
-        pointerEvents: "none",
-        position: "absolute",
-        zIndex: zIndex === "auto" ? index(el) : zIndex,
-        ...getPositionWithMargin(el)
-      } : false;
-    }
-    function getTransitionProps(target, nodes, currentProps) {
-      const propsTo = nodes.map(
-        (el, i) => parent(el) && i in currentProps ? currentProps[i] ? isVisible(el) ? getPositionWithMargin(el) : { opacity: 0 } : { opacity: isVisible(el) ? 1 : 0 } : false
-      );
-      const propsFrom = propsTo.map((props, i) => {
-        const from = parent(nodes[i]) === target && (currentProps[i] || getProps$1(nodes[i]));
-        if (!from) {
-          return false;
-        }
-        if (!props) {
-          delete from.opacity;
-        } else if (!("opacity" in props)) {
-          const { opacity } = from;
-          if (opacity % 1) {
-            props.opacity = 1;
-          } else {
-            delete from.opacity;
-          }
-        }
-        return from;
-      });
-      return [propsTo, propsFrom];
-    }
-    function resetProps(el, props) {
-      for (const prop in props) {
-        css(el, prop, "");
-      }
-    }
-    function getPositionWithMargin(el) {
-      const { height, width } = offset(el);
-      return {
-        height,
-        width,
-        transform: "",
-        ...position(el),
-        ...css(el, ["marginTop", "marginLeft"])
-      };
-    }
-    function awaitFrame() {
-      return new Promise((resolve) => requestAnimationFrame(resolve));
-    }
-
-    var Animate = {
-      props: {
-        duration: Number,
-        animation: Boolean
-      },
-      data: {
-        duration: 150,
-        animation: "slide"
-      },
-      methods: {
-        animate(action, target = this.$el) {
-          const name = this.animation;
-          const animationFn = name === "fade" ? fade : name === "delayed-fade" ? (...args) => fade(...args, 40) : name ? slide : () => {
-            action();
-            return Promise.resolve();
-          };
-          return animationFn(action, target, this.duration).catch(noop);
-        }
-      }
-    };
-
-    const keyMap = {
-      TAB: 9,
-      ESC: 27,
-      SPACE: 32,
-      END: 35,
-      HOME: 36,
-      LEFT: 37,
-      UP: 38,
-      RIGHT: 39,
-      DOWN: 40
-    };
-
-    var filter = {
-      mixins: [Animate],
-      args: "target",
-      props: {
-        target: String,
-        selActive: Boolean
-      },
-      data: {
-        target: "",
-        selActive: false,
-        attrItem: "uk-filter-control",
-        cls: "uk-active",
-        duration: 250
-      },
-      computed: {
-        toggles({ attrItem }, $el) {
-          return $$(`[${attrItem}],[data-${attrItem}]`, $el);
-        },
-        children({ target }, $el) {
-          return $$(`${target} > *`, $el);
-        }
-      },
-      watch: {
-        toggles(toggles) {
-          this.updateState();
-          const actives = $$(this.selActive, this.$el);
-          for (const toggle of toggles) {
-            if (this.selActive !== false) {
-              toggleClass(toggle, this.cls, includes(actives, toggle));
-            }
-            const button = findButton(toggle);
-            if (isTag(button, "a")) {
-              attr(button, "role", "button");
-            }
-          }
-        },
-        children(list, prev) {
-          if (prev) {
-            this.updateState();
-          }
-        }
-      },
-      events: {
-        name: "click keydown",
-        delegate() {
-          return `[${this.attrItem}],[data-${this.attrItem}]`;
-        },
-        handler(e) {
-          if (e.type === "keydown" && e.keyCode !== keyMap.SPACE) {
-            return;
-          }
-          if (closest(e.target, "a,button")) {
-            e.preventDefault();
-            this.apply(e.current);
-          }
-        }
-      },
-      methods: {
-        apply(el) {
-          const prevState = this.getState();
-          const newState = mergeState(el, this.attrItem, this.getState());
-          if (!isEqualState(prevState, newState)) {
-            this.setState(newState);
-          }
-        },
-        getState() {
-          return this.toggles.filter((item) => hasClass(item, this.cls)).reduce((state, el) => mergeState(el, this.attrItem, state), {
-            filter: { "": "" },
-            sort: []
-          });
-        },
-        async setState(state, animate = true) {
-          state = { filter: { "": "" }, sort: [], ...state };
-          trigger(this.$el, "beforeFilter", [this, state]);
-          for (const toggle of this.toggles) {
-            toggleClass(toggle, this.cls, matchFilter(toggle, this.attrItem, state));
-          }
-          await Promise.all(
-            $$(this.target, this.$el).map((target) => {
-              const filterFn = () => {
-                applyState(state, target, children(target));
-                this.$update(this.$el);
-              };
-              return animate ? this.animate(filterFn, target) : filterFn();
-            })
-          );
-          trigger(this.$el, "afterFilter", [this]);
-        },
-        updateState() {
-          fastdom.write(() => this.setState(this.getState(), false));
-        }
-      }
-    };
-    function getFilter(el, attr2) {
-      return parseOptions(data(el, attr2), ["filter"]);
-    }
-    function isEqualState(stateA, stateB) {
-      return ["filter", "sort"].every((prop) => isEqual(stateA[prop], stateB[prop]));
-    }
-    function applyState(state, target, children) {
-      const selector = getSelector(state);
-      children.forEach((el) => css(el, "display", selector && !matches(el, selector) ? "none" : ""));
-      const [sort, order] = state.sort;
-      if (sort) {
-        const sorted = sortItems(children, sort, order);
-        if (!isEqual(sorted, children)) {
-          append(target, sorted);
-        }
-      }
-    }
-    function mergeState(el, attr2, state) {
-      const { filter, group, sort, order = "asc" } = getFilter(el, attr2);
-      if (filter || isUndefined(sort)) {
-        if (group) {
-          if (filter) {
-            delete state.filter[""];
-            state.filter[group] = filter;
-          } else {
-            delete state.filter[group];
-            if (isEmpty(state.filter) || "" in state.filter) {
-              state.filter = { "": filter || "" };
-            }
-          }
-        } else {
-          state.filter = { "": filter || "" };
-        }
-      }
-      if (!isUndefined(sort)) {
-        state.sort = [sort, order];
-      }
-      return state;
-    }
-    function matchFilter(el, attr2, { filter: stateFilter = { "": "" }, sort: [stateSort, stateOrder] }) {
-      const { filter = "", group = "", sort, order = "asc" } = getFilter(el, attr2);
-      return isUndefined(sort) ? group in stateFilter && filter === stateFilter[group] || !filter && group && !(group in stateFilter) && !stateFilter[""] : stateSort === sort && stateOrder === order;
-    }
-    function getSelector({ filter }) {
-      let selector = "";
-      each(filter, (value) => selector += value || "");
-      return selector;
-    }
-    function sortItems(nodes, sort, order) {
-      return [...nodes].sort(
-        (a, b) => data(a, sort).localeCompare(data(b, sort), void 0, { numeric: true }) * (order === "asc" || -1)
-      );
-    }
-    function findButton(el) {
-      return $("a,button", el) || el;
-    }
-
-    var Container = {
-      props: {
-        container: Boolean
-      },
-      data: {
-        container: true
-      },
-      computed: {
-        container({ container }) {
-          return container === true && this.$container || container && $(container);
-        }
-      }
-    };
-
-    let prevented;
-    function preventBackgroundScroll(el) {
-      const off = on(
-        el,
-        "touchmove",
-        (e) => {
-          if (e.targetTouches.length !== 1 || matches(e.target, 'input[type="range"')) {
-            return;
-          }
-          let { scrollHeight, clientHeight } = scrollParent(e.target);
-          if (clientHeight >= scrollHeight && e.cancelable) {
-            e.preventDefault();
-          }
-        },
-        { passive: false }
-      );
-      if (prevented) {
-        return off;
-      }
-      prevented = true;
-      const { scrollingElement } = document;
-      css(scrollingElement, {
-        overflowY: CSS.supports("overflow", "clip") ? "clip" : "hidden",
-        touchAction: "none",
-        paddingRight: width(window) - scrollingElement.clientWidth || ""
-      });
-      return () => {
-        prevented = false;
-        off();
-        css(scrollingElement, { overflowY: "", touchAction: "", paddingRight: "" });
-      };
-    }
-
-    var Togglable = {
-      props: {
-        cls: Boolean,
-        animation: "list",
-        duration: Number,
-        velocity: Number,
-        origin: String,
-        transition: String
-      },
-      data: {
-        cls: false,
-        animation: [false],
-        duration: 200,
-        velocity: 0.2,
-        origin: false,
-        transition: "ease",
-        clsEnter: "uk-togglabe-enter",
-        clsLeave: "uk-togglabe-leave"
-      },
-      computed: {
-        hasAnimation({ animation }) {
-          return !!animation[0];
-        },
-        hasTransition({ animation }) {
-          return ["slide", "reveal"].some((transition) => startsWith(animation[0], transition));
-        }
-      },
-      methods: {
-        async toggleElement(targets, toggle, animate) {
-          try {
-            await Promise.all(
-              toNodes(targets).map((el) => {
-                const show = isBoolean(toggle) ? toggle : !this.isToggled(el);
-                if (!trigger(el, `before${show ? "show" : "hide"}`, [this])) {
-                  return Promise.reject();
-                }
-                const promise = (isFunction(animate) ? animate : animate === false || !this.hasAnimation ? toggleInstant : this.hasTransition ? toggleTransition : toggleAnimation)(el, show, this);
-                const cls = show ? this.clsEnter : this.clsLeave;
-                addClass(el, cls);
-                trigger(el, show ? "show" : "hide", [this]);
-                const done = () => {
-                  removeClass(el, cls);
-                  trigger(el, show ? "shown" : "hidden", [this]);
-                };
-                return promise ? promise.then(done, () => {
-                  removeClass(el, cls);
-                  return Promise.reject();
-                }) : done();
-              })
-            );
-            return true;
-          } catch (e) {
-            return false;
-          }
-        },
-        isToggled(el = this.$el) {
-          el = toNode(el);
-          return hasClass(el, this.clsEnter) ? true : hasClass(el, this.clsLeave) ? false : this.cls ? hasClass(el, this.cls.split(" ")[0]) : isVisible(el);
-        },
-        _toggle(el, toggled) {
-          if (!el) {
-            return;
-          }
-          toggled = Boolean(toggled);
-          let changed;
-          if (this.cls) {
-            changed = includes(this.cls, " ") || toggled !== hasClass(el, this.cls);
-            changed && toggleClass(el, this.cls, includes(this.cls, " ") ? void 0 : toggled);
-          } else {
-            changed = toggled === el.hidden;
-            changed && (el.hidden = !toggled);
-          }
-          $$("[autofocus]", el).some((el2) => isVisible(el2) ? el2.focus() || true : el2.blur());
-          if (changed) {
-            trigger(el, "toggled", [toggled, this]);
-          }
-        }
-      }
-    };
-    function toggleInstant(el, show, { _toggle }) {
-      Animation.cancel(el);
-      Transition.cancel(el);
-      return _toggle(el, show);
-    }
-    async function toggleTransition(el, show, { animation, duration, velocity, transition, _toggle }) {
-      var _a;
-      const [mode = "reveal", startProp = "top"] = ((_a = animation[0]) == null ? void 0 : _a.split("-")) || [];
-      const dirs = [
-        ["left", "right"],
-        ["top", "bottom"]
-      ];
-      const dir = dirs[includes(dirs[0], startProp) ? 0 : 1];
-      const end = dir[1] === startProp;
-      const props = ["width", "height"];
-      const dimProp = props[dirs.indexOf(dir)];
-      const marginProp = `margin-${dir[0]}`;
-      const marginStartProp = `margin-${startProp}`;
-      let currentDim = dimensions$1(el)[dimProp];
-      const inProgress = Transition.inProgress(el);
-      await Transition.cancel(el);
-      if (show) {
-        _toggle(el, true);
-      }
-      const prevProps = Object.fromEntries(
-        [
-          "padding",
-          "border",
-          "width",
-          "height",
-          "minWidth",
-          "minHeight",
-          "overflowY",
-          "overflowX",
-          marginProp,
-          marginStartProp
-        ].map((key) => [key, el.style[key]])
-      );
-      const dim = dimensions$1(el);
-      const currentMargin = toFloat(css(el, marginProp));
-      const marginStart = toFloat(css(el, marginStartProp));
-      const endDim = dim[dimProp] + marginStart;
-      if (!inProgress && !show) {
-        currentDim += marginStart;
-      }
-      const [wrapper] = wrapInner(el, "<div>");
-      css(wrapper, {
-        boxSizing: "border-box",
-        height: dim.height,
-        width: dim.width,
-        ...css(el, [
-          "overflow",
-          "padding",
-          "borderTop",
-          "borderRight",
-          "borderBottom",
-          "borderLeft",
-          "borderImage",
-          marginStartProp
-        ])
-      });
-      css(el, {
-        padding: 0,
-        border: 0,
-        minWidth: 0,
-        minHeight: 0,
-        [marginStartProp]: 0,
-        width: dim.width,
-        height: dim.height,
-        overflow: "hidden",
-        [dimProp]: currentDim
-      });
-      const percent = currentDim / endDim;
-      duration = (velocity * endDim + duration) * (show ? 1 - percent : percent);
-      const endProps = { [dimProp]: show ? endDim : 0 };
-      if (end) {
-        css(el, marginProp, endDim - currentDim + currentMargin);
-        endProps[marginProp] = show ? currentMargin : endDim + currentMargin;
-      }
-      if (!end ^ mode === "reveal") {
-        css(wrapper, marginProp, -endDim + currentDim);
-        Transition.start(wrapper, { [marginProp]: show ? 0 : -endDim }, duration, transition);
-      }
-      try {
-        await Transition.start(el, endProps, duration, transition);
-      } finally {
-        css(el, prevProps);
-        unwrap(wrapper.firstChild);
-        if (!show) {
-          _toggle(el, false);
-        }
-      }
-    }
-    function toggleAnimation(el, show, cmp) {
-      Animation.cancel(el);
-      const { animation, duration, _toggle } = cmp;
-      if (show) {
-        _toggle(el, true);
-        return Animation.in(el, animation[0], duration, cmp.origin);
-      }
-      return Animation.out(el, animation[1] || animation[0], duration, cmp.origin).then(
-        () => _toggle(el, false)
-      );
-    }
-
-    const active$1 = [];
-    var Modal = {
-      mixins: [Class, Container, Togglable],
-      props: {
-        selPanel: String,
-        selClose: String,
-        escClose: Boolean,
-        bgClose: Boolean,
-        stack: Boolean,
-        role: String
-      },
-      data: {
-        cls: "uk-open",
-        escClose: true,
-        bgClose: true,
-        overlay: true,
-        stack: false,
-        role: "dialog"
-      },
-      computed: {
-        panel({ selPanel }, $el) {
-          return $(selPanel, $el);
-        },
-        transitionElement() {
-          return this.panel;
-        },
-        bgClose({ bgClose }) {
-          return bgClose && this.panel;
-        }
-      },
-      connected() {
-        attr(this.panel || this.$el, "role", this.role);
-        if (this.overlay) {
-          attr(this.panel || this.$el, "aria-modal", true);
-        }
-      },
-      beforeDisconnect() {
-        if (includes(active$1, this)) {
-          this.toggleElement(this.$el, false, false);
-        }
-      },
-      events: [
-        {
-          name: "click",
-          delegate() {
-            return `${this.selClose},a[href*="#"]`;
-          },
-          handler(e) {
-            const { current, defaultPrevented } = e;
-            const { hash } = current;
-            if (!defaultPrevented && hash && isSameSiteAnchor(current) && !within(hash, this.$el) && $(hash, document.body)) {
-              this.hide();
-            } else if (matches(current, this.selClose)) {
-              e.preventDefault();
-              this.hide();
-            }
-          }
-        },
-        {
-          name: "toggle",
-          self: true,
-          handler(e) {
-            if (e.defaultPrevented) {
-              return;
-            }
-            e.preventDefault();
-            if (this.isToggled() === includes(active$1, this)) {
-              this.toggle();
-            }
-          }
-        },
-        {
-          name: "beforeshow",
-          self: true,
-          handler(e) {
-            if (includes(active$1, this)) {
-              return false;
-            }
-            if (!this.stack && active$1.length) {
-              Promise.all(active$1.map((modal) => modal.hide())).then(this.show);
-              e.preventDefault();
-            } else {
-              active$1.push(this);
-            }
-          }
-        },
-        {
-          name: "show",
-          self: true,
-          handler() {
-            if (this.stack) {
-              css(this.$el, "zIndex", toFloat(css(this.$el, "zIndex")) + active$1.length);
-            }
-            const handlers = [
-              this.overlay && preventBackgroundFocus(this),
-              this.overlay && preventBackgroundScroll(this.$el),
-              this.bgClose && listenForBackgroundClose$1(this),
-              this.escClose && listenForEscClose$1(this)
-            ];
-            once(
-              this.$el,
-              "hidden",
-              () => handlers.forEach((handler) => handler && handler()),
-              { self: true }
-            );
-            addClass(document.documentElement, this.clsPage);
-          }
-        },
-        {
-          name: "shown",
-          self: true,
-          handler() {
-            if (!isFocusable(this.$el)) {
-              attr(this.$el, "tabindex", "-1");
-            }
-            if (!matches(this.$el, ":focus-within")) {
-              this.$el.focus();
-            }
-          }
-        },
-        {
-          name: "hidden",
-          self: true,
-          handler() {
-            if (includes(active$1, this)) {
-              active$1.splice(active$1.indexOf(this), 1);
-            }
-            css(this.$el, "zIndex", "");
-            if (!active$1.some((modal) => modal.clsPage === this.clsPage)) {
-              removeClass(document.documentElement, this.clsPage);
-            }
-          }
-        }
-      ],
-      methods: {
-        toggle() {
-          return this.isToggled() ? this.hide() : this.show();
-        },
-        show() {
-          if (this.container && parent(this.$el) !== this.container) {
-            append(this.container, this.$el);
-            return new Promise(
-              (resolve) => requestAnimationFrame(() => this.show().then(resolve))
-            );
-          }
-          return this.toggleElement(this.$el, true, animate$1);
-        },
-        hide() {
-          return this.toggleElement(this.$el, false, animate$1);
-        }
-      }
-    };
-    function animate$1(el, show, { transitionElement, _toggle }) {
-      return new Promise(
-        (resolve, reject) => once(el, "show hide", () => {
-          var _a;
-          (_a = el._reject) == null ? void 0 : _a.call(el);
-          el._reject = reject;
-          _toggle(el, show);
-          const off = once(
-            transitionElement,
-            "transitionstart",
-            () => {
-              once(transitionElement, "transitionend transitioncancel", resolve, {
-                self: true
-              });
-              clearTimeout(timer);
-            },
-            { self: true }
-          );
-          const timer = setTimeout(
-            () => {
-              off();
-              resolve();
-            },
-            toMs(css(transitionElement, "transitionDuration"))
-          );
-        })
-      ).then(() => delete el._reject);
-    }
-    function toMs(time) {
-      return time ? endsWith(time, "ms") ? toFloat(time) : toFloat(time) * 1e3 : 0;
-    }
-    function preventBackgroundFocus(modal) {
-      return on(document, "focusin", (e) => {
-        if (last(active$1) === modal && !within(e.target, modal.$el)) {
-          modal.$el.focus();
-        }
-      });
-    }
-    function listenForBackgroundClose$1(modal) {
-      return on(document, pointerDown$1, ({ target }) => {
-        if (last(active$1) !== modal || modal.overlay && !within(target, modal.$el) || within(target, modal.panel)) {
-          return;
-        }
-        once(
-          document,
-          `${pointerUp$1} ${pointerCancel} scroll`,
-          ({ defaultPrevented, type, target: newTarget }) => {
-            if (!defaultPrevented && type === pointerUp$1 && target === newTarget) {
-              modal.hide();
-            }
-          },
-          true
-        );
-      });
-    }
-    function listenForEscClose$1(modal) {
-      return on(document, "keydown", (e) => {
-        if (e.keyCode === 27 && last(active$1) === modal) {
-          modal.hide();
-        }
-      });
-    }
-
-    var Animations$2 = {
-      slide: {
-        show(dir) {
-          return [{ transform: translate(dir * -100) }, { transform: translate() }];
-        },
-        percent(current) {
-          return translated(current);
-        },
-        translate(percent, dir) {
-          return [
-            { transform: translate(dir * -100 * percent) },
-            { transform: translate(dir * 100 * (1 - percent)) }
-          ];
-        }
-      }
-    };
-    function translated(el) {
-      return Math.abs(css(el, "transform").split(",")[4] / el.offsetWidth) || 0;
-    }
-    function translate(value = 0, unit = "%") {
-      value += value ? unit : "";
-      return `translate3d(${value}, 0, 0)`;
-    }
-    function scale3d(value) {
-      return `scale3d(${value}, ${value}, 1)`;
-    }
-
-    function Transitioner$1(prev, next, dir, { animation, easing }) {
-      const { percent, translate, show = noop } = animation;
-      const props = show(dir);
-      let resolve;
-      return {
-        dir,
-        show(duration, percent2 = 0, linear) {
-          const timing = linear ? "linear" : easing;
-          duration -= Math.round(duration * clamp(percent2, -1, 1));
-          this.translate(percent2);
-          triggerUpdate$1(next, "itemin", { percent: percent2, duration, timing, dir });
-          triggerUpdate$1(prev, "itemout", { percent: 1 - percent2, duration, timing, dir });
-          return new Promise((res) => {
-            resolve || (resolve = res);
-            Promise.all([
-              Transition.start(next, props[1], duration, timing),
-              Transition.start(prev, props[0], duration, timing)
-            ]).then(() => {
-              this.reset();
-              resolve();
-            }, noop);
-          });
-        },
-        cancel() {
-          return Transition.cancel([next, prev]);
-        },
-        reset() {
-          for (const prop in props[0]) {
-            css([next, prev], prop, "");
-          }
-        },
-        async forward(duration, percent2 = this.percent()) {
-          await this.cancel();
-          return this.show(duration, percent2, true);
-        },
-        translate(percent2) {
-          this.reset();
-          const props2 = translate(percent2, dir);
-          css(next, props2[1]);
-          css(prev, props2[0]);
-          triggerUpdate$1(next, "itemtranslatein", { percent: percent2, dir });
-          triggerUpdate$1(prev, "itemtranslateout", { percent: 1 - percent2, dir });
-        },
-        percent() {
-          return percent(prev || next, next, dir);
-        },
-        getDistance() {
-          return prev == null ? void 0 : prev.offsetWidth;
-        }
-      };
-    }
-    function triggerUpdate$1(el, type, data) {
-      trigger(el, createEvent(type, false, false, data));
-    }
-
-    var I18n = {
-      props: {
-        i18n: Object
-      },
-      data: {
-        i18n: null
-      },
-      methods: {
-        t(key, ...params) {
-          var _a, _b, _c;
-          let i = 0;
-          return ((_c = ((_a = this.i18n) == null ? void 0 : _a[key]) || ((_b = this.$options.i18n) == null ? void 0 : _b[key])) == null ? void 0 : _c.replace(
-            /%s/g,
-            () => params[i++] || ""
-          )) || "";
-        }
-      }
-    };
-
-    var SliderAutoplay = {
-      props: {
-        autoplay: Boolean,
-        autoplayInterval: Number,
-        pauseOnHover: Boolean
-      },
-      data: {
-        autoplay: false,
-        autoplayInterval: 7e3,
-        pauseOnHover: true
-      },
-      connected() {
-        attr(this.list, "aria-live", this.autoplay ? "off" : "polite");
-        this.autoplay && this.startAutoplay();
-      },
-      disconnected() {
-        this.stopAutoplay();
-      },
-      update() {
-        attr(this.slides, "tabindex", "-1");
-      },
-      events: [
-        {
-          name: "visibilitychange",
-          el() {
-            return document;
-          },
-          filter() {
-            return this.autoplay;
-          },
-          handler() {
-            if (document.hidden) {
-              this.stopAutoplay();
-            } else {
-              this.startAutoplay();
-            }
-          }
-        }
-      ],
-      methods: {
-        startAutoplay() {
-          this.stopAutoplay();
-          this.interval = setInterval(() => {
-            if (!(this.stack.length || this.draggable && matches(this.$el, ":focus-within") || this.pauseOnHover && matches(this.$el, ":hover"))) {
-              this.show("next");
-            }
-          }, this.autoplayInterval);
-        },
-        stopAutoplay() {
-          clearInterval(this.interval);
-        }
-      }
-    };
-
-    const pointerOptions = { passive: false, capture: true };
-    const pointerUpOptions = { passive: true, capture: true };
-    const pointerDown = "touchstart mousedown";
-    const pointerMove = "touchmove mousemove";
-    const pointerUp = "touchend touchcancel mouseup click input scroll";
-    var SliderDrag = {
-      props: {
-        draggable: Boolean
-      },
-      data: {
-        draggable: true,
-        threshold: 10
-      },
-      created() {
-        for (const key of ["start", "move", "end"]) {
-          const fn = this[key];
-          this[key] = (e) => {
-            const pos = getEventPos(e).x * (isRtl ? -1 : 1);
-            this.prevPos = pos === this.pos ? this.prevPos : this.pos;
-            this.pos = pos;
-            fn(e);
-          };
-        }
-      },
-      events: [
-        {
-          name: pointerDown,
-          passive: true,
-          delegate() {
-            return `${this.selList} > *`;
-          },
-          handler(e) {
-            if (!this.draggable || !isTouch(e) && hasSelectableText(e.target) || closest(e.target, selInput) || e.button > 0 || this.length < 2) {
-              return;
-            }
-            this.start(e);
-          }
-        },
-        {
-          name: "dragstart",
-          handler(e) {
-            e.preventDefault();
-          }
-        },
-        {
-          // iOS workaround for slider stopping if swiping fast
-          name: pointerMove,
-          el() {
-            return this.list;
-          },
-          handler: noop,
-          ...pointerOptions
-        }
-      ],
-      methods: {
-        start() {
-          this.drag = this.pos;
-          if (this._transitioner) {
-            this.percent = this._transitioner.percent();
-            this.drag += this._transitioner.getDistance() * this.percent * this.dir;
-            this._transitioner.cancel();
-            this._transitioner.translate(this.percent);
-            this.dragging = true;
-            this.stack = [];
-          } else {
-            this.prevIndex = this.index;
-          }
-          on(document, pointerMove, this.move, pointerOptions);
-          on(document, pointerUp, this.end, pointerUpOptions);
-          css(this.list, "userSelect", "none");
-        },
-        move(e) {
-          const distance = this.pos - this.drag;
-          if (distance === 0 || this.prevPos === this.pos || !this.dragging && Math.abs(distance) < this.threshold) {
-            return;
-          }
-          css(this.list, "pointerEvents", "none");
-          e.cancelable && e.preventDefault();
-          this.dragging = true;
-          this.dir = distance < 0 ? 1 : -1;
-          let { slides, prevIndex } = this;
-          let dis = Math.abs(distance);
-          let nextIndex = this.getIndex(prevIndex + this.dir);
-          let width = this._getDistance(prevIndex, nextIndex);
-          while (nextIndex !== prevIndex && dis > width) {
-            this.drag -= width * this.dir;
-            prevIndex = nextIndex;
-            dis -= width;
-            nextIndex = this.getIndex(prevIndex + this.dir);
-            width = this._getDistance(prevIndex, nextIndex);
-          }
-          this.percent = dis / width;
-          const prev = slides[prevIndex];
-          const next = slides[nextIndex];
-          const changed = this.index !== nextIndex;
-          const edge = prevIndex === nextIndex;
-          let itemShown;
-          for (const i of [this.index, this.prevIndex]) {
-            if (!includes([nextIndex, prevIndex], i)) {
-              trigger(slides[i], "itemhidden", [this]);
-              if (edge) {
-                itemShown = true;
-                this.prevIndex = prevIndex;
-              }
-            }
-          }
-          if (this.index === prevIndex && this.prevIndex !== prevIndex || itemShown) {
-            trigger(slides[this.index], "itemshown", [this]);
-          }
-          if (changed) {
-            this.prevIndex = prevIndex;
-            this.index = nextIndex;
-            !edge && trigger(prev, "beforeitemhide", [this]);
-            trigger(next, "beforeitemshow", [this]);
-          }
-          this._transitioner = this._translate(Math.abs(this.percent), prev, !edge && next);
-          if (changed) {
-            !edge && trigger(prev, "itemhide", [this]);
-            trigger(next, "itemshow", [this]);
-          }
-        },
-        end() {
-          off(document, pointerMove, this.move, pointerOptions);
-          off(document, pointerUp, this.end, pointerUpOptions);
-          if (this.dragging) {
-            this.dragging = null;
-            if (this.index === this.prevIndex) {
-              this.percent = 1 - this.percent;
-              this.dir *= -1;
-              this._show(false, this.index, true);
-              this._transitioner = null;
-            } else {
-              const dirChange = (isRtl ? this.dir * (isRtl ? 1 : -1) : this.dir) < 0 === this.prevPos > this.pos;
-              this.index = dirChange ? this.index : this.prevIndex;
-              if (dirChange) {
-                this.percent = 1 - this.percent;
-              }
-              this.show(
-                this.dir > 0 && !dirChange || this.dir < 0 && dirChange ? "next" : "previous",
-                true
-              );
-            }
-          }
-          css(this.list, { userSelect: "", pointerEvents: "" });
-          this.drag = this.percent = null;
-        },
-        _getDistance(prev, next) {
-          return this._getTransitioner(prev, prev !== next && next).getDistance() || this.slides[prev].offsetWidth;
-        }
-      }
-    };
-    function hasSelectableText(el) {
-      return css(el, "userSelect") !== "none" && toArray(el.childNodes).some((el2) => el2.nodeType === 3 && el2.textContent.trim());
-    }
 
     function initUpdates(instance) {
       instance._data = {};
@@ -3371,6 +1865,112 @@
       };
     }
 
+    const strats = {};
+    strats.events = strats.watch = strats.observe = strats.created = strats.beforeConnect = strats.connected = strats.beforeDisconnect = strats.disconnected = strats.destroy = concatStrat;
+    strats.args = function(parentVal, childVal) {
+      return childVal !== false && concatStrat(childVal || parentVal);
+    };
+    strats.update = function(parentVal, childVal) {
+      return sortBy$1(
+        concatStrat(parentVal, isFunction(childVal) ? { read: childVal } : childVal),
+        "order"
+      );
+    };
+    strats.props = function(parentVal, childVal) {
+      if (isArray(childVal)) {
+        const value = {};
+        for (const key of childVal) {
+          value[key] = String;
+        }
+        childVal = value;
+      }
+      return strats.methods(parentVal, childVal);
+    };
+    strats.computed = strats.methods = function(parentVal, childVal) {
+      return childVal ? parentVal ? { ...parentVal, ...childVal } : childVal : parentVal;
+    };
+    strats.i18n = strats.data = function(parentVal, childVal, vm) {
+      if (!vm) {
+        if (!childVal) {
+          return parentVal;
+        }
+        if (!parentVal) {
+          return childVal;
+        }
+        return function(vm2) {
+          return mergeFnData(parentVal, childVal, vm2);
+        };
+      }
+      return mergeFnData(parentVal, childVal, vm);
+    };
+    function mergeFnData(parentVal, childVal, vm) {
+      return strats.computed(
+        isFunction(parentVal) ? parentVal.call(vm, vm) : parentVal,
+        isFunction(childVal) ? childVal.call(vm, vm) : childVal
+      );
+    }
+    function concatStrat(parentVal, childVal) {
+      parentVal = parentVal && !isArray(parentVal) ? [parentVal] : parentVal;
+      return childVal ? parentVal ? parentVal.concat(childVal) : isArray(childVal) ? childVal : [childVal] : parentVal;
+    }
+    function defaultStrat(parentVal, childVal) {
+      return isUndefined(childVal) ? parentVal : childVal;
+    }
+    function mergeOptions(parent, child, vm) {
+      const options = {};
+      if (isFunction(child)) {
+        child = child.options;
+      }
+      if (child.extends) {
+        parent = mergeOptions(parent, child.extends, vm);
+      }
+      if (child.mixins) {
+        for (const mixin of child.mixins) {
+          parent = mergeOptions(parent, mixin, vm);
+        }
+      }
+      for (const key in parent) {
+        mergeKey(key);
+      }
+      for (const key in child) {
+        if (!hasOwn(parent, key)) {
+          mergeKey(key);
+        }
+      }
+      function mergeKey(key) {
+        options[key] = (strats[key] || defaultStrat)(parent[key], child[key], vm);
+      }
+      return options;
+    }
+    function parseOptions(options, args = []) {
+      try {
+        return options ? startsWith(options, "{") ? JSON.parse(options) : args.length && !includes(options, ":") ? { [args[0]]: options } : options.split(";").reduce((options2, option) => {
+          const [key, value] = option.split(/:(.*)/);
+          if (key && !isUndefined(value)) {
+            options2[key.trim()] = value.trim();
+          }
+          return options2;
+        }, {}) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+    function coerce$1(type, value) {
+      if (type === Boolean) {
+        return toBoolean(value);
+      } else if (type === Number) {
+        return toNumber(value);
+      } else if (type === "list") {
+        return toList(value);
+      } else if (type === Object && isString(value)) {
+        return parseOptions(value);
+      }
+      return type ? type(value) : value;
+    }
+    function toList(value) {
+      return isArray(value) ? value : isString(value) ? value.split(/,(?![^(]*\))/).map((value2) => isNumeric(value2) ? toNumber(value2) : toBoolean(value2.trim())) : [value];
+    }
+
     function initProps(instance) {
       const props = getProps(instance.$options);
       for (let key in props) {
@@ -3532,15 +2132,15 @@
 
     const PREFIX = "uk-";
     const DATA = "__uikit__";
-    const components$2 = {};
+    const components$1 = {};
     function component(name, options) {
       var _a;
       const id = PREFIX + hyphenate(name);
       if (!options) {
-        if (isPlainObject(components$2[id])) {
-          components$2[id] = App.extend(components$2[id]);
+        if (isPlainObject(components$1[id])) {
+          components$1[id] = App.extend(components$1[id]);
         }
-        return components$2[id];
+        return components$1[id];
       }
       name = camelize(name);
       App[name] = (element, data) => createComponent(name, element, data);
@@ -3551,7 +2151,7 @@
       if (App._initialized && !opt.functional) {
         requestAnimationFrame(() => createComponent(name, `[${id}],[data-${id}]`));
       }
-      return components$2[id] = opt;
+      return components$1[id] = opt;
     }
     function createComponent(name, element, data, ...args) {
       const Component = component(name);
@@ -3586,6 +2186,78 @@
       if (!isEmpty(element[DATA])) {
         delete element[DATA];
       }
+    }
+
+    function boot(App) {
+      if (inBrowser && window.MutationObserver) {
+        if (document.body) {
+          requestAnimationFrame(() => init(App));
+        } else {
+          new MutationObserver((records, observer) => {
+            if (document.body) {
+              init(App);
+              observer.disconnect();
+            }
+          }).observe(document.documentElement, { childList: true });
+        }
+      }
+    }
+    function init(App) {
+      trigger(document, "uikit:init", App);
+      if (document.body) {
+        apply(document.body, connect);
+      }
+      new MutationObserver((records) => records.forEach(applyChildListMutation)).observe(document, {
+        childList: true,
+        subtree: true
+      });
+      new MutationObserver((records) => records.forEach(applyAttributeMutation)).observe(document, {
+        attributes: true,
+        subtree: true
+      });
+      App._initialized = true;
+    }
+    function applyChildListMutation({ addedNodes, removedNodes }) {
+      for (const node of addedNodes) {
+        apply(node, connect);
+      }
+      for (const node of removedNodes) {
+        apply(node, disconnect);
+      }
+    }
+    function applyAttributeMutation({ target, attributeName }) {
+      var _a;
+      const name = getComponentName(attributeName);
+      if (name) {
+        if (hasAttr(target, attributeName)) {
+          createComponent(name, target);
+          return;
+        }
+        (_a = getComponent(target, name)) == null ? void 0 : _a.$destroy();
+      }
+    }
+    function connect(node) {
+      const components2 = getComponents(node);
+      for (const name in getComponents(node)) {
+        callConnected(components2[name]);
+      }
+      for (const attributeName of node.getAttributeNames()) {
+        const name = getComponentName(attributeName);
+        name && createComponent(name, node);
+      }
+    }
+    function disconnect(node) {
+      const components2 = getComponents(node);
+      for (const name in getComponents(node)) {
+        callDisconnected(components2[name]);
+      }
+    }
+    function getComponentName(attribute) {
+      if (startsWith(attribute, "data-")) {
+        attribute = attribute.slice(5);
+      }
+      const cmp = components$1[attribute];
+      return cmp && (isPlainObject(cmp) ? cmp : cmp.options).name;
     }
 
     function globalApi(App) {
@@ -3695,2607 +2367,296 @@
       return id;
     }
 
-    var SliderNav = {
-      i18n: {
-        next: "Next slide",
-        previous: "Previous slide",
-        slideX: "Slide %s",
-        slideLabel: "%s of %s",
-        role: "String"
-      },
-      data: {
-        selNav: false,
-        role: "region"
-      },
-      computed: {
-        nav({ selNav }, $el) {
-          return $(selNav, $el);
-        },
-        navChildren() {
-          return children(this.nav);
-        },
-        selNavItem({ attrItem }) {
-          return `[${attrItem}],[data-${attrItem}]`;
-        },
-        navItems(_, $el) {
-          return $$(this.selNavItem, $el);
-        }
-      },
-      watch: {
-        nav(nav, prev) {
-          attr(nav, "role", "tablist");
-          if (prev) {
-            this.$emit();
-          }
-        },
-        list(list) {
-          attr(list, "role", "presentation");
-        },
-        navChildren(children2) {
-          attr(children2, "role", "presentation");
-        },
-        navItems(items) {
-          for (const el of items) {
-            const cmd = data(el, this.attrItem);
-            const button = $("a,button", el) || el;
-            let ariaLabel;
-            let ariaControls = null;
-            if (isNumeric(cmd)) {
-              const item = toNumber(cmd);
-              const slide = this.slides[item];
-              if (slide) {
-                if (!slide.id) {
-                  slide.id = generateId(this, slide, `-item-${cmd}`);
-                }
-                ariaControls = slide.id;
-              }
-              ariaLabel = this.t("slideX", toFloat(cmd) + 1);
-              attr(button, "role", "tab");
-            } else {
-              if (this.list) {
-                if (!this.list.id) {
-                  this.list.id = generateId(this, this.list, "-items");
-                }
-                ariaControls = this.list.id;
-              }
-              ariaLabel = this.t(cmd);
-            }
-            attr(button, {
-              "aria-controls": ariaControls,
-              "aria-label": attr(button, "aria-label") || ariaLabel
-            });
-          }
-        },
-        slides(slides) {
-          slides.forEach(
-            (slide, i) => attr(slide, {
-              role: this.nav ? "tabpanel" : "group",
-              "aria-label": this.t("slideLabel", i + 1, this.length),
-              "aria-roledescription": this.nav ? null : "slide"
-            })
-          );
-        },
-        length(length) {
-          const navLength = this.navChildren.length;
-          if (this.nav && length !== navLength) {
-            empty(this.nav);
-            for (let i = 0; i < length; i++) {
-              append(this.nav, `<li ${this.attrItem}="${i}"><a href></a></li>`);
-            }
-          }
-        }
-      },
-      connected() {
-        attr(this.$el, {
-          role: this.role,
-          "aria-roledescription": "carousel"
-        });
-      },
-      update: [
-        {
-          write() {
-            this.navItems.concat(this.nav).forEach((el) => el && (el.hidden = !this.maxIndex));
-            this.updateNav();
-          },
-          events: ["resize"]
-        }
-      ],
-      events: [
-        {
-          name: "click keydown",
-          delegate() {
-            return this.selNavItem;
-          },
-          handler(e) {
-            if (closest(e.target, "a,button") && (e.type === "click" || e.keyCode === keyMap.SPACE)) {
-              e.preventDefault();
-              this.show(data(e.current, this.attrItem));
-            }
-          }
-        },
-        {
-          name: "itemshow",
-          handler: "updateNav"
-        },
-        {
-          name: "keydown",
-          delegate() {
-            return this.selNavItem;
-          },
-          handler(e) {
-            const { current, keyCode } = e;
-            const cmd = data(current, this.attrItem);
-            if (!isNumeric(cmd)) {
-              return;
-            }
-            let i = keyCode === keyMap.HOME ? 0 : keyCode === keyMap.END ? "last" : keyCode === keyMap.LEFT ? "previous" : keyCode === keyMap.RIGHT ? "next" : -1;
-            if (~i) {
-              e.preventDefault();
-              this.show(i);
-            }
-          }
-        }
-      ],
-      methods: {
-        updateNav() {
-          const index = this.getValidIndex();
-          for (const el of this.navItems) {
-            const cmd = data(el, this.attrItem);
-            const button = $("a,button", el) || el;
-            if (isNumeric(cmd)) {
-              const item = toNumber(cmd);
-              const active = item === index;
-              toggleClass(el, this.clsActive, active);
-              attr(button, {
-                "aria-selected": active,
-                tabindex: active ? null : -1
-              });
-              if (active && button && matches(parent(el), ":focus-within")) {
-                button.focus();
-              }
-            } else {
-              toggleClass(
-                el,
-                "uk-invisible",
-                this.finite && (cmd === "previous" && index === 0 || cmd === "next" && index >= this.maxIndex)
-              );
-            }
-          }
-        }
-      }
-    };
+    globalApi(App);
+    instanceApi(App);
 
-    var Slider = {
-      mixins: [SliderAutoplay, SliderDrag, SliderNav, I18n],
-      props: {
-        clsActivated: Boolean,
-        easing: String,
-        index: Number,
-        finite: Boolean,
-        velocity: Number
-      },
-      data: () => ({
-        easing: "ease",
-        finite: false,
-        velocity: 1,
-        index: 0,
-        prevIndex: -1,
-        stack: [],
-        percent: 0,
-        clsActive: "uk-active",
-        clsActivated: false,
-        Transitioner: false,
-        transitionOptions: {}
-      }),
-      connected() {
-        this.prevIndex = -1;
-        this.index = this.getValidIndex(this.$props.index);
-        this.stack = [];
-      },
-      disconnected() {
-        removeClass(this.slides, this.clsActive);
-      },
-      computed: {
-        duration({ velocity }, $el) {
-          return speedUp($el.offsetWidth / velocity);
-        },
-        list({ selList }, $el) {
-          return $(selList, $el);
-        },
-        maxIndex() {
-          return this.length - 1;
-        },
-        slides() {
-          return children(this.list);
-        },
-        length() {
-          return this.slides.length;
-        }
-      },
-      watch: {
-        slides(slides, prev) {
-          if (prev) {
-            this.$emit();
+    function resize(options) {
+      return observe(observeResize, options, "resize");
+    }
+    function intersection(options) {
+      return observe(observeIntersection, options);
+    }
+    function mutation(options) {
+      return observe(observeMutation, options);
+    }
+    function lazyload(options = {}) {
+      return intersection({
+        handler: function(entries, observer) {
+          const { targets = this.$el, preload = 5 } = options;
+          for (const el of toNodes(isFunction(targets) ? targets(this) : targets)) {
+            $$('[loading="lazy"]', el).slice(0, preload - 1).forEach((el2) => removeAttr(el2, "loading"));
           }
-        }
-      },
-      observe: resize(),
-      methods: {
-        show(index, force = false) {
-          var _a;
-          if (this.dragging || !this.length) {
-            return;
+          for (const el of entries.filter(({ isIntersecting }) => isIntersecting).map(({ target }) => target)) {
+            observer.unobserve(el);
           }
-          const { stack } = this;
-          const queueIndex = force ? 0 : stack.length;
-          const reset = () => {
-            stack.splice(queueIndex, 1);
-            if (stack.length) {
-              this.show(stack.shift(), true);
-            }
+        },
+        ...options
+      });
+    }
+    function viewport(options) {
+      return observe((target, handler) => observeViewportResize(handler), options);
+    }
+    function scroll$1(options) {
+      return observe(
+        (target, handler) => ({
+          disconnect: on(toScrollTargets(target), "scroll", handler, {
+            passive: true,
+            capture: true
+          })
+        }),
+        options,
+        "scroll"
+      );
+    }
+    function swipe(options) {
+      return {
+        observe(target, handler) {
+          return {
+            observe: noop,
+            unobserve: noop,
+            disconnect: on(target, pointerDown, handler, { passive: true })
           };
-          stack[force ? "unshift" : "push"](index);
-          if (!force && stack.length > 1) {
-            if (stack.length === 2) {
-              (_a = this._transitioner) == null ? void 0 : _a.forward(Math.min(this.duration, 200));
-            }
-            return;
-          }
-          const prevIndex = this.getIndex(this.index);
-          const prev = hasClass(this.slides, this.clsActive) && this.slides[prevIndex];
-          const nextIndex = this.getIndex(index, this.index);
-          const next = this.slides[nextIndex];
-          if (prev === next) {
-            reset();
-            return;
-          }
-          this.dir = getDirection(index, prevIndex);
-          this.prevIndex = prevIndex;
-          this.index = nextIndex;
-          if (prev && !trigger(prev, "beforeitemhide", [this]) || !trigger(next, "beforeitemshow", [this, prev])) {
-            this.index = this.prevIndex;
-            reset();
-            return;
-          }
-          const promise = this._show(prev, next, force).then(() => {
-            prev && trigger(prev, "itemhidden", [this]);
-            trigger(next, "itemshown", [this]);
-            stack.shift();
-            this._transitioner = null;
-            requestAnimationFrame(() => stack.length && this.show(stack.shift(), true));
-          });
-          prev && trigger(prev, "itemhide", [this]);
-          trigger(next, "itemshow", [this]);
-          return promise;
-        },
-        getIndex(index = this.index, prev = this.index) {
-          return clamp(
-            getIndex(index, this.slides, prev, this.finite),
-            0,
-            Math.max(0, this.maxIndex)
-          );
-        },
-        getValidIndex(index = this.index, prevIndex = this.prevIndex) {
-          return this.getIndex(index, prevIndex);
-        },
-        _show(prev, next, force) {
-          this._transitioner = this._getTransitioner(prev, next, this.dir, {
-            easing: force ? next.offsetWidth < 600 ? "cubic-bezier(0.25, 0.46, 0.45, 0.94)" : "cubic-bezier(0.165, 0.84, 0.44, 1)" : this.easing,
-            ...this.transitionOptions
-          });
-          if (!force && !prev) {
-            this._translate(1);
-            return Promise.resolve();
-          }
-          const { length } = this.stack;
-          return this._transitioner[length > 1 ? "forward" : "show"](
-            length > 1 ? Math.min(this.duration, 75 + 75 / (length - 1)) : this.duration,
-            this.percent
-          );
-        },
-        _translate(percent, prev = this.prevIndex, next = this.index) {
-          const transitioner = this._getTransitioner(prev === next ? false : prev, next);
-          transitioner.translate(percent);
-          return transitioner;
-        },
-        _getTransitioner(prev = this.prevIndex, next = this.index, dir = this.dir || 1, options = this.transitionOptions) {
-          return new this.Transitioner(
-            isNumber(prev) ? this.slides[prev] : prev,
-            isNumber(next) ? this.slides[next] : next,
-            dir * (isRtl ? -1 : 1),
-            options
-          );
-        }
-      }
-    };
-    function getDirection(index, prevIndex) {
-      return index === "next" ? 1 : index === "previous" ? -1 : index < prevIndex ? -1 : 1;
-    }
-    function speedUp(x) {
-      return 0.5 * x + 300;
-    }
-
-    var Slideshow = {
-      mixins: [Slider],
-      props: {
-        animation: String
-      },
-      data: {
-        animation: "slide",
-        clsActivated: "uk-transition-active",
-        Animations: Animations$2,
-        Transitioner: Transitioner$1
-      },
-      computed: {
-        animation({ animation, Animations: Animations2 }) {
-          return { ...Animations2[animation] || Animations2.slide, name: animation };
-        },
-        transitionOptions() {
-          return { animation: this.animation };
-        }
-      },
-      events: {
-        beforeitemshow({ target }) {
-          addClass(target, this.clsActive);
-        },
-        itemshown({ target }) {
-          addClass(target, this.clsActivated);
-        },
-        itemhidden({ target }) {
-          removeClass(target, this.clsActive, this.clsActivated);
-        }
-      }
-    };
-
-    var Animations$1 = {
-      ...Animations$2,
-      fade: {
-        show() {
-          return [{ opacity: 0 }, { opacity: 1 }];
-        },
-        percent(current) {
-          return 1 - css(current, "opacity");
-        },
-        translate(percent) {
-          return [{ opacity: 1 - percent }, { opacity: percent }];
-        }
-      },
-      scale: {
-        show() {
-          return [
-            { opacity: 0, transform: scale3d(1 - 0.2) },
-            { opacity: 1, transform: scale3d(1) }
-          ];
-        },
-        percent(current) {
-          return 1 - css(current, "opacity");
-        },
-        translate(percent) {
-          return [
-            { opacity: 1 - percent, transform: scale3d(1 - 0.2 * percent) },
-            { opacity: percent, transform: scale3d(1 - 0.2 + 0.2 * percent) }
-          ];
-        }
-      }
-    };
-
-    var LightboxPanel = {
-      mixins: [Modal, Slideshow],
-      functional: true,
-      props: {
-        delayControls: Number,
-        preload: Number,
-        videoAutoplay: Boolean,
-        template: String
-      },
-      data: () => ({
-        preload: 1,
-        videoAutoplay: false,
-        delayControls: 3e3,
-        items: [],
-        cls: "uk-open",
-        clsPage: "uk-lightbox-page",
-        selList: ".uk-lightbox-items",
-        attrItem: "uk-lightbox-item",
-        selClose: ".uk-close-large",
-        selCaption: ".uk-lightbox-caption",
-        pauseOnHover: false,
-        velocity: 2,
-        Animations: Animations$1,
-        template: `<div class="uk-lightbox uk-overflow-hidden"> <ul class="uk-lightbox-items"></ul> <div class="uk-lightbox-toolbar uk-position-top uk-text-right uk-transition-slide-top uk-transition-opaque"> <button class="uk-lightbox-toolbar-icon uk-close-large" type="button" uk-close></button> </div> <a class="uk-lightbox-button uk-position-center-left uk-position-medium uk-transition-fade" href uk-slidenav-previous uk-lightbox-item="previous"></a> <a class="uk-lightbox-button uk-position-center-right uk-position-medium uk-transition-fade" href uk-slidenav-next uk-lightbox-item="next"></a> <div class="uk-lightbox-toolbar uk-lightbox-caption uk-position-bottom uk-text-center uk-transition-slide-bottom uk-transition-opaque"></div> </div>`
-      }),
-      created() {
-        const $el = $(this.template);
-        const list = $(this.selList, $el);
-        this.items.forEach(() => append(list, "<li>"));
-        const close = $("[uk-close]", $el);
-        const closeLabel = this.t("close");
-        if (close && closeLabel) {
-          close.dataset.i18n = JSON.stringify({ label: closeLabel });
-        }
-        this.$mount(append(this.container, $el));
-      },
-      computed: {
-        caption({ selCaption }, $el) {
-          return $(selCaption, $el);
-        }
-      },
-      events: [
-        {
-          name: `${pointerMove$1} ${pointerDown$1} keydown`,
-          handler: "showControls"
-        },
-        {
-          name: "click",
-          self: true,
-          delegate() {
-            return `${this.selList} > *`;
-          },
-          handler(e) {
-            if (!e.defaultPrevented) {
-              this.hide();
-            }
-          }
-        },
-        {
-          name: "shown",
-          self: true,
-          handler() {
-            this.showControls();
-          }
-        },
-        {
-          name: "hide",
-          self: true,
-          handler() {
-            this.hideControls();
-            removeClass(this.slides, this.clsActive);
-            Transition.stop(this.slides);
-          }
-        },
-        {
-          name: "hidden",
-          self: true,
-          handler() {
-            this.$destroy(true);
-          }
-        },
-        {
-          name: "keyup",
-          el() {
-            return document;
-          },
-          handler({ keyCode }) {
-            if (!this.isToggled(this.$el) || !this.draggable) {
-              return;
-            }
-            let i = -1;
-            if (keyCode === keyMap.LEFT) {
-              i = "previous";
-            } else if (keyCode === keyMap.RIGHT) {
-              i = "next";
-            } else if (keyCode === keyMap.HOME) {
-              i = 0;
-            } else if (keyCode === keyMap.END) {
-              i = "last";
-            }
-            if (~i) {
-              this.show(i);
-            }
-          }
-        },
-        {
-          name: "beforeitemshow",
-          handler(e) {
-            if (this.isToggled()) {
-              return;
-            }
-            this.draggable = false;
-            e.preventDefault();
-            this.toggleElement(this.$el, true, false);
-            this.animation = Animations$1["scale"];
-            removeClass(e.target, this.clsActive);
-            this.stack.splice(1, 0, this.index);
-          }
-        },
-        {
-          name: "itemshow",
-          handler() {
-            html(this.caption, this.getItem().caption || "");
-            for (let j = -this.preload; j <= this.preload; j++) {
-              this.loadItem(this.index + j);
-            }
-          }
-        },
-        {
-          name: "itemshown",
-          handler() {
-            this.draggable = this.$props.draggable;
-          }
-        },
-        {
-          name: "itemload",
-          async handler(_, item) {
-            const { source: src, type, alt = "", poster, attrs = {} } = item;
-            this.setItem(item, "<span uk-spinner></span>");
-            if (!src) {
-              return;
-            }
-            let matches;
-            const iframeAttrs = {
-              allowfullscreen: "",
-              style: "max-width: 100%; box-sizing: border-box;",
-              "uk-responsive": "",
-              "uk-video": `${this.videoAutoplay}`
-            };
-            if (type === "image" || src.match(/\.(avif|jpe?g|jfif|a?png|gif|svg|webp)($|\?)/i)) {
-              const img = createEl("img", { src, alt, ...attrs });
-              on(img, "load", () => this.setItem(item, img));
-              on(img, "error", () => this.setError(item));
-            } else if (type === "video" || src.match(/\.(mp4|webm|ogv)($|\?)/i)) {
-              const video = createEl("video", {
-                src,
-                poster,
-                controls: "",
-                playsinline: "",
-                "uk-video": `${this.videoAutoplay}`,
-                ...attrs
-              });
-              on(video, "loadedmetadata", () => this.setItem(item, video));
-              on(video, "error", () => this.setError(item));
-            } else if (type === "iframe" || src.match(/\.(html|php)($|\?)/i)) {
-              this.setItem(
-                item,
-                createEl("iframe", {
-                  src,
-                  allowfullscreen: "",
-                  class: "uk-lightbox-iframe",
-                  ...attrs
-                })
-              );
-            } else if (matches = src.match(
-              /\/\/(?:.*?youtube(-nocookie)?\..*?(?:[?&]v=|\/shorts\/)|youtu\.be\/)([\w-]{11})[&?]?(.*)?/
-            )) {
-              this.setItem(
-                item,
-                createEl("iframe", {
-                  src: `https://www.youtube${matches[1] || ""}.com/embed/${matches[2]}${matches[3] ? `?${matches[3]}` : ""}`,
-                  width: 1920,
-                  height: 1080,
-                  ...iframeAttrs,
-                  ...attrs
-                })
-              );
-            } else if (matches = src.match(/\/\/.*?vimeo\.[a-z]+\/(\d+)[&?]?(.*)?/)) {
-              try {
-                const { height, width } = await (await fetch(
-                  `https://vimeo.com/api/oembed.json?maxwidth=1920&url=${encodeURI(
-                src
-              )}`,
-                  { credentials: "omit" }
-                )).json();
-                this.setItem(
-                  item,
-                  createEl("iframe", {
-                    src: `https://player.vimeo.com/video/${matches[1]}${matches[2] ? `?${matches[2]}` : ""}`,
-                    width,
-                    height,
-                    ...iframeAttrs,
-                    ...attrs
-                  })
-                );
-              } catch (e) {
-                this.setError(item);
-              }
-            }
-          }
-        }
-      ],
-      methods: {
-        loadItem(index = this.index) {
-          const item = this.getItem(index);
-          if (!this.getSlide(item).childElementCount) {
-            trigger(this.$el, "itemload", [item]);
-          }
-        },
-        getItem(index = this.index) {
-          return this.items[getIndex(index, this.slides)];
-        },
-        setItem(item, content) {
-          trigger(this.$el, "itemloaded", [this, html(this.getSlide(item), content)]);
-        },
-        getSlide(item) {
-          return this.slides[this.items.indexOf(item)];
-        },
-        setError(item) {
-          this.setItem(item, '<span uk-icon="icon: bolt; ratio: 2"></span>');
-        },
-        showControls() {
-          clearTimeout(this.controlsTimer);
-          this.controlsTimer = setTimeout(this.hideControls, this.delayControls);
-          addClass(this.$el, "uk-active", "uk-transition-active");
-        },
-        hideControls() {
-          removeClass(this.$el, "uk-active", "uk-transition-active");
-        }
-      }
-    };
-    function createEl(tag, attrs) {
-      const el = fragment(`<${tag}>`);
-      attr(el, attrs);
-      return el;
-    }
-
-    var lightbox = {
-      install: install$3,
-      props: { toggle: String },
-      data: { toggle: "a" },
-      computed: {
-        toggles({ toggle }, $el) {
-          return $$(toggle, $el);
-        }
-      },
-      watch: {
-        toggles(toggles) {
-          this.hide();
-          for (const toggle of toggles) {
-            if (isTag(toggle, "a")) {
-              attr(toggle, "role", "button");
-            }
-          }
-        }
-      },
-      disconnected() {
-        this.hide();
-      },
-      events: {
-        name: "click",
-        delegate() {
-          return `${this.toggle}:not(.uk-disabled)`;
         },
         handler(e) {
-          e.preventDefault();
-          this.show(e.current);
-        }
-      },
-      methods: {
-        show(index) {
-          const items = uniqueBy(this.toggles.map(toItem), "source");
-          if (isElement(index)) {
-            const { source } = toItem(index);
-            index = findIndex(items, ({ source: src }) => source === src);
-          }
-          this.panel = this.panel || this.$create("lightboxPanel", { ...this.$props, items });
-          on(this.panel.$el, "hidden", () => this.panel = null);
-          return this.panel.show(index);
-        },
-        hide() {
-          var _a;
-          return (_a = this.panel) == null ? void 0 : _a.hide();
-        }
-      }
-    };
-    function install$3(UIkit, Lightbox) {
-      if (!UIkit.lightboxPanel) {
-        UIkit.component("lightboxPanel", LightboxPanel);
-      }
-      assign(Lightbox.props, UIkit.component("lightboxPanel").options.props);
-    }
-    function toItem(el) {
-      const item = {};
-      for (const attr2 of ["href", "caption", "type", "poster", "alt", "attrs"]) {
-        item[attr2 === "href" ? "source" : attr2] = data(el, attr2);
-      }
-      item.attrs = parseOptions(item.attrs);
-      return item;
-    }
-
-    var notification = {
-      mixins: [Container],
-      functional: true,
-      args: ["message", "status"],
-      data: {
-        message: "",
-        status: "",
-        timeout: 5e3,
-        group: null,
-        pos: "top-center",
-        clsContainer: "uk-notification",
-        clsClose: "uk-notification-close",
-        clsMsg: "uk-notification-message"
-      },
-      install: install$2,
-      computed: {
-        marginProp({ pos }) {
-          return `margin${startsWith(pos, "top") ? "Top" : "Bottom"}`;
-        },
-        startProps() {
-          return { opacity: 0, [this.marginProp]: -this.$el.offsetHeight };
-        }
-      },
-      created() {
-        const posClass = `${this.clsContainer}-${this.pos}`;
-        let container = $(`.${posClass}`, this.container);
-        if (!container || !isVisible(container)) {
-          container = append(
-            this.container,
-            `<div class="${this.clsContainer} ${posClass}"></div>`
-          );
-        }
-        this.$mount(
-          append(
-            container,
-            `<div class="${this.clsMsg}${this.status ? ` ${this.clsMsg}-${this.status}` : ""}" role="alert"> <a href class="${this.clsClose}" data-uk-close></a> <div>${this.message}</div> </div>`
-          )
-        );
-      },
-      async connected() {
-        const margin = toFloat(css(this.$el, this.marginProp));
-        await Transition.start(css(this.$el, this.startProps), {
-          opacity: 1,
-          [this.marginProp]: margin
-        });
-        if (this.timeout) {
-          this.timer = setTimeout(this.close, this.timeout);
-        }
-      },
-      events: {
-        click(e) {
-          if (closest(e.target, 'a[href="#"],a[href=""]')) {
-            e.preventDefault();
-          }
-          this.close();
-        },
-        [pointerEnter]() {
-          if (this.timer) {
-            clearTimeout(this.timer);
-          }
-        },
-        [pointerLeave]() {
-          if (this.timeout) {
-            this.timer = setTimeout(this.close, this.timeout);
-          }
-        }
-      },
-      methods: {
-        async close(immediate) {
-          const removeFn = (el) => {
-            const container = parent(el);
-            trigger(el, "close", [this]);
-            remove$1(el);
-            if (!(container == null ? void 0 : container.hasChildNodes())) {
-              remove$1(container);
-            }
-          };
-          if (this.timer) {
-            clearTimeout(this.timer);
-          }
-          if (!immediate) {
-            await Transition.start(this.$el, this.startProps);
-          }
-          removeFn(this.$el);
-        }
-      }
-    };
-    function install$2(UIkit) {
-      UIkit.notification.closeAll = function(group, immediate) {
-        apply(document.body, (el) => {
-          const notification = UIkit.getComponent(el, "notification");
-          if (notification && (!group || group === notification.group)) {
-            notification.close(immediate);
-          }
-        });
-      };
-    }
-
-    var Media = {
-      props: {
-        media: Boolean
-      },
-      data: {
-        media: false
-      },
-      connected() {
-        const media = toMedia(this.media, this.$el);
-        this.matchMedia = true;
-        if (media) {
-          this.mediaObj = window.matchMedia(media);
-          const handler = () => {
-            this.matchMedia = this.mediaObj.matches;
-            trigger(this.$el, createEvent("mediachange", false, true, [this.mediaObj]));
-          };
-          this.offMediaObj = on(this.mediaObj, "change", () => {
-            handler();
-            this.$emit("resize");
-          });
-          handler();
-        }
-      },
-      disconnected() {
-        var _a;
-        (_a = this.offMediaObj) == null ? void 0 : _a.call(this);
-      }
-    };
-    function toMedia(value, element) {
-      if (isString(value)) {
-        if (startsWith(value, "@")) {
-          value = toFloat(css(element, `--uk-breakpoint-${value.substr(1)}`));
-        } else if (isNaN(value)) {
-          return value;
-        }
-      }
-      return value && isNumeric(value) ? `(min-width: ${value}px)` : "";
-    }
-
-    function getMaxPathLength(el) {
-      return Math.ceil(
-        Math.max(
-          0,
-          ...$$("[stroke]", el).map((stroke) => {
-            try {
-              return stroke.getTotalLength();
-            } catch (e) {
-              return 0;
-            }
-          })
-        )
-      );
-    }
-
-    const props = {
-      x: transformFn,
-      y: transformFn,
-      rotate: transformFn,
-      scale: transformFn,
-      color: colorFn,
-      backgroundColor: colorFn,
-      borderColor: colorFn,
-      blur: filterFn,
-      hue: filterFn,
-      fopacity: filterFn,
-      grayscale: filterFn,
-      invert: filterFn,
-      saturate: filterFn,
-      sepia: filterFn,
-      opacity: cssPropFn,
-      stroke: strokeFn,
-      bgx: backgroundFn,
-      bgy: backgroundFn
-    };
-    const { keys } = Object;
-    var Parallax = {
-      mixins: [Media],
-      props: fillObject(keys(props), "list"),
-      data: fillObject(keys(props), void 0),
-      computed: {
-        props(properties, $el) {
-          const stops = {};
-          for (const prop in properties) {
-            if (prop in props && !isUndefined(properties[prop])) {
-              stops[prop] = properties[prop].slice();
-            }
-          }
-          const result = {};
-          for (const prop in stops) {
-            result[prop] = props[prop](prop, $el, stops[prop], stops);
-          }
-          return result;
-        }
-      },
-      events: {
-        load() {
-          this.$emit();
-        }
-      },
-      methods: {
-        reset() {
-          for (const prop in this.getCss(0)) {
-            css(this.$el, prop, "");
-          }
-        },
-        getCss(percent) {
-          const css2 = { transform: "", filter: "" };
-          for (const prop in this.props) {
-            this.props[prop](css2, clamp(percent));
-          }
-          css2.willChange = Object.keys(css2).filter((key) => css2[key] !== "").map(propName).join(",");
-          return css2;
-        }
-      }
-    };
-    function transformFn(prop, el, stops) {
-      let unit = getUnit(stops) || { x: "px", y: "px", rotate: "deg" }[prop] || "";
-      let transformFn2;
-      if (prop === "x" || prop === "y") {
-        prop = `translate${ucfirst(prop)}`;
-        transformFn2 = (stop) => toFloat(toFloat(stop).toFixed(unit === "px" ? 0 : 6));
-      } else if (prop === "scale") {
-        unit = "";
-        transformFn2 = (stop) => getUnit([stop]) ? toPx(stop, "width", el, true) / el.offsetWidth : toFloat(stop);
-      }
-      if (stops.length === 1) {
-        stops.unshift(prop === "scale" ? 1 : 0);
-      }
-      stops = parseStops(stops, transformFn2);
-      return (css2, percent) => {
-        css2.transform += ` ${prop}(${getValue(stops, percent)}${unit})`;
-      };
-    }
-    function colorFn(prop, el, stops) {
-      if (stops.length === 1) {
-        stops.unshift(getCssValue(el, prop, ""));
-      }
-      stops = parseStops(stops, (stop) => parseColor(el, stop));
-      return (css2, percent) => {
-        const [start, end, p] = getStop(stops, percent);
-        const value = start.map((value2, i) => {
-          value2 += p * (end[i] - value2);
-          return i === 3 ? toFloat(value2) : parseInt(value2, 10);
-        }).join(",");
-        css2[prop] = `rgba(${value})`;
-      };
-    }
-    function parseColor(el, color) {
-      return getCssValue(el, "color", color).split(/[(),]/g).slice(1, -1).concat(1).slice(0, 4).map(toFloat);
-    }
-    function filterFn(prop, el, stops) {
-      if (stops.length === 1) {
-        stops.unshift(0);
-      }
-      const unit = getUnit(stops) || { blur: "px", hue: "deg" }[prop] || "%";
-      prop = { fopacity: "opacity", hue: "hue-rotate" }[prop] || prop;
-      stops = parseStops(stops);
-      return (css2, percent) => {
-        const value = getValue(stops, percent);
-        css2.filter += ` ${prop}(${value + unit})`;
-      };
-    }
-    function cssPropFn(prop, el, stops) {
-      if (stops.length === 1) {
-        stops.unshift(getCssValue(el, prop, ""));
-      }
-      stops = parseStops(stops);
-      return (css2, percent) => {
-        css2[prop] = getValue(stops, percent);
-      };
-    }
-    function strokeFn(prop, el, stops) {
-      if (stops.length === 1) {
-        stops.unshift(0);
-      }
-      const unit = getUnit(stops);
-      const length = getMaxPathLength(el);
-      stops = parseStops(stops.reverse(), (stop) => {
-        stop = toFloat(stop);
-        return unit === "%" ? stop * length / 100 : stop;
-      });
-      if (!stops.some(([value]) => value)) {
-        return noop;
-      }
-      css(el, "strokeDasharray", length);
-      return (css2, percent) => {
-        css2.strokeDashoffset = getValue(stops, percent);
-      };
-    }
-    function backgroundFn(prop, el, stops, props2) {
-      if (stops.length === 1) {
-        stops.unshift(0);
-      }
-      const attr = prop === "bgy" ? "height" : "width";
-      props2[prop] = parseStops(stops, (stop) => toPx(stop, attr, el));
-      const bgProps = ["bgx", "bgy"].filter((prop2) => prop2 in props2);
-      if (bgProps.length === 2 && prop === "bgx") {
-        return noop;
-      }
-      if (getCssValue(el, "backgroundSize", "") === "cover") {
-        return backgroundCoverFn(prop, el, stops, props2);
-      }
-      const positions = {};
-      for (const prop2 of bgProps) {
-        positions[prop2] = getBackgroundPos(el, prop2);
-      }
-      return setBackgroundPosFn(bgProps, positions, props2);
-    }
-    function backgroundCoverFn(prop, el, stops, props2) {
-      const dimImage = getBackgroundImageDimensions(el);
-      if (!dimImage.width) {
-        return noop;
-      }
-      const dimEl = {
-        width: el.offsetWidth,
-        height: el.offsetHeight
-      };
-      const bgProps = ["bgx", "bgy"].filter((prop2) => prop2 in props2);
-      const positions = {};
-      for (const prop2 of bgProps) {
-        const values = props2[prop2].map(([value]) => value);
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-        const down = values.indexOf(min) < values.indexOf(max);
-        const diff = max - min;
-        positions[prop2] = `${(down ? -diff : 0) - (down ? min : max)}px`;
-        dimEl[prop2 === "bgy" ? "height" : "width"] += diff;
-      }
-      const dim = Dimensions.cover(dimImage, dimEl);
-      for (const prop2 of bgProps) {
-        const attr = prop2 === "bgy" ? "height" : "width";
-        const overflow = dim[attr] - dimEl[attr];
-        positions[prop2] = `max(${getBackgroundPos(el, prop2)},-${overflow}px) + ${positions[prop2]}`;
-      }
-      const fn = setBackgroundPosFn(bgProps, positions, props2);
-      return (css2, percent) => {
-        fn(css2, percent);
-        css2.backgroundSize = `${dim.width}px ${dim.height}px`;
-        css2.backgroundRepeat = "no-repeat";
-      };
-    }
-    function getBackgroundPos(el, prop) {
-      return getCssValue(el, `background-position-${prop.substr(-1)}`, "");
-    }
-    function setBackgroundPosFn(bgProps, positions, props2) {
-      return function(css2, percent) {
-        for (const prop of bgProps) {
-          const value = getValue(props2[prop], percent);
-          css2[`background-position-${prop.substr(-1)}`] = `calc(${positions[prop]} + ${value}px)`;
-        }
-      };
-    }
-    const dimensions = {};
-    function getBackgroundImageDimensions(el) {
-      const src = css(el, "backgroundImage").replace(/^none|url\(["']?(.+?)["']?\)$/, "$1");
-      if (dimensions[src]) {
-        return dimensions[src];
-      }
-      const image = new Image();
-      if (src) {
-        image.src = src;
-        if (!image.naturalWidth) {
-          image.onload = () => {
-            dimensions[src] = toDimensions(image);
-            trigger(el, createEvent("load", false));
-          };
-          return toDimensions(image);
-        }
-      }
-      return dimensions[src] = toDimensions(image);
-    }
-    function toDimensions(image) {
-      return {
-        width: image.naturalWidth,
-        height: image.naturalHeight
-      };
-    }
-    function parseStops(stops, fn = toFloat) {
-      const result = [];
-      const { length } = stops;
-      let nullIndex = 0;
-      for (let i = 0; i < length; i++) {
-        let [value, percent] = isString(stops[i]) ? stops[i].trim().split(/ (?![^(]*\))/) : [stops[i]];
-        value = fn(value);
-        percent = percent ? toFloat(percent) / 100 : null;
-        if (i === 0) {
-          if (percent === null) {
-            percent = 0;
-          } else if (percent) {
-            result.push([value, 0]);
-          }
-        } else if (i === length - 1) {
-          if (percent === null) {
-            percent = 1;
-          } else if (percent !== 1) {
-            result.push([value, percent]);
-            percent = 1;
-          }
-        }
-        result.push([value, percent]);
-        if (percent === null) {
-          nullIndex++;
-        } else if (nullIndex) {
-          const leftPercent = result[i - nullIndex - 1][1];
-          const p = (percent - leftPercent) / (nullIndex + 1);
-          for (let j = nullIndex; j > 0; j--) {
-            result[i - j][1] = leftPercent + p * (nullIndex - j + 1);
-          }
-          nullIndex = 0;
-        }
-      }
-      return result;
-    }
-    function getStop(stops, percent) {
-      const index = findIndex(stops.slice(1), ([, targetPercent]) => percent <= targetPercent) + 1;
-      return [
-        stops[index - 1][0],
-        stops[index][0],
-        (percent - stops[index - 1][1]) / (stops[index][1] - stops[index - 1][1])
-      ];
-    }
-    function getValue(stops, percent) {
-      const [start, end, p] = getStop(stops, percent);
-      return start + Math.abs(start - end) * p * (start < end ? 1 : -1);
-    }
-    const unitRe = /^-?\d+(?:\.\d+)?(\S+)?/;
-    function getUnit(stops, defaultUnit) {
-      var _a;
-      for (const stop of stops) {
-        const match = (_a = stop.match) == null ? void 0 : _a.call(stop, unitRe);
-        if (match) {
-          return match[1];
-        }
-      }
-      return defaultUnit;
-    }
-    function getCssValue(el, prop, value) {
-      const prev = el.style[prop];
-      const val = css(css(el, prop, value), prop);
-      el.style[prop] = prev;
-      return val;
-    }
-    function fillObject(keys2, value) {
-      return keys2.reduce((data, prop) => {
-        data[prop] = value;
-        return data;
-      }, {});
-    }
-
-    var parallax = {
-      mixins: [Parallax],
-      props: {
-        target: String,
-        viewport: Number,
-        // Deprecated
-        easing: Number,
-        start: String,
-        end: String
-      },
-      data: {
-        target: false,
-        viewport: 1,
-        easing: 1,
-        start: 0,
-        end: 0
-      },
-      computed: {
-        target({ target }, $el) {
-          return getOffsetElement(target && query(target, $el) || $el);
-        },
-        start({ start }) {
-          return toPx(start, "height", this.target, true);
-        },
-        end({ end, viewport: viewport2 }) {
-          return toPx(
-            end || (viewport2 = (1 - viewport2) * 100) && `${viewport2}vh+${viewport2}%`,
-            "height",
-            this.target,
-            true
-          );
-        }
-      },
-      observe: [
-        viewport(),
-        scroll$1({ target: ({ target }) => target }),
-        resize({ target: ({ $el, target }) => [$el, target, scrollParent(target, true)] })
-      ],
-      update: {
-        read({ percent }, types) {
-          if (!types.has("scroll")) {
-            percent = false;
-          }
-          if (!isVisible(this.$el)) {
-            return false;
-          }
-          if (!this.matchMedia) {
-            return;
-          }
-          const prev = percent;
-          percent = ease(scrolledOver(this.target, this.start, this.end), this.easing);
-          return {
-            percent,
-            style: prev === percent ? false : this.getCss(percent)
-          };
-        },
-        write({ style }) {
-          if (!this.matchMedia) {
-            this.reset();
-            return;
-          }
-          style && css(this.$el, style);
-        },
-        events: ["scroll", "resize"]
-      }
-    };
-    function ease(percent, easing) {
-      return easing >= 0 ? Math.pow(percent, easing + 1) : 1 - Math.pow(1 - percent, 1 - easing);
-    }
-    function getOffsetElement(el) {
-      return el ? "offsetTop" in el ? el : getOffsetElement(parent(el)) : document.documentElement;
-    }
-
-    var SliderReactive = {
-      update: {
-        write() {
-          if (this.stack.length || this.dragging) {
-            return;
-          }
-          const index = this.getValidIndex(this.index);
-          if (!~this.prevIndex || this.index !== index) {
-            this.show(index);
-          } else {
-            this._translate(1, this.prevIndex, this.index);
-          }
-        },
-        events: ["resize"]
-      }
-    };
-
-    var SliderPreload = {
-      observe: lazyload({
-        target: ({ slides }) => slides,
-        targets: (instance) => instance.getAdjacentSlides()
-      })
-    };
-
-    function Transitioner(prev, next, dir, { center, easing, list }) {
-      const from = prev ? getLeft(prev, list, center) : getLeft(next, list, center) + dimensions$1(next).width * dir;
-      const to = next ? getLeft(next, list, center) : from + dimensions$1(prev).width * dir * (isRtl ? -1 : 1);
-      let resolve;
-      return {
-        dir,
-        show(duration, percent = 0, linear) {
-          const timing = linear ? "linear" : easing;
-          duration -= Math.round(duration * clamp(percent, -1, 1));
-          this.translate(percent);
-          percent = prev ? percent : clamp(percent, 0, 1);
-          triggerUpdate(this.getItemIn(), "itemin", { percent, duration, timing, dir });
-          prev && triggerUpdate(this.getItemIn(true), "itemout", {
-            percent: 1 - percent,
-            duration,
-            timing,
-            dir
-          });
-          return new Promise((res) => {
-            resolve || (resolve = res);
-            Transition.start(
-              list,
-              { transform: translate(-to * (isRtl ? -1 : 1), "px") },
-              duration,
-              timing
-            ).then(resolve, noop);
-          });
-        },
-        cancel() {
-          return Transition.cancel(list);
-        },
-        reset() {
-          css(list, "transform", "");
-        },
-        async forward(duration, percent = this.percent()) {
-          await this.cancel();
-          return this.show(duration, percent, true);
-        },
-        translate(percent) {
-          const distance = this.getDistance() * dir * (isRtl ? -1 : 1);
-          css(
-            list,
-            "transform",
-            translate(
-              clamp(
-                -to + (distance - distance * percent),
-                -getWidth(list),
-                dimensions$1(list).width
-              ) * (isRtl ? -1 : 1),
-              "px"
-            )
-          );
-          const actives = this.getActives();
-          const itemIn = this.getItemIn();
-          const itemOut = this.getItemIn(true);
-          percent = prev ? clamp(percent, -1, 1) : 0;
-          for (const slide of children(list)) {
-            const isActive = includes(actives, slide);
-            const isIn = slide === itemIn;
-            const isOut = slide === itemOut;
-            const translateIn = isIn || !isOut && (isActive || dir * (isRtl ? -1 : 1) === -1 ^ getElLeft(slide, list) > getElLeft(prev || next));
-            triggerUpdate(slide, `itemtranslate${translateIn ? "in" : "out"}`, {
-              dir,
-              percent: isOut ? 1 - percent : isIn ? percent : isActive ? 1 : 0
-            });
-          }
-        },
-        percent() {
-          return Math.abs(
-            (css(list, "transform").split(",")[4] * (isRtl ? -1 : 1) + from) / (to - from)
-          );
-        },
-        getDistance() {
-          return Math.abs(to - from);
-        },
-        getItemIn(out = false) {
-          let actives = this.getActives();
-          let nextActives = inView(list, getLeft(next || prev, list, center));
-          if (out) {
-            const temp = actives;
-            actives = nextActives;
-            nextActives = temp;
-          }
-          return nextActives[findIndex(nextActives, (el) => !includes(actives, el))];
-        },
-        getActives() {
-          return inView(list, getLeft(prev || next, list, center));
-        }
-      };
-    }
-    function getLeft(el, list, center) {
-      const left = getElLeft(el, list);
-      return center ? left - centerEl(el, list) : Math.min(left, getMax(list));
-    }
-    function getMax(list) {
-      return Math.max(0, getWidth(list) - dimensions$1(list).width);
-    }
-    function getWidth(list) {
-      return sumBy(children(list), (el) => dimensions$1(el).width);
-    }
-    function centerEl(el, list) {
-      return dimensions$1(list).width / 2 - dimensions$1(el).width / 2;
-    }
-    function getElLeft(el, list) {
-      return el && (position(el).left + (isRtl ? dimensions$1(el).width - dimensions$1(list).width : 0)) * (isRtl ? -1 : 1) || 0;
-    }
-    function inView(list, listLeft) {
-      listLeft -= 1;
-      const listWidth = dimensions$1(list).width;
-      const listRight = listLeft + listWidth + 2;
-      return children(list).filter((slide) => {
-        const slideLeft = getElLeft(slide, list);
-        const slideRight = slideLeft + Math.min(dimensions$1(slide).width, listWidth);
-        return slideLeft >= listLeft && slideRight <= listRight;
-      });
-    }
-    function triggerUpdate(el, type, data) {
-      trigger(el, createEvent(type, false, false, data));
-    }
-
-    var slider = {
-      mixins: [Class, Slider, SliderReactive, SliderPreload],
-      props: {
-        center: Boolean,
-        sets: Boolean
-      },
-      data: {
-        center: false,
-        sets: false,
-        attrItem: "uk-slider-item",
-        selList: ".uk-slider-items",
-        selNav: ".uk-slider-nav",
-        clsContainer: "uk-slider-container",
-        Transitioner
-      },
-      computed: {
-        avgWidth() {
-          return getWidth(this.list) / this.length;
-        },
-        finite({ finite }) {
-          return finite || isFinite(this.list, this.center);
-        },
-        maxIndex() {
-          if (!this.finite || this.center && !this.sets) {
-            return this.length - 1;
-          }
-          if (this.center) {
-            return last(this.sets);
-          }
-          let lft = 0;
-          const max = getMax(this.list);
-          const index = findIndex(this.slides, (el) => {
-            if (lft >= max) {
-              return true;
-            }
-            lft += dimensions$1(el).width;
-          });
-          return ~index ? index : this.length - 1;
-        },
-        sets({ sets: enabled }) {
-          if (!enabled) {
-            return;
-          }
-          let left = 0;
-          const sets = [];
-          const width = dimensions$1(this.list).width;
-          for (let i = 0; i < this.length; i++) {
-            const slideWidth = dimensions$1(this.slides[i]).width;
-            if (left + slideWidth > width) {
-              left = 0;
-            }
-            if (this.center) {
-              if (left < width / 2 && left + slideWidth + dimensions$1(getIndex(+i + 1, this.slides)).width / 2 > width / 2) {
-                sets.push(+i);
-                left = width / 2 - slideWidth / 2;
-              }
-            } else if (left === 0) {
-              sets.push(Math.min(+i, this.maxIndex));
-            }
-            left += slideWidth;
-          }
-          if (sets.length) {
-            return sets;
-          }
-        },
-        transitionOptions() {
-          return {
-            center: this.center,
-            list: this.list
-          };
-        },
-        slides() {
-          return children(this.list).filter(isVisible);
-        }
-      },
-      connected() {
-        toggleClass(this.$el, this.clsContainer, !$(`.${this.clsContainer}`, this.$el));
-      },
-      observe: resize({
-        target: ({ slides }) => slides
-      }),
-      update: {
-        write() {
-          for (const el of this.navItems) {
-            const index = toNumber(data(el, this.attrItem));
-            if (index !== false) {
-              el.hidden = !this.maxIndex || index > this.maxIndex || this.sets && !includes(this.sets, index);
-            }
-          }
-          if (this.length && !this.dragging && !this.stack.length) {
-            this.reorder();
-            this._translate(1);
-          }
-          this.updateActiveClasses();
-        },
-        events: ["resize"]
-      },
-      events: {
-        beforeitemshow(e) {
-          if (!this.dragging && this.sets && this.stack.length < 2 && !includes(this.sets, this.index)) {
-            this.index = this.getValidIndex();
-          }
-          const diff = Math.abs(
-            this.index - this.prevIndex + (this.dir > 0 && this.index < this.prevIndex || this.dir < 0 && this.index > this.prevIndex ? (this.maxIndex + 1) * this.dir : 0)
-          );
-          if (!this.dragging && diff > 1) {
-            for (let i = 0; i < diff; i++) {
-              this.stack.splice(1, 0, this.dir > 0 ? "next" : "previous");
-            }
-            e.preventDefault();
-            return;
-          }
-          const index = this.dir < 0 || !this.slides[this.prevIndex] ? this.index : this.prevIndex;
-          this.duration = speedUp(this.avgWidth / this.velocity) * (dimensions$1(this.slides[index]).width / this.avgWidth);
-          this.reorder();
-        },
-        itemshow() {
-          if (~this.prevIndex) {
-            addClass(this._getTransitioner().getItemIn(), this.clsActive);
-          }
-        },
-        itemshown() {
-          this.updateActiveClasses();
-        }
-      },
-      methods: {
-        reorder() {
-          if (this.finite) {
-            css(this.slides, "order", "");
-            return;
-          }
-          const index = this.dir > 0 && this.slides[this.prevIndex] ? this.prevIndex : this.index;
-          this.slides.forEach(
-            (slide, i) => css(
-              slide,
-              "order",
-              this.dir > 0 && i < index ? 1 : this.dir < 0 && i >= this.index ? -1 : ""
-            )
-          );
-          if (!this.center) {
-            return;
-          }
-          const next = this.slides[index];
-          let width = dimensions$1(this.list).width / 2 - dimensions$1(next).width / 2;
-          let j = 0;
-          while (width > 0) {
-            const slideIndex = this.getIndex(--j + index, index);
-            const slide = this.slides[slideIndex];
-            css(slide, "order", slideIndex > index ? -2 : -1);
-            width -= dimensions$1(slide).width;
-          }
-        },
-        updateActiveClasses() {
-          const actives = this._getTransitioner(this.index).getActives();
-          const activeClasses = [
-            this.clsActive,
-            (!this.sets || includes(this.sets, toFloat(this.index))) && this.clsActivated || ""
-          ];
-          for (const slide of this.slides) {
-            const active = includes(actives, slide);
-            toggleClass(slide, activeClasses, active);
-            attr(slide, "aria-hidden", !active);
-            for (const focusable of $$(selFocusable, slide)) {
-              if (!hasOwn(focusable, "_tabindex")) {
-                focusable._tabindex = attr(focusable, "tabindex");
-              }
-              attr(focusable, "tabindex", active ? focusable._tabindex : -1);
-            }
-          }
-        },
-        getValidIndex(index = this.index, prevIndex = this.prevIndex) {
-          index = this.getIndex(index, prevIndex);
-          if (!this.sets) {
-            return index;
-          }
-          let prev;
-          do {
-            if (includes(this.sets, index)) {
-              return index;
-            }
-            prev = index;
-            index = this.getIndex(index + this.dir, prevIndex);
-          } while (index !== prev);
-          return index;
-        },
-        getAdjacentSlides() {
-          const { width } = dimensions$1(this.list);
-          const left = -width;
-          const right = width * 2;
-          const slideWidth = dimensions$1(this.slides[this.index]).width;
-          const slideLeft = this.center ? width / 2 - slideWidth / 2 : 0;
-          const slides = /* @__PURE__ */ new Set();
-          for (const i of [-1, 1]) {
-            let currentLeft = slideLeft + (i > 0 ? slideWidth : 0);
-            let j = 0;
-            do {
-              const slide = this.slides[this.getIndex(this.index + i + j++ * i)];
-              currentLeft += dimensions$1(slide).width * i;
-              slides.add(slide);
-            } while (this.length > j && currentLeft > left && currentLeft < right);
-          }
-          return Array.from(slides);
-        }
-      }
-    };
-    function isFinite(list, center) {
-      if (!list || list.length < 2) {
-        return true;
-      }
-      const { width: listWidth } = dimensions$1(list);
-      if (!center) {
-        return Math.ceil(getWidth(list)) < Math.trunc(listWidth + getMaxElWidth(list));
-      }
-      const slides = children(list);
-      const listHalf = Math.trunc(listWidth / 2);
-      for (const index in slides) {
-        const slide = slides[index];
-        const slideWidth = dimensions$1(slide).width;
-        const slidesInView = /* @__PURE__ */ new Set([slide]);
-        let diff = 0;
-        for (const i of [-1, 1]) {
-          let left = slideWidth / 2;
-          let j = 0;
-          while (left < listHalf) {
-            const nextSlide = slides[getIndex(+index + i + j++ * i, slides)];
-            if (slidesInView.has(nextSlide)) {
-              return true;
-            }
-            left += dimensions$1(nextSlide).width;
-            slidesInView.add(nextSlide);
-          }
-          diff = Math.max(
-            diff,
-            slideWidth / 2 + dimensions$1(slides[getIndex(+index + i, slides)]).width / 2 - (left - listHalf)
-          );
-        }
-        if (diff > sumBy(
-          slides.filter((slide2) => !slidesInView.has(slide2)),
-          (slide2) => dimensions$1(slide2).width
-        )) {
-          return true;
-        }
-      }
-      return false;
-    }
-    function getMaxElWidth(list) {
-      return Math.max(0, ...children(list).map((el) => dimensions$1(el).width));
-    }
-
-    var sliderParallax = {
-      mixins: [Parallax],
-      data: {
-        selItem: "!li"
-      },
-      beforeConnect() {
-        this.item = query(this.selItem, this.$el);
-      },
-      disconnected() {
-        this.item = null;
-      },
-      events: [
-        {
-          name: "itemin itemout",
-          self: true,
-          el() {
-            return this.item;
-          },
-          handler({ type, detail: { percent, duration, timing, dir } }) {
-            fastdom.read(() => {
-              if (!this.matchMedia) {
-                return;
-              }
-              const propsFrom = this.getCss(getCurrentPercent(type, dir, percent));
-              const propsTo = this.getCss(isIn(type) ? 0.5 : dir > 0 ? 1 : 0);
-              fastdom.write(() => {
-                css(this.$el, propsFrom);
-                Transition.start(this.$el, propsTo, duration, timing).catch(noop);
-              });
-            });
-          }
-        },
-        {
-          name: "transitioncanceled transitionend",
-          self: true,
-          el() {
-            return this.item;
-          },
-          handler() {
-            Transition.cancel(this.$el);
-          }
-        },
-        {
-          name: "itemtranslatein itemtranslateout",
-          self: true,
-          el() {
-            return this.item;
-          },
-          handler({ type, detail: { percent, dir } }) {
-            fastdom.read(() => {
-              if (!this.matchMedia) {
-                this.reset();
-                return;
-              }
-              const props = this.getCss(getCurrentPercent(type, dir, percent));
-              fastdom.write(() => css(this.$el, props));
-            });
-          }
-        }
-      ]
-    };
-    function isIn(type) {
-      return endsWith(type, "in");
-    }
-    function getCurrentPercent(type, dir, percent) {
-      percent /= 2;
-      return isIn(type) ^ dir < 0 ? percent : 1 - percent;
-    }
-
-    var Animations = {
-      ...Animations$2,
-      fade: {
-        show() {
-          return [{ opacity: 0, zIndex: 0 }, { zIndex: -1 }];
-        },
-        percent(current) {
-          return 1 - css(current, "opacity");
-        },
-        translate(percent) {
-          return [{ opacity: 1 - percent, zIndex: 0 }, { zIndex: -1 }];
-        }
-      },
-      scale: {
-        show() {
-          return [{ opacity: 0, transform: scale3d(1 + 0.5), zIndex: 0 }, { zIndex: -1 }];
-        },
-        percent(current) {
-          return 1 - css(current, "opacity");
-        },
-        translate(percent) {
-          return [
-            { opacity: 1 - percent, transform: scale3d(1 + 0.5 * percent), zIndex: 0 },
-            { zIndex: -1 }
-          ];
-        }
-      },
-      pull: {
-        show(dir) {
-          return dir < 0 ? [
-            { transform: translate(30), zIndex: -1 },
-            { transform: translate(), zIndex: 0 }
-          ] : [
-            { transform: translate(-100), zIndex: 0 },
-            { transform: translate(), zIndex: -1 }
-          ];
-        },
-        percent(current, next, dir) {
-          return dir < 0 ? 1 - translated(next) : translated(current);
-        },
-        translate(percent, dir) {
-          return dir < 0 ? [
-            { transform: translate(30 * percent), zIndex: -1 },
-            { transform: translate(-100 * (1 - percent)), zIndex: 0 }
-          ] : [
-            { transform: translate(-percent * 100), zIndex: 0 },
-            { transform: translate(30 * (1 - percent)), zIndex: -1 }
-          ];
-        }
-      },
-      push: {
-        show(dir) {
-          return dir < 0 ? [
-            { transform: translate(100), zIndex: 0 },
-            { transform: translate(), zIndex: -1 }
-          ] : [
-            { transform: translate(-30), zIndex: -1 },
-            { transform: translate(), zIndex: 0 }
-          ];
-        },
-        percent(current, next, dir) {
-          return dir > 0 ? 1 - translated(next) : translated(current);
-        },
-        translate(percent, dir) {
-          return dir < 0 ? [
-            { transform: translate(percent * 100), zIndex: 0 },
-            { transform: translate(-30 * (1 - percent)), zIndex: -1 }
-          ] : [
-            { transform: translate(-30 * percent), zIndex: -1 },
-            { transform: translate(100 * (1 - percent)), zIndex: 0 }
-          ];
-        }
-      }
-    };
-
-    var slideshow = {
-      mixins: [Class, Slideshow, SliderReactive, SliderPreload],
-      props: {
-        ratio: String,
-        minHeight: Number,
-        maxHeight: Number
-      },
-      data: {
-        ratio: "16:9",
-        minHeight: false,
-        maxHeight: false,
-        selList: ".uk-slideshow-items",
-        attrItem: "uk-slideshow-item",
-        selNav: ".uk-slideshow-nav",
-        Animations
-      },
-      update: {
-        read() {
-          if (!this.list) {
-            return false;
-          }
-          let [width, height] = this.ratio.split(":").map(Number);
-          height = height * this.list.offsetWidth / width || 0;
-          if (this.minHeight) {
-            height = Math.max(this.minHeight, height);
-          }
-          if (this.maxHeight) {
-            height = Math.min(this.maxHeight, height);
-          }
-          return { height: height - boxModelAdjust(this.list, "height", "content-box") };
-        },
-        write({ height }) {
-          height > 0 && css(this.list, "minHeight", height);
-        },
-        events: ["resize"]
-      },
-      methods: {
-        getAdjacentSlides() {
-          return [1, -1].map((i) => this.slides[this.getIndex(this.index + i)]);
-        }
-      }
-    };
-
-    var sortable = {
-      mixins: [Class, Animate],
-      props: {
-        group: String,
-        threshold: Number,
-        clsItem: String,
-        clsPlaceholder: String,
-        clsDrag: String,
-        clsDragState: String,
-        clsBase: String,
-        clsNoDrag: String,
-        clsEmpty: String,
-        clsCustom: String,
-        handle: String
-      },
-      data: {
-        group: false,
-        threshold: 5,
-        clsItem: "uk-sortable-item",
-        clsPlaceholder: "uk-sortable-placeholder",
-        clsDrag: "uk-sortable-drag",
-        clsDragState: "uk-drag",
-        clsBase: "uk-sortable",
-        clsNoDrag: "uk-sortable-nodrag",
-        clsEmpty: "uk-sortable-empty",
-        clsCustom: "",
-        handle: false,
-        pos: {}
-      },
-      created() {
-        for (const key of ["init", "start", "move", "end"]) {
-          const fn = this[key];
-          this[key] = (e) => {
-            assign(this.pos, getEventPos(e));
-            fn(e);
-          };
-        }
-      },
-      events: {
-        name: pointerDown$1,
-        passive: false,
-        handler: "init"
-      },
-      computed: {
-        target() {
-          return (this.$el.tBodies || [this.$el])[0];
-        },
-        items() {
-          return children(this.target);
-        },
-        isEmpty() {
-          return isEmpty(this.items);
-        },
-        handles({ handle }, el) {
-          return handle ? $$(handle, el) : this.items;
-        }
-      },
-      watch: {
-        isEmpty(empty) {
-          toggleClass(this.target, this.clsEmpty, empty);
-        },
-        handles(handles, prev) {
-          css(prev, { touchAction: "", userSelect: "" });
-          css(handles, { touchAction: hasTouch ? "none" : "", userSelect: "none" });
-        }
-      },
-      update: {
-        write(data) {
-          if (!this.drag || !parent(this.placeholder)) {
-            return;
-          }
-          const {
-            pos: { x, y },
-            origin: { offsetTop, offsetLeft },
-            placeholder
-          } = this;
-          css(this.drag, {
-            top: y - offsetTop,
-            left: x - offsetLeft
-          });
-          const sortable = this.getSortable(document.elementFromPoint(x, y));
-          if (!sortable) {
-            return;
-          }
-          const { items } = sortable;
-          if (items.some(Transition.inProgress)) {
-            return;
-          }
-          const target = findTarget(items, { x, y });
-          if (items.length && (!target || target === placeholder)) {
-            return;
-          }
-          const previous = this.getSortable(placeholder);
-          const insertTarget = findInsertTarget(
-            sortable.target,
-            target,
-            placeholder,
-            x,
-            y,
-            sortable === previous && data.moved !== target
-          );
-          if (insertTarget === false) {
-            return;
-          }
-          if (insertTarget && placeholder === insertTarget) {
-            return;
-          }
-          if (sortable !== previous) {
-            previous.remove(placeholder);
-            data.moved = target;
-          } else {
-            delete data.moved;
-          }
-          sortable.insert(placeholder, insertTarget);
-          this.touched.add(sortable);
-        },
-        events: ["move"]
-      },
-      methods: {
-        init(e) {
-          const { target, button, defaultPrevented } = e;
-          const [placeholder] = this.items.filter((el) => within(target, el));
-          if (!placeholder || defaultPrevented || button > 0 || isInput(target) || within(target, `.${this.clsNoDrag}`) || this.handle && !within(target, this.handle)) {
-            return;
-          }
-          e.preventDefault();
-          this.touched = /* @__PURE__ */ new Set([this]);
-          this.placeholder = placeholder;
-          this.origin = { target, index: index(placeholder), ...this.pos };
-          on(document, pointerMove$1, this.move);
-          on(document, pointerUp$1, this.end);
-          if (!this.threshold) {
-            this.start(e);
-          }
-        },
-        start(e) {
-          this.drag = appendDrag(this.$container, this.placeholder);
-          const { left, top } = this.placeholder.getBoundingClientRect();
-          assign(this.origin, { offsetLeft: this.pos.x - left, offsetTop: this.pos.y - top });
-          addClass(this.drag, this.clsDrag, this.clsCustom);
-          addClass(this.placeholder, this.clsPlaceholder);
-          addClass(this.items, this.clsItem);
-          addClass(document.documentElement, this.clsDragState);
-          trigger(this.$el, "start", [this, this.placeholder]);
-          trackScroll(this.pos);
-          this.move(e);
-        },
-        move(e) {
-          if (this.drag) {
-            this.$emit("move");
-          } else if (Math.abs(this.pos.x - this.origin.x) > this.threshold || Math.abs(this.pos.y - this.origin.y) > this.threshold) {
-            this.start(e);
-          }
-        },
-        end() {
-          off(document, pointerMove$1, this.move);
-          off(document, pointerUp$1, this.end);
-          if (!this.drag) {
-            return;
-          }
-          untrackScroll();
-          const sortable = this.getSortable(this.placeholder);
-          if (this === sortable) {
-            if (this.origin.index !== index(this.placeholder)) {
-              trigger(this.$el, "moved", [this, this.placeholder]);
-            }
-          } else {
-            trigger(sortable.$el, "added", [sortable, this.placeholder]);
-            trigger(this.$el, "removed", [this, this.placeholder]);
-          }
-          trigger(this.$el, "stop", [this, this.placeholder]);
-          remove$1(this.drag);
-          this.drag = null;
-          for (const { clsPlaceholder, clsItem } of this.touched) {
-            for (const sortable2 of this.touched) {
-              removeClass(sortable2.items, clsPlaceholder, clsItem);
-            }
-          }
-          this.touched = null;
-          removeClass(document.documentElement, this.clsDragState);
-        },
-        insert(element, target) {
-          addClass(this.items, this.clsItem);
-          const insert = () => target ? before(target, element) : append(this.target, element);
-          this.animate(insert);
-        },
-        remove(element) {
-          if (!within(element, this.target)) {
-            return;
-          }
-          this.animate(() => remove$1(element));
-        },
-        getSortable(element) {
-          do {
-            const sortable = this.$getComponent(element, "sortable");
-            if (sortable && (sortable === this || this.group !== false && sortable.group === this.group)) {
-              return sortable;
-            }
-          } while (element = parent(element));
-        }
-      }
-    };
-    let trackTimer;
-    function trackScroll(pos) {
-      let last = Date.now();
-      trackTimer = setInterval(() => {
-        let { x, y } = pos;
-        y += document.scrollingElement.scrollTop;
-        const dist = (Date.now() - last) * 0.3;
-        last = Date.now();
-        scrollParents(document.elementFromPoint(x, pos.y)).reverse().some((scrollEl) => {
-          let { scrollTop: scroll, scrollHeight } = scrollEl;
-          const { top, bottom, height: height2 } = offsetViewport(scrollEl);
-          if (top < y && top + 35 > y) {
-            scroll -= dist;
-          } else if (bottom > y && bottom - 35 < y) {
-            scroll += dist;
-          } else {
-            return;
-          }
-          if (scroll > 0 && scroll < scrollHeight - height2) {
-            scrollEl.scrollTop = scroll;
-            return true;
-          }
-        });
-      }, 15);
-    }
-    function untrackScroll() {
-      clearInterval(trackTimer);
-    }
-    function appendDrag(container, element) {
-      let clone;
-      if (isTag(element, "li", "tr")) {
-        clone = $("<div>");
-        append(clone, element.cloneNode(true).children);
-        for (const attribute of element.getAttributeNames()) {
-          attr(clone, attribute, element.getAttribute(attribute));
-        }
-      } else {
-        clone = element.cloneNode(true);
-      }
-      append(container, clone);
-      css(clone, "margin", "0", "important");
-      css(clone, {
-        boxSizing: "border-box",
-        width: element.offsetWidth,
-        height: element.offsetHeight,
-        padding: css(element, "padding")
-      });
-      height(clone.firstElementChild, height(element.firstElementChild));
-      return clone;
-    }
-    function findTarget(items, point) {
-      return items[findIndex(items, (item) => pointInRect(point, item.getBoundingClientRect()))];
-    }
-    function findInsertTarget(list, target, placeholder, x, y, sameList) {
-      if (!children(list).length) {
-        return;
-      }
-      const rect = target.getBoundingClientRect();
-      if (!sameList) {
-        if (!isHorizontal(list, placeholder)) {
-          return y < rect.top + rect.height / 2 ? target : target.nextElementSibling;
-        }
-        return target;
-      }
-      const placeholderRect = placeholder.getBoundingClientRect();
-      const sameRow = linesIntersect(
-        [rect.top, rect.bottom],
-        [placeholderRect.top, placeholderRect.bottom]
-      );
-      const [pointerPos, lengthProp, startProp, endProp] = sameRow ? [x, "width", "left", "right"] : [y, "height", "top", "bottom"];
-      const diff = placeholderRect[lengthProp] < rect[lengthProp] ? rect[lengthProp] - placeholderRect[lengthProp] : 0;
-      if (placeholderRect[startProp] < rect[startProp]) {
-        if (diff && pointerPos < rect[startProp] + diff) {
-          return false;
-        }
-        return target.nextElementSibling;
-      }
-      if (diff && pointerPos > rect[endProp] - diff) {
-        return false;
-      }
-      return target;
-    }
-    function isHorizontal(list, placeholder) {
-      const single = children(list).length === 1;
-      if (single) {
-        append(list, placeholder);
-      }
-      const items = children(list);
-      const isHorizontal2 = items.some((el, i) => {
-        const rectA = el.getBoundingClientRect();
-        return items.slice(i + 1).some((el2) => {
-          const rectB = el2.getBoundingClientRect();
-          return !linesIntersect([rectA.left, rectA.right], [rectB.left, rectB.right]);
-        });
-      });
-      if (single) {
-        remove$1(placeholder);
-      }
-      return isHorizontal2;
-    }
-    function linesIntersect(lineA, lineB) {
-      return lineA[1] > lineB[0] && lineB[1] > lineA[0];
-    }
-
-    var Position = {
-      props: {
-        pos: String,
-        offset: null,
-        flip: Boolean,
-        shift: Boolean,
-        inset: Boolean
-      },
-      data: {
-        pos: `bottom-${isRtl ? "right" : "left"}`,
-        offset: false,
-        flip: true,
-        shift: true,
-        inset: false
-      },
-      connected() {
-        this.pos = this.$props.pos.split("-").concat("center").slice(0, 2);
-        [this.dir, this.align] = this.pos;
-        this.axis = includes(["top", "bottom"], this.dir) ? "y" : "x";
-      },
-      methods: {
-        positionAt(element, target, boundary) {
-          let offset = [this.getPositionOffset(element), this.getShiftOffset(element)];
-          const placement = [this.flip && "flip", this.shift && "shift"];
-          const attach = {
-            element: [this.inset ? this.dir : flipPosition(this.dir), this.align],
-            target: [this.dir, this.align]
-          };
-          if (this.axis === "y") {
-            for (const prop in attach) {
-              attach[prop].reverse();
-            }
-            offset.reverse();
-            placement.reverse();
-          }
-          const restoreScrollPosition = storeScrollPosition(element);
-          const elDim = dimensions$1(element);
-          css(element, { top: -elDim.height, left: -elDim.width });
-          positionAt(element, target, {
-            attach,
-            offset,
-            boundary,
-            placement,
-            viewportOffset: this.getViewportOffset(element)
-          });
-          restoreScrollPosition();
-        },
-        getPositionOffset(element) {
-          return toPx(
-            this.offset === false ? css(element, "--uk-position-offset") : this.offset,
-            this.axis === "x" ? "width" : "height",
-            element
-          ) * (includes(["left", "top"], this.dir) ? -1 : 1) * (this.inset ? -1 : 1);
-        },
-        getShiftOffset(element) {
-          return this.align === "center" ? 0 : toPx(
-            css(element, "--uk-position-shift-offset"),
-            this.axis === "y" ? "width" : "height",
-            element
-          ) * (includes(["left", "top"], this.align) ? 1 : -1);
-        },
-        getViewportOffset(element) {
-          return toPx(css(element, "--uk-position-viewport-offset"));
-        }
-      }
-    };
-    function storeScrollPosition(element) {
-      const scrollElement = scrollParent(element);
-      const { scrollTop } = scrollElement;
-      return () => {
-        if (scrollTop !== scrollElement.scrollTop) {
-          scrollElement.scrollTop = scrollTop;
-        }
-      };
-    }
-
-    var tooltip = {
-      mixins: [Container, Togglable, Position],
-      args: "title",
-      props: {
-        delay: Number,
-        title: String
-      },
-      data: {
-        pos: "top",
-        title: "",
-        delay: 0,
-        animation: ["uk-animation-scale-up"],
-        duration: 100,
-        cls: "uk-active"
-      },
-      beforeConnect() {
-        this.id = generateId(this, {});
-        this._hasTitle = hasAttr(this.$el, "title");
-        attr(this.$el, {
-          title: "",
-          "aria-describedby": this.id
-        });
-        makeFocusable(this.$el);
-      },
-      disconnected() {
-        this.hide();
-        if (!attr(this.$el, "title")) {
-          attr(this.$el, "title", this._hasTitle ? this.title : null);
-        }
-      },
-      methods: {
-        show() {
-          if (this.isToggled(this.tooltip || null) || !this.title) {
-            return;
-          }
-          clearTimeout(this.showTimer);
-          this.showTimer = setTimeout(this._show, this.delay);
-        },
-        async hide() {
-          if (matches(this.$el, "input:focus")) {
-            return;
-          }
-          clearTimeout(this.showTimer);
-          if (this.isToggled(this.tooltip || null)) {
-            await this.toggleElement(this.tooltip, false, false);
-          }
-          remove$1(this.tooltip);
-          this.tooltip = null;
-        },
-        async _show() {
-          this.tooltip = append(
-            this.container,
-            `<div id="${this.id}" class="uk-${this.$options.name}" role="tooltip"> <div class="uk-${this.$options.name}-inner">${this.title}</div> </div>`
-          );
-          on(this.tooltip, "toggled", (e, toggled) => {
-            if (!toggled) {
-              return;
-            }
-            const update = () => this.positionAt(this.tooltip, this.$el);
-            update();
-            const [dir, align] = getAlignment(this.tooltip, this.$el, this.pos);
-            this.origin = this.axis === "y" ? `${flipPosition(dir)}-${align}` : `${align}-${flipPosition(dir)}`;
-            const handlers = [
-              once(
-                document,
-                `keydown ${pointerDown$1}`,
-                this.hide,
-                false,
-                (e2) => e2.type === pointerDown$1 && !within(e2.target, this.$el) || e2.type === "keydown" && e2.keyCode === keyMap.ESC
-              ),
-              on([document, ...overflowParents(this.$el)], "scroll", update, {
-                passive: true
-              })
-            ];
-            once(this.tooltip, "hide", () => handlers.forEach((handler) => handler()), {
-              self: true
-            });
-          });
-          if (!await this.toggleElement(this.tooltip, true)) {
-            this.hide();
-          }
-        }
-      },
-      events: {
-        focus: "show",
-        blur: "hide",
-        [`${pointerEnter} ${pointerLeave}`](e) {
           if (!isTouch(e)) {
-            this[e.type === pointerEnter ? "show" : "hide"]();
+            return;
+          }
+          const pos = getEventPos(e);
+          const target = "tagName" in e.target ? e.target : parent(e.target);
+          once(document, `${pointerUp} ${pointerCancel} scroll`, (e2) => {
+            const { x, y } = getEventPos(e2);
+            if (e2.type !== "scroll" && target && x && Math.abs(pos.x - x) > 100 || y && Math.abs(pos.y - y) > 100) {
+              setTimeout(() => {
+                trigger(target, "swipe");
+                trigger(target, `swipe${swipeDirection(pos.x, pos.y, x, y)}`);
+              });
+            }
+          });
+        },
+        ...options
+      };
+    }
+    function observe(observe2, options, emit) {
+      return {
+        observe: observe2,
+        handler() {
+          this.$emit(emit);
+        },
+        ...options
+      };
+    }
+    function swipeDirection(x1, y1, x2, y2) {
+      return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? x1 - x2 > 0 ? "Left" : "Right" : y1 - y2 > 0 ? "Up" : "Down";
+    }
+    function toScrollTargets(elements) {
+      return toNodes(elements).map((node) => {
+        const { ownerDocument } = node;
+        const parent2 = scrollParent(node, true);
+        return parent2 === ownerDocument.scrollingElement ? ownerDocument : parent2;
+      });
+    }
+
+    var Class = {
+      connected() {
+        addClass(this.$el, this.$options.id);
+      }
+    };
+
+    var Togglable = {
+      props: {
+        cls: Boolean,
+        animation: "list",
+        duration: Number,
+        velocity: Number,
+        origin: String,
+        transition: String
+      },
+      data: {
+        cls: false,
+        animation: [false],
+        duration: 200,
+        velocity: 0.2,
+        origin: false,
+        transition: "ease",
+        clsEnter: "uk-togglabe-enter",
+        clsLeave: "uk-togglabe-leave"
+      },
+      computed: {
+        hasAnimation({ animation }) {
+          return !!animation[0];
+        },
+        hasTransition({ animation }) {
+          return ["slide", "reveal"].some((transition) => startsWith(animation[0], transition));
+        }
+      },
+      methods: {
+        async toggleElement(targets, toggle, animate) {
+          try {
+            await Promise.all(
+              toNodes(targets).map((el) => {
+                const show = isBoolean(toggle) ? toggle : !this.isToggled(el);
+                if (!trigger(el, `before${show ? "show" : "hide"}`, [this])) {
+                  return Promise.reject();
+                }
+                const promise = (isFunction(animate) ? animate : animate === false || !this.hasAnimation ? toggleInstant : this.hasTransition ? toggleTransition : toggleAnimation)(el, show, this);
+                const cls = show ? this.clsEnter : this.clsLeave;
+                addClass(el, cls);
+                trigger(el, show ? "show" : "hide", [this]);
+                const done = () => {
+                  removeClass(el, cls);
+                  trigger(el, show ? "shown" : "hidden", [this]);
+                };
+                return promise ? promise.then(done, () => {
+                  removeClass(el, cls);
+                  return Promise.reject();
+                }) : done();
+              })
+            );
+            return true;
+          } catch (e) {
+            return false;
           }
         },
-        // Clicking a button does not give it focus on all browsers and platforms
-        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#clicking_and_focus
-        [pointerDown$1](e) {
-          if (isTouch(e)) {
-            this.show();
+        isToggled(el = this.$el) {
+          el = toNode(el);
+          return hasClass(el, this.clsEnter) ? true : hasClass(el, this.clsLeave) ? false : this.cls ? hasClass(el, this.cls.split(" ")[0]) : isVisible(el);
+        },
+        _toggle(el, toggled) {
+          if (!el) {
+            return;
+          }
+          toggled = Boolean(toggled);
+          let changed;
+          if (this.cls) {
+            changed = includes(this.cls, " ") || toggled !== hasClass(el, this.cls);
+            changed && toggleClass(el, this.cls, includes(this.cls, " ") ? void 0 : toggled);
+          } else {
+            changed = toggled === el.hidden;
+            changed && (el.hidden = !toggled);
+          }
+          $$("[autofocus]", el).some((el2) => isVisible(el2) ? el2.focus() || true : el2.blur());
+          if (changed) {
+            trigger(el, "toggled", [toggled, this]);
           }
         }
       }
     };
-    function makeFocusable(el) {
-      if (!isFocusable(el)) {
-        attr(el, "tabindex", "0");
-      }
+    function toggleInstant(el, show, { _toggle }) {
+      Animation.cancel(el);
+      Transition.cancel(el);
+      return _toggle(el, show);
     }
-    function getAlignment(el, target, [dir, align]) {
-      const elOffset = offset(el);
-      const targetOffset = offset(target);
-      const properties = [
+    async function toggleTransition(el, show, { animation, duration, velocity, transition, _toggle }) {
+      var _a;
+      const [mode = "reveal", startProp = "top"] = ((_a = animation[0]) == null ? void 0 : _a.split("-")) || [];
+      const dirs = [
         ["left", "right"],
         ["top", "bottom"]
       ];
-      for (const props2 of properties) {
-        if (elOffset[props2[0]] >= targetOffset[props2[1]]) {
-          dir = props2[1];
-          break;
-        }
-        if (elOffset[props2[1]] <= targetOffset[props2[0]]) {
-          dir = props2[0];
-          break;
+      const dir = dirs[includes(dirs[0], startProp) ? 0 : 1];
+      const end = dir[1] === startProp;
+      const props = ["width", "height"];
+      const dimProp = props[dirs.indexOf(dir)];
+      const marginProp = `margin-${dir[0]}`;
+      const marginStartProp = `margin-${startProp}`;
+      let currentDim = dimensions(el)[dimProp];
+      const inProgress = Transition.inProgress(el);
+      await Transition.cancel(el);
+      if (show) {
+        _toggle(el, true);
+      }
+      const prevProps = Object.fromEntries(
+        [
+          "padding",
+          "border",
+          "width",
+          "height",
+          "minWidth",
+          "minHeight",
+          "overflowY",
+          "overflowX",
+          marginProp,
+          marginStartProp
+        ].map((key) => [key, el.style[key]])
+      );
+      const dim = dimensions(el);
+      const currentMargin = toFloat(css(el, marginProp));
+      const marginStart = toFloat(css(el, marginStartProp));
+      const endDim = dim[dimProp] + marginStart;
+      if (!inProgress && !show) {
+        currentDim += marginStart;
+      }
+      const [wrapper] = wrapInner(el, "<div>");
+      css(wrapper, {
+        boxSizing: "border-box",
+        height: dim.height,
+        width: dim.width,
+        ...css(el, [
+          "overflow",
+          "padding",
+          "borderTop",
+          "borderRight",
+          "borderBottom",
+          "borderLeft",
+          "borderImage",
+          marginStartProp
+        ])
+      });
+      css(el, {
+        padding: 0,
+        border: 0,
+        minWidth: 0,
+        minHeight: 0,
+        [marginStartProp]: 0,
+        width: dim.width,
+        height: dim.height,
+        overflow: "hidden",
+        [dimProp]: currentDim
+      });
+      const percent = currentDim / endDim;
+      duration = (velocity * endDim + duration) * (show ? 1 - percent : percent);
+      const endProps = { [dimProp]: show ? endDim : 0 };
+      if (end) {
+        css(el, marginProp, endDim - currentDim + currentMargin);
+        endProps[marginProp] = show ? currentMargin : endDim + currentMargin;
+      }
+      if (!end ^ mode === "reveal") {
+        css(wrapper, marginProp, -endDim + currentDim);
+        Transition.start(wrapper, { [marginProp]: show ? 0 : -endDim }, duration, transition);
+      }
+      try {
+        await Transition.start(el, endProps, duration, transition);
+      } finally {
+        css(el, prevProps);
+        unwrap(wrapper.firstChild);
+        if (!show) {
+          _toggle(el, false);
         }
       }
-      const props = includes(properties[0], dir) ? properties[1] : properties[0];
-      if (elOffset[props[0]] === targetOffset[props[0]]) {
-        align = props[0];
-      } else if (elOffset[props[1]] === targetOffset[props[1]]) {
-        align = props[1];
-      } else {
-        align = "center";
-      }
-      return [dir, align];
     }
-
-    var upload = {
-      mixins: [I18n],
-      i18n: {
-        invalidMime: "Invalid File Type: %s",
-        invalidName: "Invalid File Name: %s",
-        invalidSize: "Invalid File Size: %s Kilobytes Max"
-      },
-      props: {
-        allow: String,
-        clsDragover: String,
-        concurrent: Number,
-        maxSize: Number,
-        method: String,
-        mime: String,
-        multiple: Boolean,
-        name: String,
-        params: Object,
-        type: String,
-        url: String
-      },
-      data: {
-        allow: false,
-        clsDragover: "uk-dragover",
-        concurrent: 1,
-        maxSize: 0,
-        method: "POST",
-        mime: false,
-        multiple: false,
-        name: "files[]",
-        params: {},
-        type: "",
-        url: "",
-        abort: noop,
-        beforeAll: noop,
-        beforeSend: noop,
-        complete: noop,
-        completeAll: noop,
-        error: noop,
-        fail: noop,
-        load: noop,
-        loadEnd: noop,
-        loadStart: noop,
-        progress: noop
-      },
-      events: {
-        change(e) {
-          if (!matches(e.target, 'input[type="file"]')) {
-            return;
-          }
-          e.preventDefault();
-          if (e.target.files) {
-            this.upload(e.target.files);
-          }
-          e.target.value = "";
-        },
-        drop(e) {
-          stop(e);
-          const transfer = e.dataTransfer;
-          if (!(transfer == null ? void 0 : transfer.files)) {
-            return;
-          }
-          removeClass(this.$el, this.clsDragover);
-          this.upload(transfer.files);
-        },
-        dragenter(e) {
-          stop(e);
-        },
-        dragover(e) {
-          stop(e);
-          addClass(this.$el, this.clsDragover);
-        },
-        dragleave(e) {
-          stop(e);
-          removeClass(this.$el, this.clsDragover);
-        }
-      },
-      methods: {
-        async upload(files) {
-          files = toArray(files);
-          if (!files.length) {
-            return;
-          }
-          trigger(this.$el, "upload", [files]);
-          for (const file of files) {
-            if (this.maxSize && this.maxSize * 1e3 < file.size) {
-              this.fail(this.t("invalidSize", this.maxSize));
-              return;
-            }
-            if (this.allow && !match$1(this.allow, file.name)) {
-              this.fail(this.t("invalidName", this.allow));
-              return;
-            }
-            if (this.mime && !match$1(this.mime, file.type)) {
-              this.fail(this.t("invalidMime", this.mime));
-              return;
-            }
-          }
-          if (!this.multiple) {
-            files = files.slice(0, 1);
-          }
-          this.beforeAll(this, files);
-          const chunks = chunk(files, this.concurrent);
-          const upload = async (files2) => {
-            const data = new FormData();
-            files2.forEach((file) => data.append(this.name, file));
-            for (const key in this.params) {
-              data.append(key, this.params[key]);
-            }
-            try {
-              const xhr = await ajax(this.url, {
-                data,
-                method: this.method,
-                responseType: this.type,
-                beforeSend: (env) => {
-                  const { xhr: xhr2 } = env;
-                  on(xhr2.upload, "progress", this.progress);
-                  for (const type of ["loadStart", "load", "loadEnd", "abort"]) {
-                    on(xhr2, type.toLowerCase(), this[type]);
-                  }
-                  return this.beforeSend(env);
-                }
-              });
-              this.complete(xhr);
-              if (chunks.length) {
-                await upload(chunks.shift());
-              } else {
-                this.completeAll(xhr);
-              }
-            } catch (e) {
-              this.error(e);
-            }
-          };
-          await upload(chunks.shift());
-        }
+    function toggleAnimation(el, show, cmp) {
+      Animation.cancel(el);
+      const { animation, duration, _toggle } = cmp;
+      if (show) {
+        _toggle(el, true);
+        return Animation.in(el, animation[0], duration, cmp.origin);
       }
-    };
-    function match$1(pattern, path) {
-      return path.match(
-        new RegExp(
-          `^${pattern.replace(/\//g, "\\/").replace(/\*\*/g, "(\\/[^\\/]+)*").replace(/\*/g, "[^\\/]+").replace(/((?!\\))\?/g, "$1.")}$`,
-          "i"
-        )
+      return Animation.out(el, animation[1] || animation[0], duration, cmp.origin).then(
+        () => _toggle(el, false)
       );
     }
-    function chunk(files, size) {
-      const chunks = [];
-      for (let i = 0; i < files.length; i += size) {
-        chunks.push(files.slice(i, i + size));
-      }
-      return chunks;
-    }
-    function stop(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    function ajax(url, options) {
-      const env = {
-        data: null,
-        method: "GET",
-        headers: {},
-        xhr: new XMLHttpRequest(),
-        beforeSend: noop,
-        responseType: "",
-        ...options
-      };
-      return Promise.resolve().then(() => env.beforeSend(env)).then(() => send(url, env));
-    }
-    function send(url, env) {
-      return new Promise((resolve, reject) => {
-        const { xhr } = env;
-        for (const prop in env) {
-          if (prop in xhr) {
-            try {
-              xhr[prop] = env[prop];
-            } catch (e) {
-            }
-          }
-        }
-        xhr.open(env.method.toUpperCase(), url);
-        for (const header in env.headers) {
-          xhr.setRequestHeader(header, env.headers[header]);
-        }
-        on(xhr, "load", () => {
-          if (xhr.status === 0 || xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
-            resolve(xhr);
-          } else {
-            reject(
-              assign(Error(xhr.statusText), {
-                xhr,
-                status: xhr.status
-              })
-            );
-          }
-        });
-        on(xhr, "error", () => reject(assign(Error("Network Error"), { xhr })));
-        on(xhr, "timeout", () => reject(assign(Error("Network Timeout"), { xhr })));
-        xhr.send(env.data);
-      });
-    }
 
-    var components$1 = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        Countdown: countdown,
-        Filter: filter,
-        Lightbox: lightbox,
-        LightboxPanel: LightboxPanel,
-        Notification: notification,
-        Parallax: parallax,
-        Slider: slider,
-        SliderParallax: sliderParallax,
-        Slideshow: slideshow,
-        SlideshowParallax: sliderParallax,
-        Sortable: sortable,
-        Tooltip: tooltip,
-        Upload: upload
-    });
-
-    function boot(App) {
-      if (inBrowser && window.MutationObserver) {
-        if (document.body) {
-          requestAnimationFrame(() => init(App));
-        } else {
-          new MutationObserver((records, observer) => {
-            if (document.body) {
-              init(App);
-              observer.disconnect();
-            }
-          }).observe(document.documentElement, { childList: true });
-        }
-      }
-    }
-    function init(App) {
-      trigger(document, "uikit:init", App);
-      if (document.body) {
-        apply(document.body, connect);
-      }
-      new MutationObserver((records) => records.forEach(applyChildListMutation)).observe(document, {
-        childList: true,
-        subtree: true
-      });
-      new MutationObserver((records) => records.forEach(applyAttributeMutation)).observe(document, {
-        attributes: true,
-        subtree: true
-      });
-      App._initialized = true;
-    }
-    function applyChildListMutation({ addedNodes, removedNodes }) {
-      for (const node of addedNodes) {
-        apply(node, connect);
-      }
-      for (const node of removedNodes) {
-        apply(node, disconnect);
-      }
-    }
-    function applyAttributeMutation({ target, attributeName }) {
-      var _a;
-      const name = getComponentName(attributeName);
-      if (name) {
-        if (hasAttr(target, attributeName)) {
-          createComponent(name, target);
-          return;
-        }
-        (_a = getComponent(target, name)) == null ? void 0 : _a.$destroy();
-      }
-    }
-    function connect(node) {
-      const components2 = getComponents(node);
-      for (const name in getComponents(node)) {
-        callConnected(components2[name]);
-      }
-      for (const attributeName of node.getAttributeNames()) {
-        const name = getComponentName(attributeName);
-        name && createComponent(name, node);
-      }
-    }
-    function disconnect(node) {
-      const components2 = getComponents(node);
-      for (const name in getComponents(node)) {
-        callDisconnected(components2[name]);
-      }
-    }
-    function getComponentName(attribute) {
-      if (startsWith(attribute, "data-")) {
-        attribute = attribute.slice(5);
-      }
-      const cmp = components$2[attribute];
-      return cmp && (isPlainObject(cmp) ? cmp : cmp.options).name;
-    }
-
-    globalApi(App);
-    instanceApi(App);
+    const keyMap = {
+      TAB: 9,
+      ESC: 27,
+      SPACE: 32,
+      END: 35,
+      HOME: 36,
+      LEFT: 37,
+      UP: 38,
+      RIGHT: 39,
+      DOWN: 40
+    };
 
     var Accordion = {
       mixins: [Class, Togglable],
@@ -6389,7 +2750,7 @@
         }
       ],
       update() {
-        const activeItems = filter$1(this.items, `.${this.clsOpen}`);
+        const activeItems = filter(this.items, `.${this.clsOpen}`);
         for (const index2 in this.items) {
           const toggle = this.toggles[index2];
           const content = this.contents[index2];
@@ -6415,7 +2776,7 @@
         toggle(item, animate) {
           item = this.items[getIndex(item, this.items)];
           let items = [item];
-          const activeItems = filter$1(this.items, `.${this.clsOpen}`);
+          const activeItems = filter(this.items, `.${this.clsOpen}`);
           if (!this.multiple && !includes(activeItems, items[0])) {
             items = items.concat(activeItems);
           }
@@ -6451,7 +2812,7 @@
       const currentHeight = toFloat(css(wrapper, "height"));
       await Transition.cancel(wrapper);
       hide(content, false);
-      const endHeight = sumBy(["marginTop", "marginBottom"], (prop) => css(content, prop)) + dimensions$1(content).height;
+      const endHeight = sumBy(["marginTop", "marginBottom"], (prop) => css(content, prop)) + dimensions(content).height;
       const percent = currentHeight / endHeight;
       duration = (velocity * endHeight + duration) * (show ? 1 - percent : percent);
       css(wrapper, "height", currentHeight);
@@ -6501,12 +2862,12 @@
       },
       methods: {
         async close() {
-          await this.toggleElement(this.$el, false, animate);
+          await this.toggleElement(this.$el, false, animate$1);
           this.$destroy(true);
         }
       }
     };
-    function animate(el, show, { duration, transition, velocity }) {
+    function animate$1(el, show, { duration, transition, velocity }) {
       const height = toFloat(css(el, "height"));
       css(el, "height", height);
       return Transition.start(
@@ -6630,7 +2991,130 @@
       }
     }
 
-    let active;
+    var Container = {
+      props: {
+        container: Boolean
+      },
+      data: {
+        container: true
+      },
+      computed: {
+        container({ container }) {
+          return container === true && this.$container || container && $(container);
+        }
+      }
+    };
+
+    let prevented;
+    function preventBackgroundScroll(el) {
+      const off = on(
+        el,
+        "touchmove",
+        (e) => {
+          if (e.targetTouches.length !== 1 || matches(e.target, 'input[type="range"')) {
+            return;
+          }
+          let { scrollHeight, clientHeight } = scrollParent(e.target);
+          if (clientHeight >= scrollHeight && e.cancelable) {
+            e.preventDefault();
+          }
+        },
+        { passive: false }
+      );
+      if (prevented) {
+        return off;
+      }
+      prevented = true;
+      const { scrollingElement } = document;
+      css(scrollingElement, {
+        overflowY: CSS.supports("overflow", "clip") ? "clip" : "hidden",
+        touchAction: "none",
+        paddingRight: width(window) - scrollingElement.clientWidth || ""
+      });
+      return () => {
+        prevented = false;
+        off();
+        css(scrollingElement, { overflowY: "", touchAction: "", paddingRight: "" });
+      };
+    }
+
+    var Position = {
+      props: {
+        pos: String,
+        offset: null,
+        flip: Boolean,
+        shift: Boolean,
+        inset: Boolean
+      },
+      data: {
+        pos: `bottom-${isRtl ? "right" : "left"}`,
+        offset: false,
+        flip: true,
+        shift: true,
+        inset: false
+      },
+      connected() {
+        this.pos = this.$props.pos.split("-").concat("center").slice(0, 2);
+        [this.dir, this.align] = this.pos;
+        this.axis = includes(["top", "bottom"], this.dir) ? "y" : "x";
+      },
+      methods: {
+        positionAt(element, target, boundary) {
+          let offset = [this.getPositionOffset(element), this.getShiftOffset(element)];
+          const placement = [this.flip && "flip", this.shift && "shift"];
+          const attach = {
+            element: [this.inset ? this.dir : flipPosition(this.dir), this.align],
+            target: [this.dir, this.align]
+          };
+          if (this.axis === "y") {
+            for (const prop in attach) {
+              attach[prop].reverse();
+            }
+            offset.reverse();
+            placement.reverse();
+          }
+          const restoreScrollPosition = storeScrollPosition(element);
+          const elDim = dimensions(element);
+          css(element, { top: -elDim.height, left: -elDim.width });
+          positionAt(element, target, {
+            attach,
+            offset,
+            boundary,
+            placement,
+            viewportOffset: this.getViewportOffset(element)
+          });
+          restoreScrollPosition();
+        },
+        getPositionOffset(element) {
+          return toPx(
+            this.offset === false ? css(element, "--uk-position-offset") : this.offset,
+            this.axis === "x" ? "width" : "height",
+            element
+          ) * (includes(["left", "top"], this.dir) ? -1 : 1) * (this.inset ? -1 : 1);
+        },
+        getShiftOffset(element) {
+          return this.align === "center" ? 0 : toPx(
+            css(element, "--uk-position-shift-offset"),
+            this.axis === "y" ? "width" : "height",
+            element
+          ) * (includes(["left", "top"], this.align) ? 1 : -1);
+        },
+        getViewportOffset(element) {
+          return toPx(css(element, "--uk-position-viewport-offset"));
+        }
+      }
+    };
+    function storeScrollPosition(element) {
+      const scrollElement = scrollParent(element);
+      const { scrollTop } = scrollElement;
+      return () => {
+        if (scrollTop !== scrollElement.scrollTop) {
+          scrollElement.scrollTop = scrollTop;
+        }
+      };
+    }
+
+    let active$1;
     var drop = {
       mixins: [Container, Position, Togglable],
       args: "pos",
@@ -6703,7 +3187,7 @@
       disconnected() {
         if (this.isActive()) {
           this.hide(false);
-          active = null;
+          active$1 = null;
         }
         css(this.$el, this._style);
       },
@@ -6808,12 +3292,12 @@
           name: "show",
           self: true,
           handler() {
-            active = this;
+            active$1 = this;
             this.tracker.init();
             const handlers = [
               listenForResize(this),
-              listenForEscClose(this),
-              listenForBackgroundClose(this),
+              listenForEscClose$1(this),
+              listenForBackgroundClose$1(this),
               this.autoUpdate && listenForScroll(this),
               !this.bgScroll && preventBackgroundScroll(this.$el)
             ];
@@ -6833,10 +3317,10 @@
           name: "hide",
           handler({ target }) {
             if (this.$el !== target) {
-              active = active === null && within(target, this.$el) && this.isToggled() ? this : active;
+              active$1 = active$1 === null && within(target, this.$el) && this.isToggled() ? this : active$1;
               return;
             }
-            active = this.isActive() ? null : active;
+            active$1 = this.isActive() ? null : active$1;
             this.tracker.cancel();
           }
         }
@@ -6858,15 +3342,15 @@
           if (this.isActive()) {
             return;
           }
-          if (active) {
-            if (delay && active.isDelaying) {
+          if (active$1) {
+            if (delay && active$1.isDelaying) {
               this.showTimer = setTimeout(() => matches(target, ":hover") && this.show(), 10);
               return;
             }
             let prev;
-            while (active && prev !== active && !within(this.$el, active.$el)) {
-              prev = active;
-              active.hide(false, false);
+            while (active$1 && prev !== active$1 && !within(this.$el, active$1.$el)) {
+              prev = active$1;
+              active$1.hide(false, false);
             }
           }
           if (this.container && parent(this.$el) !== this.container) {
@@ -6899,7 +3383,7 @@
           this.isDelaying = false;
         },
         isActive() {
-          return active === this;
+          return active$1 === this;
         },
         position() {
           removeClass(this.$el, "uk-drop-stack");
@@ -6980,21 +3464,21 @@
         passive: true
       });
     }
-    function listenForEscClose(drop) {
+    function listenForEscClose$1(drop) {
       return on(document, "keydown", (e) => {
         if (e.keyCode === keyMap.ESC) {
           drop.hide(false);
         }
       });
     }
-    function listenForBackgroundClose(drop) {
-      return on(document, pointerDown$1, ({ target }) => {
+    function listenForBackgroundClose$1(drop) {
+      return on(document, pointerDown, ({ target }) => {
         if (!within(target, drop.$el)) {
           once(
             document,
-            `${pointerUp$1} ${pointerCancel} scroll`,
+            `${pointerUp} ${pointerCancel} scroll`,
             ({ defaultPrevented, type, target: newTarget }) => {
-              if (!defaultPrevented && type === pointerUp$1 && target === newTarget && !(drop.targetEl && within(target, drop.targetEl))) {
+              if (!defaultPrevented && type === pointerUp && target === newTarget && !(drop.targetEl && within(target, drop.targetEl))) {
                 drop.hide(false);
               }
             },
@@ -7256,7 +3740,7 @@
       methods: {
         getActive() {
           var _a;
-          return includes(this.dropdowns, (_a = active) == null ? void 0 : _a.$el) && active;
+          return includes(this.dropdowns, (_a = active$1) == null ? void 0 : _a.$el) && active$1;
         },
         async transitionTo(newHeight, el) {
           const { dropbar } = this;
@@ -7372,6 +3856,108 @@
         }
       ]
     };
+
+    var Margin = {
+      props: {
+        margin: String,
+        firstColumn: Boolean
+      },
+      data: {
+        margin: "uk-margin-small-top",
+        firstColumn: "uk-first-column"
+      },
+      observe: [
+        mutation({
+          options: {
+            childList: true,
+            attributes: true,
+            attributeFilter: ["style"]
+          }
+        }),
+        resize({
+          target: ({ $el }) => [$el, ...children($el)]
+        })
+      ],
+      update: {
+        read() {
+          const rows = getRows(this.$el.children);
+          return {
+            rows,
+            columns: getColumns(rows)
+          };
+        },
+        write({ columns, rows }) {
+          for (const row of rows) {
+            for (const column of row) {
+              toggleClass(column, this.margin, rows[0] !== row);
+              toggleClass(column, this.firstColumn, columns[0].includes(column));
+            }
+          }
+        },
+        events: ["resize"]
+      }
+    };
+    function getRows(items) {
+      return sortBy(items, "top", "bottom");
+    }
+    function getColumns(rows) {
+      const columns = [];
+      for (const row of rows) {
+        const sorted = sortBy(row, "left", "right");
+        for (let j = 0; j < sorted.length; j++) {
+          columns[j] = columns[j] ? columns[j].concat(sorted[j]) : sorted[j];
+        }
+      }
+      return isRtl ? columns.reverse() : columns;
+    }
+    function sortBy(items, startProp, endProp) {
+      const sorted = [[]];
+      for (const el of items) {
+        if (!isVisible(el)) {
+          continue;
+        }
+        let dim = getOffset(el);
+        for (let i = sorted.length - 1; i >= 0; i--) {
+          const current = sorted[i];
+          if (!current[0]) {
+            current.push(el);
+            break;
+          }
+          let startDim;
+          if (current[0].offsetParent === el.offsetParent) {
+            startDim = getOffset(current[0]);
+          } else {
+            dim = getOffset(el, true);
+            startDim = getOffset(current[0], true);
+          }
+          if (dim[startProp] >= startDim[endProp] - 1 && dim[startProp] !== startDim[startProp]) {
+            sorted.push([el]);
+            break;
+          }
+          if (dim[endProp] - 1 > startDim[startProp] || dim[startProp] === startDim[startProp]) {
+            current.push(el);
+            break;
+          }
+          if (i === 0) {
+            sorted.unshift([el]);
+            break;
+          }
+        }
+      }
+      return sorted;
+    }
+    function getOffset(element, offset = false) {
+      let { offsetTop, offsetLeft, offsetHeight, offsetWidth } = element;
+      if (offset) {
+        [offsetTop, offsetLeft] = offsetPosition(element);
+      }
+      return {
+        top: offsetTop,
+        left: offsetLeft,
+        bottom: offsetTop + offsetHeight,
+        right: offsetLeft + offsetWidth
+      };
+    }
 
     var grid = {
       extends: Margin,
@@ -7525,7 +4111,7 @@
         css(element, "display", "block", "important");
       }
       css(element, "minHeight", "");
-      const height = dimensions$1(element).height - boxModelAdjust(element, "height", "content-box");
+      const height = dimensions(element).height - boxModelAdjust(element, "height", "content-box");
       css(element, style);
       return height;
     }
@@ -7563,7 +4149,7 @@
           const isScrollingElement = scrollingElement === scrollElement || body === scrollElement;
           minHeight = `calc(${isScrollingElement ? "100vh" : `${viewportHeight}px`}`;
           if (this.expand) {
-            const diff = dimensions$1(scrollElement).height - dimensions$1(this.$el).height;
+            const diff = dimensions(scrollElement).height - dimensions(this.$el).height;
             minHeight += ` - ${diff}px`;
           } else {
             if (this.offsetTop) {
@@ -7575,13 +4161,13 @@
               }
             }
             if (this.offsetBottom === true) {
-              minHeight += ` - ${dimensions$1(this.$el.nextElementSibling).height}px`;
+              minHeight += ` - ${dimensions(this.$el.nextElementSibling).height}px`;
             } else if (isNumeric(this.offsetBottom)) {
               minHeight += ` - ${this.offsetBottom}vh`;
             } else if (this.offsetBottom && endsWith(this.offsetBottom, "px")) {
               minHeight += ` - ${toFloat(this.offsetBottom)}px`;
             } else if (isString(this.offsetBottom)) {
-              minHeight += ` - ${dimensions$1(query(this.offsetBottom, this.$el)).height}px`;
+              minHeight += ` - ${dimensions(query(this.offsetBottom, this.$el)).height}px`;
             }
           }
           minHeight += `${box ? ` - ${box}px` : ""})`;
@@ -7633,6 +4219,25 @@
     var spinner = "<svg width=\"30\" height=\"30\" viewBox=\"0 0 30 30\"><circle fill=\"none\" stroke=\"#000\" cx=\"15\" cy=\"15\" r=\"14\"/></svg>";
 
     var totop = "<svg width=\"18\" height=\"10\" viewBox=\"0 0 18 10\"><polyline fill=\"none\" stroke=\"#000\" stroke-width=\"1.2\" points=\"1 9 9 1 17 9\"/></svg>";
+
+    var I18n = {
+      props: {
+        i18n: Object
+      },
+      data: {
+        i18n: null
+      },
+      methods: {
+        t(key, ...params) {
+          var _a, _b, _c;
+          let i = 0;
+          return ((_c = ((_a = this.i18n) == null ? void 0 : _a[key]) || ((_b = this.$options.i18n) == null ? void 0 : _b[key])) == null ? void 0 : _c.replace(
+            /%s/g,
+            () => params[i++] || ""
+          )) || "";
+        }
+      }
+    };
 
     var Svg = {
       args: "src",
@@ -8000,6 +4605,45 @@
       return isTag(el, "img");
     }
 
+    var Media = {
+      props: {
+        media: Boolean
+      },
+      data: {
+        media: false
+      },
+      connected() {
+        const media = toMedia(this.media, this.$el);
+        this.matchMedia = true;
+        if (media) {
+          this.mediaObj = window.matchMedia(media);
+          const handler = () => {
+            this.matchMedia = this.mediaObj.matches;
+            trigger(this.$el, createEvent("mediachange", false, true, [this.mediaObj]));
+          };
+          this.offMediaObj = on(this.mediaObj, "change", () => {
+            handler();
+            this.$emit("resize");
+          });
+          handler();
+        }
+      },
+      disconnected() {
+        var _a;
+        (_a = this.offMediaObj) == null ? void 0 : _a.call(this);
+      }
+    };
+    function toMedia(value, element) {
+      if (isString(value)) {
+        if (startsWith(value, "@")) {
+          value = toFloat(css(element, `--uk-breakpoint-${value.substr(1)}`));
+        } else if (isNaN(value)) {
+          return value;
+        }
+      }
+      return value && isNumeric(value) ? `(min-width: ${value}px)` : "";
+    }
+
     var leader = {
       mixins: [Class, Media],
       props: {
@@ -8039,6 +4683,221 @@
         events: ["resize"]
       }
     };
+
+    const active = [];
+    var Modal = {
+      mixins: [Class, Container, Togglable],
+      props: {
+        selPanel: String,
+        selClose: String,
+        escClose: Boolean,
+        bgClose: Boolean,
+        stack: Boolean,
+        role: String
+      },
+      data: {
+        cls: "uk-open",
+        escClose: true,
+        bgClose: true,
+        overlay: true,
+        stack: false,
+        role: "dialog"
+      },
+      computed: {
+        panel({ selPanel }, $el) {
+          return $(selPanel, $el);
+        },
+        transitionElement() {
+          return this.panel;
+        },
+        bgClose({ bgClose }) {
+          return bgClose && this.panel;
+        }
+      },
+      connected() {
+        attr(this.panel || this.$el, "role", this.role);
+        if (this.overlay) {
+          attr(this.panel || this.$el, "aria-modal", true);
+        }
+      },
+      beforeDisconnect() {
+        if (includes(active, this)) {
+          this.toggleElement(this.$el, false, false);
+        }
+      },
+      events: [
+        {
+          name: "click",
+          delegate() {
+            return `${this.selClose},a[href*="#"]`;
+          },
+          handler(e) {
+            const { current, defaultPrevented } = e;
+            const { hash } = current;
+            if (!defaultPrevented && hash && isSameSiteAnchor(current) && !within(hash, this.$el) && $(hash, document.body)) {
+              this.hide();
+            } else if (matches(current, this.selClose)) {
+              e.preventDefault();
+              this.hide();
+            }
+          }
+        },
+        {
+          name: "toggle",
+          self: true,
+          handler(e) {
+            if (e.defaultPrevented) {
+              return;
+            }
+            e.preventDefault();
+            if (this.isToggled() === includes(active, this)) {
+              this.toggle();
+            }
+          }
+        },
+        {
+          name: "beforeshow",
+          self: true,
+          handler(e) {
+            if (includes(active, this)) {
+              return false;
+            }
+            if (!this.stack && active.length) {
+              Promise.all(active.map((modal) => modal.hide())).then(this.show);
+              e.preventDefault();
+            } else {
+              active.push(this);
+            }
+          }
+        },
+        {
+          name: "show",
+          self: true,
+          handler() {
+            if (this.stack) {
+              css(this.$el, "zIndex", toFloat(css(this.$el, "zIndex")) + active.length);
+            }
+            const handlers = [
+              this.overlay && preventBackgroundFocus(this),
+              this.overlay && preventBackgroundScroll(this.$el),
+              this.bgClose && listenForBackgroundClose(this),
+              this.escClose && listenForEscClose(this)
+            ];
+            once(
+              this.$el,
+              "hidden",
+              () => handlers.forEach((handler) => handler && handler()),
+              { self: true }
+            );
+            addClass(document.documentElement, this.clsPage);
+          }
+        },
+        {
+          name: "shown",
+          self: true,
+          handler() {
+            if (!isFocusable(this.$el)) {
+              attr(this.$el, "tabindex", "-1");
+            }
+            if (!matches(this.$el, ":focus-within")) {
+              this.$el.focus();
+            }
+          }
+        },
+        {
+          name: "hidden",
+          self: true,
+          handler() {
+            if (includes(active, this)) {
+              active.splice(active.indexOf(this), 1);
+            }
+            css(this.$el, "zIndex", "");
+            if (!active.some((modal) => modal.clsPage === this.clsPage)) {
+              removeClass(document.documentElement, this.clsPage);
+            }
+          }
+        }
+      ],
+      methods: {
+        toggle() {
+          return this.isToggled() ? this.hide() : this.show();
+        },
+        show() {
+          if (this.container && parent(this.$el) !== this.container) {
+            append(this.container, this.$el);
+            return new Promise(
+              (resolve) => requestAnimationFrame(() => this.show().then(resolve))
+            );
+          }
+          return this.toggleElement(this.$el, true, animate);
+        },
+        hide() {
+          return this.toggleElement(this.$el, false, animate);
+        }
+      }
+    };
+    function animate(el, show, { transitionElement, _toggle }) {
+      return new Promise(
+        (resolve, reject) => once(el, "show hide", () => {
+          var _a;
+          (_a = el._reject) == null ? void 0 : _a.call(el);
+          el._reject = reject;
+          _toggle(el, show);
+          const off = once(
+            transitionElement,
+            "transitionstart",
+            () => {
+              once(transitionElement, "transitionend transitioncancel", resolve, {
+                self: true
+              });
+              clearTimeout(timer);
+            },
+            { self: true }
+          );
+          const timer = setTimeout(
+            () => {
+              off();
+              resolve();
+            },
+            toMs(css(transitionElement, "transitionDuration"))
+          );
+        })
+      ).then(() => delete el._reject);
+    }
+    function toMs(time) {
+      return time ? endsWith(time, "ms") ? toFloat(time) : toFloat(time) * 1e3 : 0;
+    }
+    function preventBackgroundFocus(modal) {
+      return on(document, "focusin", (e) => {
+        if (last(active) === modal && !within(e.target, modal.$el)) {
+          modal.$el.focus();
+        }
+      });
+    }
+    function listenForBackgroundClose(modal) {
+      return on(document, pointerDown, ({ target }) => {
+        if (last(active) !== modal || modal.overlay && !within(target, modal.$el) || within(target, modal.panel)) {
+          return;
+        }
+        once(
+          document,
+          `${pointerUp} ${pointerCancel} scroll`,
+          ({ defaultPrevented, type, target: newTarget }) => {
+            if (!defaultPrevented && type === pointerUp && target === newTarget) {
+              modal.hide();
+            }
+          },
+          true
+        );
+      });
+    }
+    function listenForEscClose(modal) {
+      return on(document, "keydown", (e) => {
+        if (e.keyCode === 27 && last(active) === modal) {
+          modal.hide();
+        }
+      });
+    }
 
     var modal = {
       install,
@@ -8342,7 +5201,7 @@
           return {
             max: Math.max(
               this.minHeight,
-              height(this.container) - (dimensions$1(this.content).height - height(this.$el))
+              height(this.container) - (dimensions(this.content).height - height(this.$el))
             )
           };
         },
@@ -8459,7 +5318,7 @@
       watch: {
         elements(elements) {
           if (this.hidden) {
-            css(filter$1(elements, `:not(.${this.inViewClass})`), "opacity", 0);
+            css(filter(elements, `:not(.${this.inViewClass})`), "opacity", 0);
           }
         }
       },
@@ -8964,6 +5823,21 @@
       requestAnimationFrame(() => css(el, "transition", ""));
     }
 
+    function getMaxPathLength(el) {
+      return Math.ceil(
+        Math.max(
+          0,
+          ...$$("[stroke]", el).map((stroke) => {
+            try {
+              return stroke.getTotalLength();
+            } catch (e) {
+              return 0;
+            }
+          })
+        )
+      );
+    }
+
     var svg = {
       mixins: [Svg],
       args: "src",
@@ -9294,7 +6168,7 @@
       observe: lazyload({ target: ({ target }) => target }),
       events: [
         {
-          name: pointerDown$1,
+          name: pointerDown,
           filter() {
             return includes(this.mode, "hover");
           },
@@ -9306,7 +6180,7 @@
             trigger(this.$el, "focus");
             once(
               document,
-              pointerDown$1,
+              pointerDown,
               () => trigger(this.$el, "blur"),
               true,
               (e2) => !within(e2.target, this.$el)
@@ -9463,8 +6337,6 @@
 
     each(components, (component, name) => App.component(name, component));
     boot(App);
-
-    each(components$1, (component, name) => App.component(name, component));
 
     return App;
 

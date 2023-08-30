@@ -1,4 +1,4 @@
-/*! UIkit 3.15.19 | https://www.getuikit.com | (c) 2014 - 2022 YOOtheme | MIT License */
+/*! UIkit 3.16.26 | https://www.getuikit.com | (c) 2014 - 2023 YOOtheme | MIT License */
 /* ========================================================================
    Component: Base
  ========================================================================== */
@@ -2071,7 +2071,7 @@ select.uk-form-width-xsmall {
   bottom: 0;
   right: 0;
   left: 100%;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid currentColor;
   transition: left 0.3s ease-out;
 }
 /* Hover */
@@ -2142,6 +2142,7 @@ select.uk-form-width-xsmall {
      * Workaround: Just use a `button` or `input` element as button
      */
 .uk-button-group .uk-button:hover,
+.uk-button-group .uk-button:focus,
 .uk-button-group .uk-button:active,
 .uk-button-group .uk-button.uk-active {
   position: relative;
@@ -3512,123 +3513,33 @@ select.uk-form-width-xsmall {
 .uk-drop-stack .uk-drop-grid > * {
   width: 100% !important;
 }
-/* ========================================================================
-   Component: Dropdown
+/* Parent icon
  ========================================================================== */
-/*
- * 1. Hide by default
- * 2. Set position
- * 3. Set a default width
- * 4. Style
- */
-.uk-dropdown {
-  /* 1 */
-  display: none;
-  /* 2 */
-  position: absolute;
-  z-index: 1020;
-  --uk-position-offset: 10px;
-  --uk-position-viewport-offset: 15px;
-  /* 3 */
-  box-sizing: border-box;
-  min-width: 200px;
-  /* 4 */
-  padding: 25px;
-  background: #fff;
-  color: #666;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+.uk-drop-parent-icon {
+  margin-right: 0.25em;
+  transition: transform 0.3s ease-out;
 }
-/* Show */
-.uk-dropdown.uk-open {
-  display: block;
-}
-/*
- * Remove margin from the last-child
- */
-.uk-dropdown > :last-child {
-  margin-bottom: 0;
-}
-/* Size modifier
- ========================================================================== */
-.uk-dropdown-large {
-  padding: 40px;
-}
-/* Nav
- * Adopts `uk-nav`
- ========================================================================== */
-.uk-dropdown-nav {
-  font-size: 0.875rem;
-}
-/*
- * Items
- */
-.uk-dropdown-nav > li > a {
-  color: #999;
-}
-/* Hover + Active */
-.uk-dropdown-nav > li > a:hover,
-.uk-dropdown-nav > li.uk-active > a {
-  color: #666;
-}
-/*
- * Subtitle
- */
-.uk-dropdown-nav .uk-nav-subtitle {
-  font-size: 12px;
-}
-/*
- * Header
- */
-.uk-dropdown-nav .uk-nav-header {
-  color: #333;
-}
-/*
- * Divider
- */
-.uk-dropdown-nav .uk-nav-divider {
-  border-top: 1px solid #e5e5e5;
-}
-/*
- * Sublists
- */
-.uk-dropdown-nav .uk-nav-sub a {
-  color: #999;
-}
-.uk-dropdown-nav .uk-nav-sub a:hover,
-.uk-dropdown-nav .uk-nav-sub li.uk-active > a {
-  color: #666;
-}
-/* Grid modifiers
- ========================================================================== */
-.uk-dropdown-stack .uk-dropdown-grid > * {
-  width: 100% !important;
+[aria-expanded="true"] > .uk-drop-parent-icon {
+  transform: rotateX(180deg);
 }
 /* ========================================================================
    Component: Dropbar
  ========================================================================== */
 /*
- * 1. Hide by default
- * 2. Set position
- * 3. Style
+ * Adopts `uk-drop`
+ * 1. Reset drop
+ * 2. Style
  */
 .uk-dropbar {
   --uk-position-offset: 0;
   --uk-position-shift-offset: 0;
   --uk-position-viewport-offset: 0;
   /* 1 */
-  display: none;
+  width: auto;
   /* 2 */
-  position: absolute;
-  z-index: 1020;
-  /* 3 */
-  box-sizing: border-box;
   padding: 25px 15px 25px 15px;
   background: #fff;
   color: #666;
-}
-/* Show */
-.uk-dropbar.uk-open {
-  display: block;
 }
 /*
  * Remove margin from the last-child
@@ -3650,6 +3561,9 @@ select.uk-form-width-xsmall {
     padding-left: 40px;
   }
 }
+.uk-dropbar :focus-visible {
+  outline-color: #333 !important;
+}
 /* Size modifier
  ========================================================================== */
 .uk-dropbar-large {
@@ -3669,6 +3583,24 @@ select.uk-form-width-xsmall {
 }
 .uk-dropbar-left {
   box-shadow: 12px 0 7px -6px rgba(0, 0, 0, 0.05);
+}
+/* ========================================================================
+   Component: Dropnav
+ ========================================================================== */
+/*
+ * 1. Position
+ * 2. Reset dropbar
+ * 3. Width
+ */
+.uk-dropnav-dropbar {
+  /* 1 */
+  position: absolute;
+  z-index: 980;
+  /* 2 */
+  padding: 0;
+  /* 3 */
+  right: 0;
+  left: 0;
 }
 /* ========================================================================
    Component: Modal
@@ -3693,7 +3625,6 @@ select.uk-form-width-xsmall {
   z-index: 1010;
   /* 3 */
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   /* 4 */
   padding: 15px 15px;
   /* 5 */
@@ -3882,8 +3813,14 @@ select.uk-form-width-xsmall {
 .uk-modal-close-full {
   top: 0;
   left: 0;
-  padding: 20px;
+  padding: 10px;
   background: #fff;
+}
+/* Tablet landscape and bigger */
+@media (min-width: 960px) {
+  .uk-modal-close-full {
+    padding: 20px;
+  }
 }
 /* ========================================================================
    Component: Slideshow
@@ -3959,10 +3896,14 @@ select.uk-form-width-xsmall {
 /* Container
  ========================================================================== */
 /*
- * Clip child elements
+ * 1. Clip child elements
+ * 2. Prevent accidental scrolling through elements in slide getting focused
  */
 .uk-slider-container {
+  /* 1 */
   overflow: hidden;
+  /* 2 */
+  overflow: clip;
 }
 /*
  * Widen container to prevent box-shadows from clipping, `large-box-shadow`
@@ -4007,13 +3948,14 @@ select.uk-form-width-xsmall {
 /*
  * 1. Let items take content dimensions (0 0 auto)
  *    `max-width` needed to keep image responsiveness and prevent content overflow
- * 3. Create position context
+ * 2. Create position context
  */
 .uk-slider-items > * {
   /* 1 */
   flex: none;
+  box-sizing: border-box;
   max-width: 100%;
-  /* 3 */
+  /* 2 */
   position: relative;
 }
 /* ========================================================================
@@ -4102,7 +4044,6 @@ select.uk-form-width-xsmall {
   background: #222;
   /* 3 */
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 /* Phone landscape and bigger */
 @media (min-width: 640px) {
@@ -4996,9 +4937,10 @@ ul.uk-nav-sub {
  ========================================================================== */
 .uk-nav-parent-icon {
   margin-right: auto;
+  transition: transform 0.3s ease-out;
 }
-.uk-nav > li > a[aria-expanded="true"] .uk-nav-parent-icon {
-  transform: rotate(-180deg);
+.uk-nav > li.uk-open > a .uk-nav-parent-icon {
+  transform: rotateX(180deg);
 }
 /* Header
  ========================================================================== */
@@ -5213,7 +5155,7 @@ ul.uk-nav-sub {
 }
 /* Parent icon  */
 .uk-nav-center .uk-nav-parent-icon {
-  margin-right: 4px;
+  margin-right: 0.25em;
 }
 /* Style modifier
  ========================================================================== */
@@ -5251,7 +5193,7 @@ ul.uk-nav-sub {
 .uk-navbar-left,
 [class*='uk-navbar-center'] {
   display: flex;
-  gap: 30px;
+  gap: 15px;
   /* 1 */
   align-items: center;
 }
@@ -5290,10 +5232,10 @@ ul.uk-nav-sub {
   top: 0;
 }
 .uk-navbar-center-right {
-  left: calc(100% + 30px);
+  left: calc(100% + 15px);
 }
 .uk-navbar-center-left {
-  right: calc(100% + 30px);
+  right: calc(100% + 15px);
 }
 [class*='uk-navbar-center-'] {
   width: max-content;
@@ -5306,7 +5248,7 @@ ul.uk-nav-sub {
  */
 .uk-navbar-nav {
   display: flex;
-  gap: 30px;
+  gap: 15px;
   /* 1 */
   margin: 0;
   padding: 0;
@@ -5377,9 +5319,10 @@ ul.uk-nav-sub {
  ========================================================================== */
 .uk-navbar-parent-icon {
   margin-right: 4px;
+  transition: transform 0.3s ease-out;
 }
 .uk-navbar-nav > li > a[aria-expanded="true"] .uk-navbar-parent-icon {
-  transform: rotate(-180deg);
+  transform: rotateX(180deg);
 }
 /* Item
  ========================================================================== */
@@ -5429,33 +5372,21 @@ ul.uk-nav-sub {
 /* Dropdown
  ========================================================================== */
 /*
- * Adopts `uk-dropdown`
- * 1. Hide by default
- * 2. Set position
- * 3. Set a default width
- * 4. Style
+ * Adopts `uk-drop`
+ * 1. Set a default width
+ * 2. Style
  */
 .uk-navbar-dropdown {
-  /* 1 */
-  display: none;
-  /* 2 */
-  position: absolute;
-  z-index: 1020;
   --uk-position-offset: 15px;
   --uk-position-shift-offset: 0;
   --uk-position-viewport-offset: 15px;
-  /* 3 */
-  box-sizing: border-box;
+  /* 1 */
   width: 200px;
-  /* 4 */
+  /* 2 */
   padding: 25px;
   background: #fff;
   color: #666;
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
-}
-/* Show */
-.uk-navbar-dropdown.uk-open {
-  display: block;
 }
 /*
  * Remove margin from the last-child
@@ -5463,38 +5394,37 @@ ul.uk-nav-sub {
 .uk-navbar-dropdown > :last-child {
   margin-bottom: 0;
 }
+.uk-navbar-dropdown :focus-visible {
+  outline-color: #333 !important;
+}
 /*
  * Grid
  * Adopts `uk-grid`
  */
 /* Gutter Horizontal */
-.uk-navbar-dropdown-grid {
+.uk-navbar-dropdown .uk-drop-grid {
   margin-right: -30px;
 }
-.uk-navbar-dropdown-grid > * {
+.uk-navbar-dropdown .uk-drop-grid > * {
   padding-right: 30px;
 }
 /* Gutter Vertical */
-.uk-navbar-dropdown-grid > .uk-grid-margin {
+.uk-navbar-dropdown .uk-drop-grid > .uk-grid-margin {
   margin-top: 30px;
-}
-/* Stack */
-.uk-navbar-dropdown-stack .uk-navbar-dropdown-grid > * {
-  width: 100% !important;
 }
 /*
  * Width modifier
  */
-.uk-navbar-dropdown-width-2:not(.uk-navbar-dropdown-stack) {
+.uk-navbar-dropdown-width-2:not(.uk-drop-stack) {
   width: 400px;
 }
-.uk-navbar-dropdown-width-3:not(.uk-navbar-dropdown-stack) {
+.uk-navbar-dropdown-width-3:not(.uk-drop-stack) {
   width: 600px;
 }
-.uk-navbar-dropdown-width-4:not(.uk-navbar-dropdown-stack) {
+.uk-navbar-dropdown-width-4:not(.uk-drop-stack) {
   width: 800px;
 }
-.uk-navbar-dropdown-width-5:not(.uk-navbar-dropdown-stack) {
+.uk-navbar-dropdown-width-5:not(.uk-drop-stack) {
   width: 1000px;
 }
 /*
@@ -5592,17 +5522,35 @@ ul.uk-nav-sub {
 /* Dropbar
  ========================================================================== */
 /*
- * 1. Reset dropbar
- * 2. Width
+ * Adopts `uk-dropnav-dropbar`
  */
-.uk-navbar-dropbar {
-  /* 1 */
-  display: block !important;
-  z-index: 980;
-  padding: 0;
-  /* 2 */
-  right: 0;
-  left: 0;
+/*
+ * Create navbar placeholder space if dropbar is behind navbar
+ */
+.uk-navbar-dropbar-behind::before {
+  content: "";
+  display: block;
+  height: 80px;
+}
+/* Tablet landscape and bigger */
+@media (min-width: 960px) {
+  .uk-navbar-right,
+  .uk-navbar-left,
+  [class*='uk-navbar-center'] {
+    gap: 30px;
+  }
+  .uk-navbar-center-right {
+    left: calc(100% + 30px);
+  }
+  .uk-navbar-center-left {
+    right: calc(100% + 30px);
+  }
+}
+/* Tablet landscape and bigger */
+@media (min-width: 960px) {
+  .uk-navbar-nav {
+    gap: 30px;
+  }
 }
 /* ========================================================================
    Component: Subnav
@@ -6132,16 +6080,16 @@ ul.uk-nav-sub {
   bottom: 0;
   right: 0;
   left: 0;
-  background: rgba(255, 255, 255, 0.4);
-  transition: background-color 0.1s ease-in-out;
+  background-image: linear-gradient(-180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.4));
+  transition: opacity 0.1s ease-in-out;
 }
 /* Hover */
 .uk-thumbnav > * > :hover::after {
-  background-color: transparent;
+  opacity: 0;
 }
 /* Active */
 .uk-thumbnav > .uk-active > *::after {
-  background-color: transparent;
+  opacity: 0;
 }
 /* Modifier: 'uk-thumbnav-vertical'
  ========================================================================== */
@@ -6241,6 +6189,120 @@ ul.uk-nav-sub {
   padding-top: 10px;
 }
 /* ========================================================================
+   Component: Dropdown
+ ========================================================================== */
+/*
+ * Adopts `uk-drop`
+ * 1. Reset drop and let text expand the width instead of wrapping
+ * 2. Set a default width
+ * 3. Style
+ */
+.uk-dropdown {
+  --uk-position-offset: 10px;
+  --uk-position-viewport-offset: 15px;
+  /* 1 */
+  width: auto;
+  /* 2 */
+  min-width: 200px;
+  /* 3 */
+  padding: 25px;
+  background: #fff;
+  color: #666;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+/*
+ * Remove margin from the last-child
+ */
+.uk-dropdown > :last-child {
+  margin-bottom: 0;
+}
+.uk-dropdown :focus-visible {
+  outline-color: #333 !important;
+}
+/* Size modifier
+ ========================================================================== */
+.uk-dropdown-large {
+  padding: 40px;
+}
+/* Dropbar modifier
+ ========================================================================== */
+/*
+ * 1. Reset dropdown width to prevent to early shifting
+ * 2. Reset style
+ * 3. Padding
+ */
+.uk-dropdown-dropbar {
+  /* 1 */
+  width: auto;
+  /* 2 */
+  background: transparent;
+  /* 3 */
+  padding: 5px 0 25px 0;
+  --uk-position-viewport-offset: 15px;
+  box-shadow: none;
+}
+/* Phone landscape and bigger */
+@media (min-width: 640px) {
+  .uk-dropdown-dropbar {
+    --uk-position-viewport-offset: 30px;
+  }
+}
+/* Tablet landscape and bigger */
+@media (min-width: 960px) {
+  .uk-dropdown-dropbar {
+    --uk-position-viewport-offset: 40px;
+  }
+}
+.uk-dropdown-dropbar-large {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+/* Nav
+ * Adopts `uk-nav`
+ ========================================================================== */
+.uk-dropdown-nav {
+  font-size: 0.875rem;
+}
+/*
+ * Items
+ */
+.uk-dropdown-nav > li > a {
+  color: #999;
+}
+/* Hover + Active */
+.uk-dropdown-nav > li > a:hover,
+.uk-dropdown-nav > li.uk-active > a {
+  color: #666;
+}
+/*
+ * Subtitle
+ */
+.uk-dropdown-nav .uk-nav-subtitle {
+  font-size: 12px;
+}
+/*
+ * Header
+ */
+.uk-dropdown-nav .uk-nav-header {
+  color: #333;
+}
+/*
+ * Divider
+ */
+.uk-dropdown-nav .uk-nav-divider {
+  border-top: 1px solid #e5e5e5;
+}
+/*
+ * Sublists
+ */
+.uk-dropdown-nav .uk-nav-sub a {
+  color: #999;
+}
+.uk-dropdown-nav .uk-nav-sub a:hover,
+.uk-dropdown-nav .uk-nav-sub li.uk-active > a {
+  color: #666;
+}
+/* ========================================================================
    Component: Lightbox
  ========================================================================== */
 /*
@@ -6283,9 +6345,6 @@ ul.uk-nav-sub {
 /*
  * Focus
  */
-.uk-lightbox :focus {
-  outline-color: rgba(255, 255, 255, 0.7);
-}
 .uk-lightbox :focus-visible {
   outline-color: rgba(255, 255, 255, 0.7);
 }
@@ -7271,10 +7330,10 @@ ul.uk-nav-sub {
   line-height: 1.4;
   color: #999;
 }
-.uk-text-meta a {
+.uk-text-meta > a {
   color: #999;
 }
-.uk-text-meta a:hover {
+.uk-text-meta > a:hover {
   color: #666;
   text-decoration: none;
 }
@@ -7370,6 +7429,7 @@ ul.uk-nav-sub {
   display: inline-block;
   /* 4 */
   background-color: #1e87f0;
+  background-image: linear-gradient(-90deg, #1e87f0 0%, #411ef0 100%);
 }
 /* Alignment modifiers
  ========================================================================== */
@@ -7959,7 +8019,6 @@ iframe[data-uk-cover] {
   padding: 10px;
   border: 1px solid #e5e5e5;
   overflow: auto;
-  -webkit-overflow-scrolling: touch;
   resize: both;
 }
 /* Clearfix
@@ -8005,7 +8064,6 @@ iframe[data-uk-cover] {
  */
 .uk-overflow-auto {
   overflow: auto;
-  -webkit-overflow-scrolling: touch;
 }
 .uk-overflow-auto > :last-child {
   margin-bottom: 0;
@@ -9352,22 +9410,42 @@ iframe[data-uk-cover] {
 /* Based on the State of the Parent Element
  ========================================================================== */
 /*
- * Can't use `display: none` nor `visibility: hidden` because both are not focusable.
+ * Mind that `display: none`, `visibility: hidden` and `opacity: 0`
+ * remove the element from the accessibility tree and that
+ * `display: none` and `visibility: hidden` are not focusable.
+ *
  * The target stays visible if any element within receives focus through keyboard.
  */
 /*
- * Discard space when hidden.
+ * Remove space when hidden.
+ * 1. Remove from document flow.
+ * 2. Hide element and shrink its dimension. Can't use zero dimensions together
+ *    with `overflow: hidden` it would remove it from the accessibility tree.
+ * 3. Hide the single rendered pixel.
+ * 4. Prevent text wrapping caused by `width: 1px` because it has side effects on vocalisation
+ *    by screen readers and the visual tracking indicator of other assistive technologies.
  */
+.uk-hidden-visually:not(:focus):not(:active):not(:focus-within),
 .uk-visible-toggle:not(:hover):not(:focus) .uk-hidden-hover:not(:focus-within) {
+  /* 1 */
   position: absolute !important;
-  width: 0 !important;
-  height: 0 !important;
+  /* 2 */
+  width: 1px !important;
+  height: 1px !important;
   padding: 0 !important;
+  border: 0 !important;
   margin: 0 !important;
   overflow: hidden !important;
+  /* 3 */
+  clip-path: inset(50%) !important;
+  /* 4 */
+  white-space: nowrap !important;
 }
 /*
  * Keep space when hidden.
+ * Hide element without shrinking its dimension.
+ * Unfortunately, can't use `clip-path: inset(50%)` because hover won't work
+ * if the element is positioned outside of the toggle box.
  */
 .uk-visible-toggle:not(:hover):not(:focus) .uk-invisible-hover:not(:focus-within) {
   opacity: 0 !important;
@@ -9503,7 +9581,7 @@ iframe[data-uk-cover] {
 .uk-offcanvas-bar :not(pre) > kbd,
 .uk-offcanvas-bar :not(pre) > samp {
   color: rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 .uk-light em,
 .uk-section-primary:not(.uk-preserve-color) em,
@@ -9756,19 +9834,6 @@ iframe[data-uk-cover] {
 .uk-offcanvas-bar hr,
 .uk-offcanvas-bar .uk-hr {
   border-top-color: rgba(255, 255, 255, 0.2);
-}
-.uk-light :focus,
-.uk-section-primary:not(.uk-preserve-color) :focus,
-.uk-section-secondary:not(.uk-preserve-color) :focus,
-.uk-tile-primary:not(.uk-preserve-color) :focus,
-.uk-tile-secondary:not(.uk-preserve-color) :focus,
-.uk-card-primary.uk-card-body :focus,
-.uk-card-primary > :not([class*='uk-card-media']) :focus,
-.uk-card-secondary.uk-card-body :focus,
-.uk-card-secondary > :not([class*='uk-card-media']) :focus,
-.uk-overlay-primary :focus,
-.uk-offcanvas-bar :focus {
-  outline-color: #fff;
 }
 .uk-light :focus-visible,
 .uk-section-primary:not(.uk-preserve-color) :focus-visible,
@@ -10579,7 +10644,7 @@ iframe[data-uk-cover] {
 .uk-offcanvas-bar .uk-checkbox:checked,
 .uk-offcanvas-bar .uk-checkbox:indeterminate {
   background-color: #fff;
-  border-color: rgba(255, 255, 255, 0.7);
+  border-color: #fff;
 }
 .uk-light .uk-radio:checked:focus,
 .uk-light .uk-checkbox:checked:focus,
@@ -12128,6 +12193,19 @@ iframe[data-uk-cover] {
 .uk-offcanvas-bar .uk-dotnav > .uk-active > * {
   background-color: rgba(255, 255, 255, 0.9);
   border-color: transparent;
+}
+.uk-light .uk-thumbnav > * > *::after,
+.uk-section-primary:not(.uk-preserve-color) .uk-thumbnav > * > *::after,
+.uk-section-secondary:not(.uk-preserve-color) .uk-thumbnav > * > *::after,
+.uk-tile-primary:not(.uk-preserve-color) .uk-thumbnav > * > *::after,
+.uk-tile-secondary:not(.uk-preserve-color) .uk-thumbnav > * > *::after,
+.uk-card-primary.uk-card-body .uk-thumbnav > * > *::after,
+.uk-card-primary > :not([class*='uk-card-media']) .uk-thumbnav > * > *::after,
+.uk-card-secondary.uk-card-body .uk-thumbnav > * > *::after,
+.uk-card-secondary > :not([class*='uk-card-media']) .uk-thumbnav > * > *::after,
+.uk-overlay-primary .uk-thumbnav > * > *::after,
+.uk-offcanvas-bar .uk-thumbnav > * > *::after {
+  background-image: linear-gradient(-180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4));
 }
 .uk-light .uk-iconnav > * > a,
 .uk-section-primary:not(.uk-preserve-color) .uk-iconnav > * > a,
