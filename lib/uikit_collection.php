@@ -27,7 +27,7 @@ class uikitCollection {
 
         $icon = isset($iconMap[$ext]) ? $iconMap[$ext] : 'file';
 
-        return "<span uk-icon='icon: $icon; ratio: $ratio'></span>&nbsp;";
+        return "<span uk-icon='icon: $icon; ratio: $ratio'></span>";
     }
 }
 ?>
