@@ -22,6 +22,14 @@ objparams|form_ytemplate|uikit3,bootstrap
 ```
 Bootstrap wird als Fallback verwendet. 
 
+## UikitIcon
+
+Verwendung: 
+
+```PHP
+echo uikitCollection::uikitIcon('dokument.pdf', 2);
+```
+Die 2 ist das gewünschte Ratio, Standard ist 1
 
 ## Autoren
 
