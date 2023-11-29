@@ -26,7 +26,7 @@ Bootstrap wird als Fallback verwendet.
 
 Werden Bilder mit einem Bild oder mp4 verlinkt, wird es eine Uikit-Lightbox
 
-Verwendung: 
+Verwendung in boot.php des project addons: 
 
 ```php
 uikitCollection::cke5LightboxHelper();
