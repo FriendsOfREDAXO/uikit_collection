@@ -22,7 +22,7 @@ $elementAttributes['class'] = trim($elementType . ' uk-' . $elementType . $uk_wa
 <?php $choiceOutput = function (rex_yform_choice_view $view) use ($elementAttributes, $elementType) { ?>
     <div<?= rex_string::buildAttributes($elementAttributes) ?>>
         <label class="uk-form-label">
-            <input class="uk-checkbox" type="<?= $elementType ?>" <!-- Updated class -->
+            <input class="uk-<?= $elementType ?>" type="<?= $elementType ?>" 
                 value="<?= rex_escape($view->getValue()) ?>"
                 <?= (in_array($view->getValue(), $this->getValue(), true) ? ' checked' : '') ?>
                 <?= $view->getAttributesAsString() ?>
