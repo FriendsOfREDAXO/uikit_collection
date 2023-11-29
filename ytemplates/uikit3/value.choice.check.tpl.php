@@ -8,24 +8,23 @@ if ($this->getElement('notice')) {
     $notices[] = rex_i18n::translate($this->getElement('notice'), false);
 }
 if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['hide_field_warning_messages']) {
-    $notices[] = '<span class="text-warning">'.rex_i18n::translate($this->params['warning_messages'][$this->getId()], false).'</span>';
+    $notices[] = '<span class="uk-text-warning">' . rex_i18n::translate($this->params['warning_messages'][$this->getId()], false) . '</span>';
 }
 
 $elementType = $choiceList->isMultiple() ? 'checkbox' : 'radio';
 $uk_warning = $this->getWarningClass() ? ' uk-form-danger' : '';
 
-$groupAttributes['class'] = 'form-check-group';
-$elementAttributes['class'] = trim($elementType.' '.'uk-form-controls '.$this->getWarningClass().$uk_warning);
-
+$groupAttributes['class'] = 'uk-form-controls'; // Updated class
+$elementAttributes['class'] = trim($elementType . ' uk-' . $elementType . $uk_warning); // Updated class
 
 ?>
 
 <?php $choiceOutput = function (rex_yform_choice_view $view) use ($elementAttributes, $elementType) { ?>
     <div<?= rex_string::buildAttributes($elementAttributes) ?>>
         <label class="uk-form-label">
-            <input class="uk-<?= $elementType ?>"
+            <input class="uk-checkbox" type="<?= $elementType ?>" <!-- Updated class -->
                 value="<?= rex_escape($view->getValue()) ?>"
-                <?= (in_array($view->getValue(), $this->getValue(), true) ? ' checked="checked"' : '') ?>
+                <?= (in_array($view->getValue(), $this->getValue(), true) ? ' checked' : '') ?>
                 <?= $view->getAttributesAsString() ?>
             />
             <i class="form-helper"></i>
@@ -43,9 +42,9 @@ $elementAttributes['class'] = trim($elementType.' '.'uk-form-controls '.$this->g
     </div>
 <?php } ?>
 
-<div<?= rex_string::buildAttributes($groupAttributes) ?>>
+<div class="uk-form-controls"> <!-- Updated class -->
     <?php if ($this->getLabel()): ?>
-        <label class="form-control-label uk-form-label" for="<?= $this->getFieldId() ?>">
+        <label class="uk-form-label" for="<?= $this->getFieldId() ?>">
             <?= rex_escape($this->getLabelStyle($this->getLabel())) ?>
         </label>
     <?php endif ?>
@@ -59,6 +58,6 @@ $elementAttributes['class'] = trim($elementType.' '.'uk-form-controls '.$this->g
     <?php endforeach ?>
 
     <?php if ($notices): ?>
-        <p class="help-block"><?= implode('<br />', $notices) ?></p>
+        <p class="uk-text-warning"><?= implode('<br />', $notices) ?></p>
     <?php endif ?>
 </div>
