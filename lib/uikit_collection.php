@@ -1,27 +1,35 @@
 <?php
 class uikitCollection {
-
+ if (rex::isFrontend())
+    { 
     public static function cke5LightboxHelper(): void
     {
-        rex_extension::register('OUTPUT_FILTER', function (rex_extension_point $ep) {
-            $html = $ep->getSubject();
-            // Ersetze alle gefundene <figure> Tags mit der Callback-Funktion
-            $html = preg_replace_callback('/<figure\b[^>]*\bclass\s*=\s*["\'][^"\']*?\bimage\b[^"\']*["\'][^>]*>.*?<a[^>]+href=[\'"]([^\'"]+?\.(jpg|jpeg|png|mp4|gif))[\'"][^>]*><img[^>]+src=[\'"]([^\'"]+?)[\'"][^>]*>.*?<\/figure>/i', function ($matches) {
-                // Hole die abgeglichenen Werte
-                $link = $matches[0];
-                $href = $matches[1];
-                $ext = $matches[2];
-                $src = $matches[3];
+      rex_extension::register('OUTPUT_FILTER', function (rex_extension_point $ep) {
+                $html = $ep->getSubject();
 
-                // Überprüfe, ob der href-Wert auf .jpg, .jpeg, .png oder .gif endet
-                if (in_array($ext, ['jpg', 'jpeg', 'png', 'mp4', 'gif'])) {
-                    // Ersetze das <figure> Tag mit der aktualisierten Version
-                    return str_replace('<figure ', '<figure uk-lightbox ', $link);
+                // Verwende reguläre Ausdrücke, um verlinkte Bilder im HTML zu finden
+                preg_match_all('/<figure\b[^>]*\bclass\s*=\s*["\'][^"\']*?\bimage\b[^"\']*["\'][^>]*>.*?<a[^>]+href=[\'"]([^\'"]+?\.(jpg|jpeg|png|mp4|gif))[\'"][^>]*><img[^>]+src=[\'"]([^\'"]+?)[\'"][^>]*>.*?<\/figure>/i', $html, $matches, PREG_SET_ORDER);
+
+                // Durchlaufe alle Treffer
+                foreach ($matches as $match) {
+                    // Hole die abgeglichenen Werte
+                    $link = $match[0];
+                    $href = $match[1];
+                    $ext = $match[2];
+                    $src = $match[3];
+
+                    // Überprüfe, ob der href-Wert auf .jpg, .jpeg, .png oder .gif endet
+                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'mp4', 'gif'])) {
+                        // Wenn es ein Bild ist, ersetze das <figure>-Tag mit der aktualisierten Version
+                        $updated_link = str_replace('<figure ', '<figure uk-lightbox ', $link);
+                        $html = str_replace($link, $updated_link, $html);
+                    }
                 }
-                // Ansonsten gib das Original zurück
-                return $link;
-            }, $html);
-        }, rex_extension::LATE);
+
+                // Setze das geänderte HTML als neues Subjekt
+                $ep->setSubject($html);
+            }, rex_extension::LATE);
+    }
     }
     
     public static function uikitIcon($file, $ratio = 1): string {
