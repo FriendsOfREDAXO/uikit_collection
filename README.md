@@ -22,6 +22,16 @@ objparams|form_ytemplate|uikit3,bootstrap
 ```
 Bootstrap wird als Fallback verwendet. 
 
+## cke5LightboxHelper (Outputfilter) 
+
+Werden Bilder mit einem Bild oder mp4 verlinkt, wird es eine Uikit-Lightbox
+
+Verwendung: 
+
+```php
+uikitCollection::cke5LightboxHelper();
+```
+
 ## UikitIcon
 
 Verwendung: 
