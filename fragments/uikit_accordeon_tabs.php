@@ -21,7 +21,7 @@ if (isset($this->type)) {
     $type = $this->type;
 }
 ?>
-<?php if ($type === '1') : ?>
+<?php if (count($values) >= 1 && $type === '1') : ?>
     <div uk-accordion>
         <?php
         /** @var array<int, array<string, string>> $values */
@@ -44,7 +44,7 @@ if (isset($this->type)) {
             </div>
         <?php endforeach ?>
     </div>
-<?php elseif ($type === '2') : ?>
+<?php elseif (count($values) >= 1  && $type === '2') : ?>
     <div class="uk-margin-medium-top">
         <div class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
             <?php
