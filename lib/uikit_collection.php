@@ -62,5 +62,21 @@ class uikitCollection {
 
         return "<span uk-icon='icon: $icon; ratio: $ratio'></span>";
     }
+    
+    public static function mediaCopyright(string $file = '', string $type = 'text'): string {
+        $output = '';
+        if ($file != '') {
+            if ($media = rex_media::get($file)) {
+                $copyright = $media->getValue('med_copyright');
+                $copyright_link = $media->getValue('med_copyright_link');
+                if ($copyright_link != '' && $type == 'link') {
+                    $output = '<a rel="noopener" href="'.$copyright_link.'">Copyright: '.$copyright.'</a>';
+                } elseif ($copyright != '') {
+                    $output = 'Copyright: '.$copyright;
+                }
+            }
+        }
+        return $output;
+    }
 }
 ?>
