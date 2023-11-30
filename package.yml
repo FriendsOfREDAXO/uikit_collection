@@ -7,7 +7,7 @@ supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
 
 default_config:
-    path: 'assets/uikit_collection/uikit/dist/'
+    path: 'assets/uikit_collection/uikit/dist'
     prefix: ''
 
 requires:
