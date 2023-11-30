@@ -20,16 +20,23 @@ if (isset($this->media) && $this->media != '') {
             $copyright = '<div class="uk-width-1-1"><span class="uk-text-meta">' . $copyrightText . '</span></div>';
         }
 
-        // Bild und Urheberrecht in HTML-Struktur einfügen
+        // Definiere die Namen der Mediatypen aus dem Media Manager
+        $mediaTypeBig = 'uikit_gal_big';
+        $mediaTypeThumb = 'uikit_gal_thumb';
+
+        // Generiere die URLs mithilfe des Media Managers
+        $urlBig = rex_media_manager::getUrl($mediaTypeBig, $GalItem);
+        $urlThumb = rex_media_manager::getUrl($mediaTypeThumb, $GalItem);
+
         $images .= '
-        <div>
-            <div class="uk-card uk-card-default">
-                <a href="/media/galbig/'.$GalItem.'" uk-tooltip title="'.$picTitle.'" data-caption="'.$picTitle.'">
-                    <img src="/media/galthumb/'.$GalItem.'" alt="'.$picTitle.'">
-                </a>
-                '.$copyright.'
-            </div>
-        </div>'; 
+             <div>
+                <div class="uk-card uk-card-default">
+                    <a href="'.$urlBig.'" uk-tooltip title="'.rex_escape($picTitle).'" data-caption="'.rex_escape($picTitle).'">
+                        <img src="'.$urlThumb.'" alt="'.rex_escape($picTitle).'">
+                    </a>
+                    '.$copyright.'
+                </div>
+            </div>';
     }
 
     // Stil der Galerie anpassen, abhängig von der Anzahl der Bilder
