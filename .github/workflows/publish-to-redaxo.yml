@@ -12,18 +12,18 @@ jobs:
         uses: actions/checkout@v3
         
       - name: Set up PHP
-        if: runner.os == 'Linux' && fileExists('composer.json')
+        if: runner.os == 'Linux' && -f composer.json
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
 
       - name: Install Composer Dependencies
-        if: runner.os == 'Linux' && fileExists('composer.json')
+        if: runner.os == 'Linux' && -f composer.json
         run: |
           composer install --no-dev
           
       - name: Publish to REDAXO.org
-        if: runner.os == 'Linux' && fileExists('composer.json')
+        if: runner.os == 'Linux' && -f composer.json
         uses: FriendsOfREDAXO/installer-action@v1
         with:
           myredaxo-username: ${{ secrets.MYREDAXO_USERNAME }}
