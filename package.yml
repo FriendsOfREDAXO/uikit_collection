@@ -6,6 +6,10 @@ author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
 
+default_config:
+    path: 'assets/uikit_collection/uikit/dist/'
+    prefix: ''
+
 requires:
     redaxo: '>=5.15.0'
     php: '>=8.1'
