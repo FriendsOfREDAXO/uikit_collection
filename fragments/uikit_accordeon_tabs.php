@@ -8,7 +8,7 @@ if (isset($this->help) && $this->help === true) {
     $help = [];
     $help['info']  = 'Nimmt ein Array an und erstellt eine Tab oder Akkordeon Liste';
     $help['type']  = 'Bei 1 > Akkordeon, bei 2 Tabs';
-    $help['items'] = 'Array mit den Keys title und body';
+    $help['items'] = 'Array mit den Keys title, body, media';
     dump($help);
 }
 $values = [];
