@@ -32,13 +32,13 @@ if (isset($this->type)) {
                 <?php endif; ?>
                 <div class="uk-accordion-content uk-background-muted uk-margin-remove uk-padding-small">
                     <?php if ($value['text'] !== '') : ?>
-                        <p><?= $value['text'] ?></p>
+                       <div><?= $value['text'] ?></div>
                     <?php endif; ?>
                     
                     <?php if($value['media']!='') {
                     $fragment = new rex_fragment();
                     $fragment->setVar('media', $value['media'], false);
-                    echo $fragment->parse('/uk3/gallery.php');
+                    echo $fragment->parse('uikit_gallery.php');
                     }?>
                 </div>
             </div>
@@ -62,6 +62,12 @@ if (isset($this->type)) {
                 <?php if ($value['text'] !== '') : ?>
                     <div><?= $value['text'] ?></div>
                 <?php endif; ?>
+                
+                <?php if($value['media']!='') {
+                    $fragment = new rex_fragment();
+                    $fragment->setVar('media', $value['media'], false);
+                    echo $fragment->parse('uikit_gallery.php');
+                    }?>
             <?php endforeach ?>
         </div>
     </div>
