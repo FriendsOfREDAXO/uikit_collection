@@ -1,7 +1,7 @@
 <?php
 if (isset($this->media) && $this->media != '') {
     $out = '';
-    $files = explode(",", $this->media);  
+    $files = array_filter(explode(",", $this->media));  
     foreach ($files as $GalItem) {
         // Abfragen des Medienobjekts
         $pic = rex_media::get($GalItem);
