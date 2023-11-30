@@ -1,6 +1,6 @@
 package: uikit_collection
 
-version: '4.0.0-dev'
+version: '4.0.0-beta1'
 vendor: '3.17.11'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
