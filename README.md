@@ -57,6 +57,8 @@ items = Array mit den Keys title, body, media;
 
 Bei Verwendung von media wird das gallery fragment verwendet und die Galerie nach dem body ausgegeben
 
+> Es wird ein Metafeld med_copyright in den Medien-Metas benötigt. 
+
 ### uikit_card.php
 
 Mit diesem Fragment können Uikit-Cards generiert werden. 
@@ -76,9 +78,11 @@ $help['main_attributes']   = 'Hier können Attribute zur uk-card ergänzt werden
 $help['body_attributes']   = 'Hier können Attribute zum body ergänzt werden (array), bei class werden diese angehägnt ';
 ```
 
+### uikit_gallery.php
 
+Dieses Fragment nimmt über dem Parameter media eine Liste von Medien des Medienpools auf und gibt eine Galerie aus. 
 
-
+> Es wird ein Metafeld med_copyright in den Medien-Metas benötigt. 
 
 
 
