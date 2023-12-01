@@ -1,4 +1,4 @@
-# UIkit Collection // REDAXO AddOn
+# UIkit Collection :: REDAXO AddOn
 
 ## Einleitung
 
