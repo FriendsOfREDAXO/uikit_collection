@@ -85,8 +85,7 @@ Dieses Fragment nimmt über dem Parameter media eine Liste von Medien des Medien
 > Es wird ein Metafeld med_copyright in den Medien-Metas benötigt. 
 
 
-
-## Autoren
+## Credits
 
 Wolfgang Bund
 
@@ -97,6 +96,9 @@ Christian Kolloch
 Thomas Skerbis
 
 Markus Wottrich
+
+
+## Autor
 
 **Friends Of REDAXO**
 
