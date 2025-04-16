@@ -13,7 +13,7 @@ if (isset($this->help) && $this->help === true) {
     $help['content']         = 'Hauptinhalt des Offcanvas';
     $help['button_text']     = 'Text für den auslösenden Button';
     $help['button_class']    = 'CSS-Klassen für den Button (Standard: uk-button uk-button-default)';
-    $help['position']        = 'Position des Offcanvas: left, right, top, bottom (Standard: left)';
+    $help['position']        = 'Position des Offcanvas: left, right, top, bottom (Standard: right)';
     $help['mode']            = 'Animation: slide, push, reveal, none (Standard: slide)';
     $help['overlay']         = 'Overlay anzeigen (true/false, Standard: true)';
     $help['esc_close']       = 'Schließen mit ESC-Taste erlauben (true/false, Standard: true)';
@@ -37,7 +37,7 @@ $title = isset($this->title) ? $this->title : '';
 $content = isset($this->content) ? $this->content : '';
 $buttonText = isset($this->button_text) ? $this->button_text : 'Öffnen';
 $buttonClass = isset($this->button_class) ? $this->button_class : 'uk-button uk-button-default';
-$position = isset($this->position) ? $this->position : 'left';
+$position = isset($this->position) ? $this->position : 'right'; // Geändert von 'left' zu 'right'
 $mode = isset($this->mode) ? $this->mode : 'slide';
 $overlay = !isset($this->overlay) || $this->overlay === true;
 $escClose = !isset($this->esc_close) || $this->esc_close === true;

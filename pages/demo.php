@@ -2,12 +2,6 @@
 /**
  * UIkit Collection Demo Seite
  */
-
-// Verhindere direkten Aufruf
-if (!defined('REDAXO')) {
-    die('Direct access denied!');
-}
-
 // Aktiver Tab
 $currentTab = rex_request('component', 'string', 'overview');
 
@@ -349,6 +343,263 @@ echo $fragment->parse(\'uikit_notification.php\');
         $fragment->setVar('position', 'top-center', false);
         $fragment->setVar('show_immediately', false, false);
         $content .= $fragment->parse('uikit_notification.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+        
+        break;
+
+    case 'offcanvas':
+        // Offcanvas Demo
+        $content .= '<h2>Offcanvas</h2>';
+        $content .= '<p class="lead">Das Fragment <code>uikit_offcanvas.php</code> erstellt seitlich einfahrende Navigationsleisten oder Menüs.</p>';
+        $content .= '<div class="uk-alert-warning uk-margin-bottom" uk-alert>';
+        $content .= '<p><span uk-icon="icon: warning"></span> Wichtiger Hinweis: Im REDAXO-Backend sollte Offcanvas immer von rechts geöffnet werden, damit es nicht vom linken Menü verdeckt wird.</p>';
+        $content .= '</div>';
+        
+        // Beispiel 1: Standard Offcanvas (rechts)
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 1: Standard Offcanvas (rechts)</h3>';
+        $content .= '<p>Ein einfaches Offcanvas mit Standardeinstellungen, das von rechts eingeblendet wird:</p>';
+        
+        $content .= '<pre><code>&lt;?php
+$fragment = new rex_fragment();
+$fragment->setVar(\'id\', \'demo-offcanvas-rechts-1\', false);
+$fragment->setVar(\'title\', \'Offcanvas Menü\', false);
+$fragment->setVar(\'content\', \'&lt;ul class="uk-nav uk-nav-default"&gt;
+    &lt;li class="uk-active"&gt;&lt;a href="#"&gt;Startseite&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Über uns&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Leistungen&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Kontakt&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;\', false);
+$fragment->setVar(\'button_text\', \'Menü öffnen\', false);
+$fragment->setVar(\'position\', \'right\', false); // Position rechts statt links
+echo $fragment->parse(\'uikit_offcanvas.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $fragment = new rex_fragment();
+        $fragment->setVar('id', 'demo-offcanvas-rechts-1', false);
+        $fragment->setVar('title', 'Offcanvas Menü', false);
+        $fragment->setVar('content', '<ul class="uk-nav uk-nav-default">
+    <li class="uk-active"><a href="#">Startseite</a></li>
+    <li><a href="#">Über uns</a></li>
+    <li><a href="#">Leistungen</a></li>
+    <li><a href="#">Kontakt</a></li>
+</ul>', false);
+        $fragment->setVar('button_text', 'Menü öffnen', false);
+        $fragment->setVar('position', 'right', false); // Position rechts statt links
+        $content .= $fragment->parse('uikit_offcanvas.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Beispiel 2: Offcanvas rechts mit Push-Animation
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 2: Offcanvas rechts mit Push-Animation</h3>';
+        $content .= '<p>Ein Offcanvas, das von rechts kommt und einen Push-Effekt verwendet:</p>';
+        
+        $content .= '<pre><code>&lt;?php
+$fragment = new rex_fragment();
+$fragment->setVar(\'id\', \'demo-offcanvas-rechts\', false);
+$fragment->setVar(\'title\', \'Filter\', false);
+$fragment->setVar(\'content\', \'&lt;form class="uk-form-stacked"&gt;
+    &lt;div class="uk-margin"&gt;
+        &lt;label class="uk-form-label"&gt;Kategorie&lt;/label&gt;
+        &lt;div class="uk-form-controls"&gt;
+            &lt;select class="uk-select"&gt;
+                &lt;option&gt;Alle Kategorien&lt;/option&gt;
+                &lt;option&gt;Kategorie 1&lt;/option&gt;
+                &lt;option&gt;Kategorie 2&lt;/option&gt;
+            &lt;/select&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="uk-margin"&gt;
+        &lt;label class="uk-form-label"&gt;Preis&lt;/label&gt;
+        &lt;div class="uk-form-controls"&gt;
+            &lt;input class="uk-range" type="range" value="2" min="0" max="10" step="0.1"&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;button class="uk-button uk-button-primary uk-width-1-1"&gt;Anwenden&lt;/button&gt;
+&lt;/form&gt;\', false);
+$fragment->setVar(\'button_text\', \'Filter anzeigen\', false);
+$fragment->setVar(\'button_class\', \'uk-button uk-button-secondary\', false);
+$fragment->setVar(\'position\', \'right\', false);
+$fragment->setVar(\'mode\', \'push\', false);
+echo $fragment->parse(\'uikit_offcanvas.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $fragment = new rex_fragment();
+        $fragment->setVar('id', 'demo-offcanvas-rechts', false);
+        $fragment->setVar('title', 'Filter', false);
+        $fragment->setVar('content', '<form class="uk-form-stacked">
+    <div class="uk-margin">
+        <label class="uk-form-label">Kategorie</label>
+        <div class="uk-form-controls">
+            <select class="uk-select">
+                <option>Alle Kategorien</option>
+                <option>Kategorie 1</option>
+                <option>Kategorie 2</option>
+            </select>
+        </div>
+    </div>
+    <div class="uk-margin">
+        <label class="uk-form-label">Preis</label>
+        <div class="uk-form-controls">
+            <input class="uk-range" type="range" value="2" min="0" max="10" step="0.1">
+        </div>
+    </div>
+    <button class="uk-button uk-button-primary uk-width-1-1">Anwenden</button>
+</form>', false);
+        $fragment->setVar('button_text', 'Filter anzeigen', false);
+        $fragment->setVar('button_class', 'uk-button uk-button-secondary', false);
+        $fragment->setVar('position', 'right', false);
+        $fragment->setVar('mode', 'push', false);
+        $content .= $fragment->parse('uikit_offcanvas.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Beispiel 3: Offcanvas von oben mit Reveal-Animation
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 3: Offcanvas von oben mit Reveal-Animation</h3>';
+        $content .= '<p>Ein Offcanvas, das von oben kommt und einen Reveal-Effekt verwendet:</p>';
+        
+        $content .= '<pre><code>&lt;?php
+$fragment = new rex_fragment();
+$fragment->setVar(\'id\', \'demo-offcanvas-top\', false);
+$fragment->setVar(\'title\', \'Suche\', false);
+$fragment->setVar(\'content\', \'&lt;div class="uk-margin"&gt;
+    &lt;form class="uk-search uk-search-default uk-width-1-1"&gt;
+        &lt;span uk-search-icon&gt;&lt;/span&gt;
+        &lt;input class="uk-search-input" type="search" placeholder="Suchbegriff eingeben..."&gt;
+    &lt;/form&gt;
+    &lt;div class="uk-margin uk-grid-small uk-child-width-auto" uk-grid&gt;
+        &lt;label&gt;&lt;input class="uk-checkbox" type="checkbox"&gt; In Artikeln&lt;/label&gt;
+        &lt;label&gt;&lt;input class="uk-checkbox" type="checkbox"&gt; In Bildern&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;button class="uk-button uk-button-primary"&gt;Suchen&lt;/button&gt;
+&lt;/div&gt;\', false);
+$fragment->setVar(\'button_text\', \'Suche öffnen\', false);
+$fragment->setVar(\'button_class\', \'uk-button uk-button-primary\', false);
+$fragment->setVar(\'position\', \'top\', false);
+$fragment->setVar(\'mode\', \'reveal\', false);
+echo $fragment->parse(\'uikit_offcanvas.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $fragment = new rex_fragment();
+        $fragment->setVar('id', 'demo-offcanvas-top', false);
+        $fragment->setVar('title', 'Suche', false);
+        $fragment->setVar('content', '<div class="uk-margin">
+    <form class="uk-search uk-search-default uk-width-1-1">
+        <span uk-search-icon></span>
+        <input class="uk-search-input" type="search" placeholder="Suchbegriff eingeben...">
+    </form>
+    <div class="uk-margin uk-grid-small uk-child-width-auto" uk-grid>
+        <label><input class="uk-checkbox" type="checkbox"> In Artikeln</label>
+        <label><input class="uk-checkbox" type="checkbox"> In Bildern</label>
+    </div>
+    <button class="uk-button uk-button-primary">Suchen</button>
+</div>', false);
+        $fragment->setVar('button_text', 'Suche öffnen', false);
+        $fragment->setVar('button_class', 'uk-button uk-button-primary', false);
+        $fragment->setVar('position', 'top', false);
+        $fragment->setVar('mode', 'reveal', false);
+        $content .= $fragment->parse('uikit_offcanvas.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+        
+        // Parameter-Dokumentation
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Parameter</h3>';
+        $content .= '<p>Die folgenden Parameter können für das Offcanvas-Fragment gesetzt werden:</p>';
+
+        $content .= '<div class="uk-overflow-auto">';
+        $content .= '<table class="uk-table uk-table-divider uk-table-hover uk-table-small">';
+        $content .= '<thead><tr><th>Parameter</th><th>Typ</th><th>Standard</th><th>Beschreibung</th></tr></thead>';
+        $content .= '<tbody>';
+        $content .= '<tr><td><code>id</code></td><td>String</td><td>-</td><td>Eine eindeutige ID für das Offcanvas-Element (erforderlich)</td></tr>';
+        $content .= '<tr><td><code>title</code></td><td>String</td><td>-</td><td>Titel des Offcanvas</td></tr>';
+        $content .= '<tr><td><code>content</code></td><td>String</td><td>-</td><td>Hauptinhalt des Offcanvas</td></tr>';
+        $content .= '<tr><td><code>button_text</code></td><td>String</td><td>Öffnen</td><td>Text für den auslösenden Button</td></tr>';
+        $content .= '<tr><td><code>button_class</code></td><td>String</td><td>uk-button uk-button-default</td><td>CSS-Klassen für den Button</td></tr>';
+        $content .= '<tr><td><code>position</code></td><td>String</td><td>left</td><td>Position des Offcanvas: left, right, top, bottom (für REDAXO-Backend wird \'right\' empfohlen)</td></tr>';
+        $content .= '<tr><td><code>mode</code></td><td>String</td><td>slide</td><td>Animation: slide, push, reveal, none</td></tr>';
+        $content .= '<tr><td><code>overlay</code></td><td>Boolean</td><td>true</td><td>Overlay anzeigen</td></tr>';
+        $content .= '<tr><td><code>esc_close</code></td><td>Boolean</td><td>true</td><td>Schließen mit ESC-Taste erlauben</td></tr>';
+        $content .= '<tr><td><code>bg_close</code></td><td>Boolean</td><td>true</td><td>Schließen durch Klick im Hintergrund erlauben</td></tr>';
+        $content .= '<tr><td><code>close_button</code></td><td>Boolean</td><td>true</td><td>Schließen-Button anzeigen</td></tr>';
+        $content .= '<tr><td><code>flip</code></td><td>Boolean</td><td>false</td><td>Ausrichtung umkehren</td></tr>';
+        $content .= '</tbody>';
+        $content .= '</table>';
+        $content .= '</div>';
+        $content .= '</div>';
+        
+        // Reale Anwendungsbeispiele
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Typische Anwendungsbeispiele</h3>';
+        
+        $content .= '<div class="uk-child-width-1-2@s uk-grid-match" uk-grid>';
+        
+        // Beispiel: Mobile Navigation
+        $content .= '<div>';
+        $content .= '<div class="uk-card uk-card-small uk-card-body uk-card-primary">';
+        $content .= '<h4>Mobile Navigation</h4>';
+        $content .= '<p>Verwenden Sie Offcanvas für responsive Navigationsmenüs auf kleinen Bildschirmen:</p>';
+        $content .= '<pre><code>// HTML/Template
+&lt;button class="uk-button uk-hidden@m" uk-toggle="target: #mobile-nav"&gt;Menü&lt;/button&gt;
+
+&lt;?php
+// Nur auf kleinen Bildschirmen anzeigen
+$fragment = new rex_fragment();
+$fragment->setVar(\'id\', \'mobile-nav\', false);
+$fragment->setVar(\'title\', \'Navigation\', false);
+$fragment->setVar(\'content\', $navigation_html, false);
+// Kein Button anzeigen, wird separat gesteuert
+$fragment->setVar(\'button_text\', \'\', false);
+echo $fragment->parse(\'uikit_offcanvas.php\');
+?&gt;</code></pre>';
+        $content .= '</div>';
+        $content .= '</div>';
+        
+        // Beispiel: Warenkorb
+        $content .= '<div>';
+        $content .= '<div class="uk-card uk-card-small uk-card-body uk-card-secondary">';
+        $content .= '<h4>Warenkorb</h4>';
+        $content .= '<p>Zeigen Sie den aktuellen Warenkorb in einer E-Commerce-Anwendung an:</p>';
+        $content .= '<pre><code>&lt;?php
+// Warenkorb-Inhalt aus der Session laden
+$cart_items = $_SESSION[\'cart\'] ?? [];
+$cart_html = \'\';
+
+if (empty($cart_items)) {
+    $cart_html = \'&lt;p&gt;Ihr Warenkorb ist leer.&lt;/p&gt;\';
+} else {
+    $cart_html = \'&lt;ul class="uk-list uk-list-divider"&gt;\';
+    foreach ($cart_items as $item) {
+        $cart_html .= \'&lt;li&gt;\' . $item[\'name\'] . \' - \' . $item[\'price\'] . \'€&lt;/li&gt;\';
+    }
+    $cart_html .= \'&lt;/ul&gt;\';
+    $cart_html .= \'&lt;a href="/checkout" class="uk-button uk-button-primary"&gt;Zur Kasse&lt;/a&gt;\';
+}
+
+$fragment = new rex_fragment();
+$fragment->setVar(\'id\', \'cart-panel\', false);
+$fragment->setVar(\'title\', \'Warenkorb\', false);
+$fragment->setVar(\'content\', $cart_html, false);
+$fragment->setVar(\'position\', \'right\', false);
+$fragment->setVar(\'button_text\', \'Warenkorb\', false);
+$fragment->setVar(\'button_class\', \'uk-button uk-button-default\', false);
+echo $fragment->parse(\'uikit_offcanvas.php\');
+?&gt;</code></pre>';
+        $content .= '</div>';
+        $content .= '</div>';
         
         $content .= '</div>';
         $content .= '</div>';

@@ -21,5 +21,5 @@ page:
         demo:
             title: 'Demo'
             icon: rex-icon fa-desktop
-            subpath: demo.php
+           
 
