@@ -2,12 +2,6 @@
 /**
  * UIkit Collection Demo Seite
  */
-
-// Verhindere direkten Aufruf
-if (!defined('REDAXO')) {
-    die('Direct access denied!');
-}
-
 // Aktiver Tab
 $currentTab = rex_request('component', 'string', 'overview');
 
