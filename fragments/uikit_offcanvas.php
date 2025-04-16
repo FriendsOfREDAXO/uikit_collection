@@ -37,13 +37,14 @@ $title = isset($this->title) ? $this->title : '';
 $content = isset($this->content) ? $this->content : '';
 $buttonText = isset($this->button_text) ? $this->button_text : 'Öffnen';
 $buttonClass = isset($this->button_class) ? $this->button_class : 'uk-button uk-button-default';
-$position = isset($this->position) ? $this->position : 'right'; // Geändert von 'left' zu 'right'
+$position = isset($this->position) ? $this->position : 'right';
 $mode = isset($this->mode) ? $this->mode : 'slide';
 $overlay = !isset($this->overlay) || $this->overlay === true;
 $escClose = !isset($this->esc_close) || $this->esc_close === true;
 $bgClose = !isset($this->bg_close) || $this->bg_close === true;
 $closeButton = !isset($this->close_button) || $this->close_button === true;
-$flip = isset($this->flip) && $this->flip === true;
+// Flip standardmäßig auf true setzen, wenn Position rechts ist
+$flip = isset($this->flip) ? $this->flip === true : ($position === 'right');
 
 // Offcanvas-Attribute
 $offcanvasAttributes = [
