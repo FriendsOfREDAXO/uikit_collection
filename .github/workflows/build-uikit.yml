@@ -142,11 +142,40 @@ jobs:
           name: uikit_collection_assets
           path: assets/
           
-      - name: Commit info
+      - name: Create Pull Request Branch
         run: |
-          echo "Um die Änderungen zu committen, führe folgende Befehle lokal aus:"
-          echo "--------------------------------------------------------"
-          echo "git add assets/"
-          echo "git commit -m \"Update UIkit assets to version $ACTUAL_VERSION\""
-          echo "git push"
-          echo "--------------------------------------------------------"
+          # Konfiguriere Git für die Erstellung des Commits
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          
+          # Erstelle einen neuen Branch
+          BRANCH_NAME="update-uikit-v$ACTUAL_VERSION"
+          git checkout -b $BRANCH_NAME
+          
+          # Füge Änderungen hinzu und committe
+          git add assets/
+          git commit -m "Update UIkit assets to version $ACTUAL_VERSION" || echo "No changes to commit"
+          
+          # Push den Branch zum Repository
+          git push --set-upstream origin $BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+        
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update UIkit assets to version ${{ env.ACTUAL_VERSION }}
+          title: Update UIkit assets to version ${{ env.ACTUAL_VERSION }}
+          body: |
+            # UIkit Update
+            
+            Diese PR aktualisiert die UIkit-Assets auf Version ${{ env.ACTUAL_VERSION }}.
+            
+            ## Änderungen:
+            - Aktualisierung der CSS-Dateien
+            - Aktualisierung der JavaScript-Dateien
+            
+            Automatisch erstellt durch den GitHub Actions Workflow.
+          branch: ${{ env.BRANCH_NAME }}
+          base: main
+          delete-branch: false
