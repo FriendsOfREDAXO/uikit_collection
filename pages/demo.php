@@ -285,6 +285,287 @@ echo $fragment->parse(\'uikit_gallery.php\');
         
         break;
 
+    case 'grid':
+        // Grid Demo
+        $content .= '<h2>Grid-Layout</h2>';
+        $content .= '<p class="lead">Das Fragment <code>uikit_grid.php</code> ermöglicht flexible Grid-Layouts mit verschiedenen Optionen.</p>';
+
+        // Beispiel 1: Einfaches Grid
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 1: Einfaches Grid</h3>';
+        $content .= '<p>Ein Basis-Grid mit unterschiedlicher Anzahl von Spalten je nach Bildschirmgröße:</p>';
+
+        $content .= '<pre><code>&lt;?php
+$items = [
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;Item 1&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;Item 2&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;Item 3&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;Item 4&lt;/div&gt;\'],
+];
+
+$fragment = new rex_fragment();
+$fragment->setVar(\'items\', $items, false);
+$fragment->setVar(\'cols\', \'uk-child-width-1-1 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l\', false);
+$fragment->setVar(\'gap\', \'medium\', false);
+echo $fragment->parse(\'uikit_grid.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $items = [
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">Item 1</div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">Item 2</div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">Item 3</div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">Item 4</div>'],
+        ];
+
+        $fragment = new rex_fragment();
+        $fragment->setVar('items', $items, false);
+        $fragment->setVar('cols', 'uk-child-width-1-1 uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l', false);
+        $fragment->setVar('gap', 'medium', false);
+        $content .= $fragment->parse('uikit_grid.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Beispiel 2: Grid mit Masonry-Layout
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 2: Masonry-Layout</h3>';
+        $content .= '<p>Ein Grid mit unterschiedlich hohen Elementen im Masonry-Layout:</p>';
+
+        $content .= '<pre><code>&lt;?php
+$items = [
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;Kurzer Inhalt&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;
+        &lt;h4&gt;Größerer Inhalt&lt;/h4&gt;
+        &lt;p&gt;Dieser Inhalt ist größer und nimmt mehr Platz ein.&lt;/p&gt;
+        &lt;p&gt;Masonry passt die Elemente optimal an.&lt;/p&gt;
+    &lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;Mittelgroßer Inhalt mit etwas Text&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;
+        &lt;p&gt;Noch ein längerer Text in diesem Element.&lt;/p&gt;
+        &lt;p&gt;Mit mehreren Absätzen.&lt;/p&gt;
+    &lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;Kurzer Text&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;Ein weiteres Element&lt;/div&gt;\'],
+];
+
+$fragment = new rex_fragment();
+$fragment->setVar(\'items\', $items, false);
+$fragment->setVar(\'cols\', \'uk-child-width-1-2@s uk-child-width-1-3@m\', false);
+$fragment->setVar(\'masonry\', true, false);
+$fragment->setVar(\'gap\', \'small\', false);
+echo $fragment->parse(\'uikit_grid.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $items = [
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">Kurzer Inhalt</div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">
+                <h4>Größerer Inhalt</h4>
+                <p>Dieser Inhalt ist größer und nimmt mehr Platz ein.</p>
+                <p>Masonry passt die Elemente optimal an.</p>
+            </div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">Mittelgroßer Inhalt mit etwas Text</div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">
+                <p>Noch ein längerer Text in diesem Element.</p>
+                <p>Mit mehreren Absätzen.</p>
+            </div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">Kurzer Text</div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">Ein weiteres Element</div>'],
+        ];
+
+        $fragment = new rex_fragment();
+        $fragment->setVar('items', $items, false);
+        $fragment->setVar('cols', 'uk-child-width-1-2@s uk-child-width-1-3@m', false);
+        $fragment->setVar('masonry', true, false);
+        $fragment->setVar('gap', 'small', false);
+        $content .= $fragment->parse('uikit_grid.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Beispiel 3: Grid mit Trennlinien und gleicher Höhe
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 3: Grid mit Trennlinien und gleicher Höhe</h3>';
+        $content .= '<p>Ein Grid mit Trennlinien zwischen den Elementen und gleicher Höhe für alle Elemente:</p>';
+
+        $content .= '<pre><code>&lt;?php
+$items = [
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;
+        &lt;h4&gt;Feature 1&lt;/h4&gt;
+        &lt;p&gt;Beschreibung der ersten Funktion.&lt;/p&gt;
+    &lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;
+        &lt;h4&gt;Feature 2&lt;/h4&gt;
+        &lt;p&gt;Beschreibung der zweiten Funktion mit etwas mehr Text.&lt;/p&gt;
+    &lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-default uk-card-body"&gt;
+        &lt;h4&gt;Feature 3&lt;/h4&gt;
+        &lt;p&gt;Beschreibung der dritten Funktion.&lt;/p&gt;
+    &lt;/div&gt;\'],
+];
+
+$fragment = new rex_fragment();
+$fragment->setVar(\'items\', $items, false);
+$fragment->setVar(\'cols\', \'uk-child-width-1-3@m\', false);
+$fragment->setVar(\'divider\', true, false);
+$fragment->setVar(\'match_height\', true, false);
+echo $fragment->parse(\'uikit_grid.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $items = [
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">
+                <h4>Feature 1</h4>
+                <p>Beschreibung der ersten Funktion.</p>
+            </div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">
+                <h4>Feature 2</h4>
+                <p>Beschreibung der zweiten Funktion mit etwas mehr Text.</p>
+            </div>'],
+            ['content' => '<div class="uk-card uk-card-default uk-card-body">
+                <h4>Feature 3</h4>
+                <p>Beschreibung der dritten Funktion.</p>
+            </div>'],
+        ];
+
+        $fragment = new rex_fragment();
+        $fragment->setVar('items', $items, false);
+        $fragment->setVar('cols', 'uk-child-width-1-3@m', false);
+        $fragment->setVar('divider', true, false);
+        $fragment->setVar('match_height', true, false);
+        $content .= $fragment->parse('uikit_grid.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Beispiel 4: Grid mit benutzerdefiniertem Template
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 4: Grid mit benutzerdefiniertem Template</h3>';
+        $content .= '<p>Ein Grid mit einem benutzerdefinierten Template für die Items:</p>';
+
+        $content .= '<pre><code>&lt;?php
+$items = [
+    [\'title\' => \'Titel 1\', \'text\' => \'Beschreibung 1\', \'icon\' => \'check\'],
+    [\'title\' => \'Titel 2\', \'text\' => \'Beschreibung 2\', \'icon\' => \'heart\'],
+    [\'title\' => \'Titel 3\', \'text\' => \'Beschreibung 3\', \'icon\' => \'star\'],
+    [\'title\' => \'Titel 4\', \'text\' => \'Beschreibung 4\', \'icon\' => \'world\'],
+];
+
+$template = \'&lt;div class="{{class}} uk-text-center"&gt;
+    &lt;div class="uk-card uk-card-primary uk-card-body"&gt;
+        &lt;span uk-icon="icon: {{icon}}; ratio: 2"&gt;&lt;/span&gt;
+        &lt;h4&gt;{{title}}&lt;/h4&gt;
+        &lt;p&gt;{{text}}&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;\';
+
+$fragment = new rex_fragment();
+$fragment->setVar(\'items\', $items, false);
+$fragment->setVar(\'cols\', \'uk-child-width-1-2@s uk-child-width-1-4@m\', false);
+$fragment->setVar(\'gap\', \'medium\', false);
+$fragment->setVar(\'item_template\', $template, false);
+echo $fragment->parse(\'uikit_grid.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $items = [
+            ['title' => 'Titel 1', 'text' => 'Beschreibung 1', 'icon' => 'check'],
+            ['title' => 'Titel 2', 'text' => 'Beschreibung 2', 'icon' => 'heart'],
+            ['title' => 'Titel 3', 'text' => 'Beschreibung 3', 'icon' => 'star'],
+            ['title' => 'Titel 4', 'text' => 'Beschreibung 4', 'icon' => 'world'],
+        ];
+
+        $template = '<div class="{{class}} uk-text-center">
+            <div class="uk-card uk-card-primary uk-card-body">
+                <span uk-icon="icon: {{icon}}; ratio: 2"></span>
+                <h4>{{title}}</h4>
+                <p>{{text}}</p>
+            </div>
+        </div>';
+
+        $fragment = new rex_fragment();
+        $fragment->setVar('items', $items, false);
+        $fragment->setVar('cols', 'uk-child-width-1-2@s uk-child-width-1-4@m', false);
+        $fragment->setVar('gap', 'medium', false);
+        $fragment->setVar('item_template', $template, false);
+        $content .= $fragment->parse('uikit_grid.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Beispiel 5: Grid mit Parallax-Effekt
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 5: Grid mit Parallax-Effekt</h3>';
+        $content .= '<p>Ein Grid mit Parallax-Effekt beim Scrollen:</p>';
+
+        $content .= '<pre><code>&lt;?php
+$items = [
+    [\'content\' => \'&lt;div class="uk-card uk-card-secondary uk-card-body uk-height-medium"&gt;Item 1&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-secondary uk-card-body uk-height-medium"&gt;Item 2&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-secondary uk-card-body uk-height-medium"&gt;Item 3&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-secondary uk-card-body uk-height-medium"&gt;Item 4&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-secondary uk-card-body uk-height-medium"&gt;Item 5&lt;/div&gt;\'],
+    [\'content\' => \'&lt;div class="uk-card uk-card-secondary uk-card-body uk-height-medium"&gt;Item 6&lt;/div&gt;\'],
+];
+
+$fragment = new rex_fragment();
+$fragment->setVar(\'items\', $items, false);
+$fragment->setVar(\'cols\', \'uk-child-width-1-2@s uk-child-width-1-3@m\', false);
+$fragment->setVar(\'parallax\', 150, false);
+$fragment->setVar(\'gap\', \'medium\', false);
+echo $fragment->parse(\'uikit_grid.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $items = [
+            ['content' => '<div class="uk-card uk-card-secondary uk-card-body uk-height-medium">Item 1</div>'],
+            ['content' => '<div class="uk-card uk-card-secondary uk-card-body uk-height-medium">Item 2</div>'],
+            ['content' => '<div class="uk-card uk-card-secondary uk-card-body uk-height-medium">Item 3</div>'],
+            ['content' => '<div class="uk-card uk-card-secondary uk-card-body uk-height-medium">Item 4</div>'],
+            ['content' => '<div class="uk-card uk-card-secondary uk-card-body uk-height-medium">Item 5</div>'],
+            ['content' => '<div class="uk-card uk-card-secondary uk-card-body uk-height-medium">Item 6</div>'],
+        ];
+
+        $fragment = new rex_fragment();
+        $fragment->setVar('items', $items, false);
+        $fragment->setVar('cols', 'uk-child-width-1-2@s uk-child-width-1-3@m', false);
+        $fragment->setVar('parallax', 150, false);
+        $fragment->setVar('gap', 'medium', false);
+        $content .= $fragment->parse('uikit_grid.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Parameter-Dokumentation
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Parameter</h3>';
+        $content .= '<p>Die folgenden Parameter können für das Grid-Fragment gesetzt werden:</p>';
+
+        $content .= '<div class="uk-overflow-auto">';
+        $content .= '<table class="uk-table uk-table-divider uk-table-hover uk-table-small">';
+        $content .= '<thead><tr><th>Parameter</th><th>Typ</th><th>Standard</th><th>Beschreibung</th></tr></thead>';
+        $content .= '<tbody>';
+        $content .= '<tr><td><code>items</code></td><td>Array</td><td>-</td><td>Array mit Items. Jedes Item ist ein Array mit beliebigen Keys</td></tr>';
+        $content .= '<tr><td><code>cols</code></td><td>String</td><td>uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l</td><td>Anzahl der Spalten als UIkit-Klassen</td></tr>';
+        $content .= '<tr><td><code>masonry</code></td><td>Boolean</td><td>false</td><td>Masonry-Layout aktivieren</td></tr>';
+        $content .= '<tr><td><code>parallax</code></td><td>Int</td><td>0</td><td>Parallax-Effekt in Pixel (z.B. 150)</td></tr>';
+        $content .= '<tr><td><code>gap</code></td><td>String</td><td>-</td><td>Abstand zwischen den Items (small, medium, large oder Pixelwert)</td></tr>';
+        $content .= '<tr><td><code>divider</code></td><td>Boolean</td><td>false</td><td>Trennlinie zwischen den Elementen anzeigen</td></tr>';
+        $content .= '<tr><td><code>match_height</code></td><td>Boolean</td><td>false</td><td>Gleiche Höhe für alle Elemente</td></tr>';
+        $content .= '<tr><td><code>grid_classes</code></td><td>String</td><td>-</td><td>CSS-Klassen für das Grid-Element</td></tr>';
+        $content .= '<tr><td><code>item_template</code></td><td>String</td><td>&lt;div class="{{class}}"&gt;{{content}}&lt;/div&gt;</td><td>HTML-Template für jedes Item</td></tr>';
+        $content .= '</tbody>';
+        $content .= '</table>';
+        $content .= '</div>';
+        $content .= '</div>';
+        break;
+
     case 'modal':
         // Modal Demo
         $content .= '<h2>Modal</h2>';
