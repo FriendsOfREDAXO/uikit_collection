@@ -1159,7 +1159,7 @@ echo $fragment->parse(\'uikit_offcanvas.php\');
         
         // Beispiel: Mobile Navigation
         $content .= '<div>';
-        $content .= '<div class="uk-card uk-card-small uk-card-body uk-card-primary">';
+        $content .= '<div class="uk-card uk-card-small uk-card-body uk-card-default">';
         $content .= '<h4>Mobile Navigation</h4>';
         $content .= '<p>Verwenden Sie Offcanvas für responsive Navigationsmenüs auf kleinen Bildschirmen:</p>';
         $content .= '<pre><code>// HTML/Template
@@ -1180,7 +1180,7 @@ echo $fragment->parse(\'uikit_offcanvas.php\');
         
         // Beispiel: Warenkorb
         $content .= '<div>';
-        $content .= '<div class="uk-card uk-card-small uk-card-body uk-card-secondary">';
+        $content .= '<div class="uk-card uk-card-small uk-card-body uk-card-default">';
         $content .= '<h4>Warenkorb</h4>';
         $content .= '<p>Zeigen Sie den aktuellen Warenkorb in einer E-Commerce-Anwendung an:</p>';
         $content .= '<pre><code>&lt;?php
