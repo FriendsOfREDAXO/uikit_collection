@@ -1,12 +1,13 @@
 name: Build UIkit with REDAXO Theme
 
+# Nur manuelles Auslösen des Workflows
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
-    # Ermöglicht manuelles Auslösen des Workflows
+    inputs:
+      uikit_branch:
+        description: 'UIkit Branch (main oder 3.x, etc.)'
+        required: true
+        default: 'main'
 
 jobs:
   build:
@@ -25,14 +26,34 @@ jobs:
         run: |
           echo "ROOT_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
           echo "TEMP_DIR=$GITHUB_WORKSPACE/temp-uikit" >> $GITHUB_ENV
-          echo "UIKIT_VERSION=master" >> $GITHUB_ENV
+          echo "UIKIT_VERSION=${{ github.event.inputs.uikit_branch }}" >> $GITHUB_ENV
           
       - name: Clone UIkit Repository
         run: |
           echo "Clone UIkit Repository (latest version)..."
           git clone https://github.com/uikit/uikit.git "$TEMP_DIR"
           cd "$TEMP_DIR"
-          git checkout "$UIKIT_VERSION"
+          
+          # Liste verfügbare Branches
+          echo "Verfügbare Branches:"
+          git branch -r
+          
+          # Versuche den angegebenen Branch zu checken
+          if git checkout "$UIKIT_VERSION"; then
+            echo "Branch $UIKIT_VERSION erfolgreich ausgecheckt"
+          else
+            echo "Branch $UIKIT_VERSION nicht gefunden, versuche main und dann master..."
+            if git checkout main; then
+              echo "Branch main erfolgreich ausgecheckt"
+              echo "UIKIT_VERSION=main" >> $GITHUB_ENV
+            elif git checkout master; then
+              echo "Branch master erfolgreich ausgecheckt"
+              echo "UIKIT_VERSION=master" >> $GITHUB_ENV
+            else
+              echo "Weder main noch master gefunden. Verwende default Branch."
+              echo "UIKIT_VERSION=default" >> $GITHUB_ENV
+            fi
+          fi
           
       - name: Get UIkit version
         run: |
@@ -88,25 +109,22 @@ jobs:
           echo "Cleaning up..."
           rm -rf "$TEMP_DIR"
       
-      - name: Create release artifacts
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Create artifacts
         run: |
-          echo "Creating release artifacts..."
-          zip -r uikit_collection.zip . -x "*.git*" -x "temp-uikit/*" -x ".github/*"
+          echo "Creating artifacts..."
+          zip -r uikit_collection.zip assets -x "*.git*" -x "temp-uikit/*" -x ".github/*"
       
-      - name: Upload release artifacts
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: uikit_collection
-          path: uikit_collection.zip
-      
-      - name: Commit changes
-        # Nur bei Push auf master/main Branch und nicht bei Pull Requests
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+          name: uikit_collection_assets
+          path: assets/
+          
+      - name: Commit info
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add assets/
-          git commit -m "Update UIkit assets to version $ACTUAL_VERSION" || echo "No changes to commit"
-          git push
+          echo "Um die Änderungen zu committen, führe folgende Befehle lokal aus:"
+          echo "--------------------------------------------------------"
+          echo "git add assets/"
+          echo "git commit -m \"Update UIkit assets to version $ACTUAL_VERSION\""
+          echo "git push"
+          echo "--------------------------------------------------------"
