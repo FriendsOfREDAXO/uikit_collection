@@ -1,193 +1,27 @@
-name: Build UIkit with REDAXO Theme
+# Instructions: https://github.com/FriendsOfREDAXO/installer-action/
 
-# Nur manuelles Auslösen des Workflows
+name: Publish to REDAXO.org
 on:
-  workflow_dispatch:
-    inputs:
-      uikit_branch:
-        description: 'UIkit Branch (main oder 3.x, etc.)'
-        required: true
-        default: 'main'
+  release:
+    types:
+      - published
 
 jobs:
-  build:
+  redaxo_publish:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - if: hashFiles('composer.json') != ''
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: '18'
-          
-      - name: Install pnpm
-        run: |
-          npm install -g pnpm@7.30.5
-          pnpm --version
-          
-      - name: Setup environment variables
-        run: |
-          echo "ROOT_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-          echo "TEMP_DIR=$GITHUB_WORKSPACE/temp-uikit" >> $GITHUB_ENV
-          echo "UIKIT_VERSION=${{ github.event.inputs.uikit_branch }}" >> $GITHUB_ENV
-          
-      - name: Clone UIkit Repository
-        run: |
-          echo "Clone UIkit Repository (latest version)..."
-          git clone https://github.com/uikit/uikit.git "$TEMP_DIR"
-          cd "$TEMP_DIR"
-          
-          # Liste verfügbare Branches
-          echo "Verfügbare Branches:"
-          git branch -r
-          
-          # Versuche den angegebenen Branch zu checken
-          if git checkout "$UIKIT_VERSION"; then
-            echo "Branch $UIKIT_VERSION erfolgreich ausgecheckt"
-          else
-            echo "Branch $UIKIT_VERSION nicht gefunden, versuche main und dann master..."
-            if git checkout main; then
-              echo "Branch main erfolgreich ausgecheckt"
-              echo "UIKIT_VERSION=main" >> $GITHUB_ENV
-            elif git checkout master; then
-              echo "Branch master erfolgreich ausgecheckt"
-              echo "UIKIT_VERSION=master" >> $GITHUB_ENV
-            else
-              echo "Weder main noch master gefunden. Verwende default Branch."
-              echo "UIKIT_VERSION=default" >> $GITHUB_ENV
-            fi
-          fi
-          
-      - name: Determine default branch
-        id: default-branch
-        run: |
-          # Finde den aktuellen default Branch des Repositories
-          DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
-          echo "Default branch is: $DEFAULT_BRANCH"
-          echo "default_branch=$DEFAULT_BRANCH" >> $GITHUB_OUTPUT
-          
-      - name: Get UIkit version
-        run: |
-          cd "$TEMP_DIR"
-          ACTUAL_VERSION=$(node -p "require('./package.json').version")
-          echo "ACTUAL_VERSION=$ACTUAL_VERSION" >> $GITHUB_ENV
-          echo "Using UIkit Version: $ACTUAL_VERSION"
-      
-      - name: Install dependencies
-        run: |
-          echo "Installing dependencies..."
-          cd "$TEMP_DIR"
-          
-          # Prüfe, welche Package Manager verwendet wird (npm oder pnpm)
-          if grep -q "pnpm" package.json; then
-            echo "Verwende pnpm für die Installation"
-            pnpm install
-          else
-            echo "Verwende npm für die Installation"
-            npm install
-          fi
-        
-      - name: Create custom theme
-        run: |
-          echo "Creating custom theme..."
-          cd "$TEMP_DIR"
-          mkdir -p custom/redaxo-theme
-          cp -r "$ROOT_DIR/uikit-theme/"* custom/redaxo-theme/
-          
-          # Create main theme file
-          cat > custom/redaxo-theme.less <<EOL
-          // Import UIkit core (without default theme)
-          @import "../src/less/uikit.less";
-          
-          // Import redaxo-specific adjustments
-          @import "redaxo-theme/_import.less";
-          EOL
-      
-      - name: Compile UIkit with custom theme
-        run: |
-          echo "Compiling UIkit with custom theme..."
-          cd "$TEMP_DIR"
-          
-          # Verwende direkte Kompilierungsbefehle anstelle von npm scripts
-          if [ -f "package.json" ] && grep -q "pnpm" package.json; then
-            echo "Verwende pnpm für die Kompilierung"
-            pnpm compile-less || pnpm run compile-less
-            pnpm compile-js || pnpm run compile-js
-          else
-            echo "Verwende npm für die Kompilierung"
-            npm run compile
-          fi
-      
-      - name: Copy compiled files
-        run: |
-          echo "Copying compiled files to assets directory..."
-          ASSETS_DIR="${ROOT_DIR}/assets"
-          mkdir -p "${ASSETS_DIR}"
-          
-          # Copy compiled CSS files
-          mkdir -p "${ASSETS_DIR}/css"
-          cp "$TEMP_DIR/dist/css/uikit"*.css "${ASSETS_DIR}/css/"
-          
-          # Copy compiled JavaScript files
-          mkdir -p "${ASSETS_DIR}/js"
-          cp "$TEMP_DIR/dist/js/uikit"*.js "${ASSETS_DIR}/js/"
-      
-      - name: Clean up
-        run: |
-          echo "Cleaning up..."
-          rm -rf "$TEMP_DIR"
-      
-      - name: Create artifacts
-        run: |
-          echo "Creating artifacts..."
-          zip -r uikit_collection.zip assets -x "*.git*" -x "temp-uikit/*" -x ".github/*"
-      
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+          php-version: "8.2"
+      - if: hashFiles('composer.json') != ''
+        uses: ramsey/composer-install@v2
         with:
-          name: uikit_collection_assets
-          path: assets/
-          
-      - name: Create Pull Request Branch
-        run: |
-          # Konfiguriere Git für die Erstellung des Commits
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions@github.com"
-          
-          # Stelle sicher, dass wir alle aktuellen Branches haben
-          git fetch origin
-          
-          # Erstelle einen neuen Branch
-          BRANCH_NAME="update-uikit-v$ACTUAL_VERSION"
-          git checkout -b $BRANCH_NAME
-          
-          # Füge Änderungen hinzu und committe
-          git add assets/ || echo "No assets directory found"
-          git add uikit_collection.zip || echo "No zip file found"
-          git commit -m "Update UIkit assets to version $ACTUAL_VERSION" || echo "No changes to commit"
-          
-          # Push den Branch zum Repository
-          git push --set-upstream origin $BRANCH_NAME
-          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-        
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+          composer-options: "--no-dev"
+      - uses: FriendsOfREDAXO/installer-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: Update UIkit assets to version ${{ env.ACTUAL_VERSION }}
-          title: Update UIkit assets to version ${{ env.ACTUAL_VERSION }}
-          body: |
-            # UIkit Update
-            
-            Diese PR aktualisiert die UIkit-Assets auf Version ${{ env.ACTUAL_VERSION }}.
-            
-            ## Änderungen:
-            - Aktualisierung der CSS-Dateien
-            - Aktualisierung der JavaScript-Dateien
-            
-            Automatisch erstellt durch den GitHub Actions Workflow.
-          branch: ${{ env.BRANCH_NAME }}
-          base: ${{ steps.default-branch.outputs.default_branch }}
-          delete-branch: false
+          myredaxo-username: ${{ secrets.MYREDAXO_USERNAME }}
+          myredaxo-api-key: ${{ secrets.MYREDAXO_API_KEY }}
+          description: ${{ github.event.release.body }}
+          version: ${{ github.event.release.tag_name }}
