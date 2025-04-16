@@ -60,6 +60,14 @@ jobs:
             fi
           fi
           
+      - name: Determine default branch
+        id: default-branch
+        run: |
+          # Finde den aktuellen default Branch des Repositories
+          DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+          echo "Default branch is: $DEFAULT_BRANCH"
+          echo "default_branch=$DEFAULT_BRANCH" >> $GITHUB_OUTPUT
+          
       - name: Get UIkit version
         run: |
           cd "$TEMP_DIR"
@@ -148,12 +156,16 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           
+          # Stelle sicher, dass wir alle aktuellen Branches haben
+          git fetch origin
+          
           # Erstelle einen neuen Branch
           BRANCH_NAME="update-uikit-v$ACTUAL_VERSION"
           git checkout -b $BRANCH_NAME
           
           # Füge Änderungen hinzu und committe
-          git add assets/
+          git add assets/ || echo "No assets directory found"
+          git add uikit_collection.zip || echo "No zip file found"
           git commit -m "Update UIkit assets to version $ACTUAL_VERSION" || echo "No changes to commit"
           
           # Push den Branch zum Repository
@@ -177,5 +189,5 @@ jobs:
             
             Automatisch erstellt durch den GitHub Actions Workflow.
           branch: ${{ env.BRANCH_NAME }}
-          base: main
+          base: ${{ steps.default-branch.outputs.default_branch }}
           delete-branch: false
