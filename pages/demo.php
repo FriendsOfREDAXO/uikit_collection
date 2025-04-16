@@ -224,9 +224,9 @@ echo $fragment->parse(\'uikit_accordeon_tabs.php\');
         $content .= '<h2>Cards</h2>';
         $content .= '<p class="lead">Das Fragment <code>uikit_card.php</code> ermöglicht das einfache Erstellen von Card-Layouts.</p>';
         
-        // Beispiel für eine Card
+        // Beispiel 1: Einfache Card
         $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
-        $content .= '<h3 class="uk-card-title">Beispiel: Standard Card</h3>';
+        $content .= '<h3 class="uk-card-title">Beispiel 1: Einfache Card</h3>';
         
         $content .= '<pre><code>&lt;?php
 $media = \'&lt;img src="/media/beispiel_bild.jpg" alt="Beispielbild"&gt;\';
@@ -258,6 +258,335 @@ echo $fragment->parse(\'uikit_card.php\');
         $fragment->setVar('main_attributes', ['class' => 'uk-card-default uk-card-hover'], false);
         $content .= $fragment->parse('uikit_card.php');
         
+        $content .= '</div>';
+        $content .= '</div>';
+        
+        // Beispiel 2: Card-Varianten
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 2: Card-Varianten (Default, Primary, Secondary)</h3>';
+        $content .= '<p>UIkit bietet verschiedene Stilvarianten für Cards:</p>';
+        
+        $content .= '<pre><code>&lt;?php
+// Eine Funktion zur Card-Erstellung mit verschiedenen Stilen
+function create_card($title, $style) {
+    $body = \'&lt;p&gt;Diese Card verwendet den \' . $style . \' Stil.&lt;/p&gt;\';
+    $footer = \'&lt;a href="#" class="uk-button uk-button-text"&gt;Aktion&lt;/a&gt;\';
+    
+    $fragment = new rex_fragment();
+    $fragment->setVar(\'title\', $title, false);
+    $fragment->setVar(\'body\', $body, false);
+    $fragment->setVar(\'footer\', $footer, false);
+    $fragment->setVar(\'main_attributes\', [\'class\' => \'uk-card-\' . $style . \' uk-card-hover\'], false);
+    return $fragment->parse(\'uikit_card.php\');
+}
+
+// Default Card
+echo create_card(\'Default Card\', \'default\');
+
+// Primary Card
+echo create_card(\'Primary Card\', \'primary\');
+
+// Secondary Card
+echo create_card(\'Secondary Card\', \'secondary\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        $content .= '<div class="uk-child-width-1-3@m" uk-grid>';
+        
+        // Default Card
+        $content .= '<div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Default Card', false);
+        $fragment->setVar('body', '<p>Diese Card verwendet den default Stil.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Aktion</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-default uk-card-hover'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        // Primary Card
+        $content .= '<div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Primary Card', false);
+        $fragment->setVar('body', '<p>Diese Card verwendet den primary Stil.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Aktion</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-primary uk-card-hover'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        // Secondary Card
+        $content .= '<div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Secondary Card', false);
+        $fragment->setVar('body', '<p>Diese Card verwendet den secondary Stil.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Aktion</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-secondary uk-card-hover'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        $content .= '</div>';
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Beispiel 3: Cards mit verschiedenen Größen
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 3: Cards mit verschiedenen Größen</h3>';
+        $content .= '<p>UIkit Cards können in verschiedenen Größen dargestellt werden:</p>';
+        
+        $content .= '<pre><code>&lt;?php
+// Klein (Small)
+$fragment = new rex_fragment();
+$fragment->setVar(\'title\', \'Small Card\', false);
+$fragment->setVar(\'body\', \'&lt;p&gt;Eine kleine Card.&lt;/p&gt;\', false);
+$fragment->setVar(\'main_attributes\', [\'class\' => \'uk-card-default uk-card-small\'], false);
+echo $fragment->parse(\'uikit_card.php\');
+
+// Standard (keine Größenangabe)
+$fragment = new rex_fragment();
+$fragment->setVar(\'title\', \'Standard Card\', false);
+$fragment->setVar(\'body\', \'&lt;p&gt;Eine Card in Standardgröße.&lt;/p&gt;\', false);
+$fragment->setVar(\'main_attributes\', [\'class\' => \'uk-card-default\'], false);
+echo $fragment->parse(\'uikit_card.php\');
+
+// Groß (Large)
+$fragment = new rex_fragment();
+$fragment->setVar(\'title\', \'Large Card\', false);
+$fragment->setVar(\'body\', \'&lt;p&gt;Eine große Card.&lt;/p&gt;\', false);
+$fragment->setVar(\'main_attributes\', [\'class\' => \'uk-card-default uk-card-large\'], false);
+echo $fragment->parse(\'uikit_card.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        // Klein (Small)
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Small Card', false);
+        $fragment->setVar('body', '<p>Eine kleine Card.</p>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-default uk-card-small uk-margin-bottom'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        
+        // Standard (keine Größenangabe)
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Standard Card', false);
+        $fragment->setVar('body', '<p>Eine Card in Standardgröße.</p>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-default uk-margin-bottom'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        
+        // Groß (Large)
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Large Card', false);
+        $fragment->setVar('body', '<p>Eine große Card.</p>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-default uk-card-large'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        
+        $content .= '</div>';
+        $content .= '</div>';
+        
+        // Beispiel 4: Cards in einem Grid-Layout
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 4: Cards in einem Grid-Layout</h3>';
+        $content .= '<p>Mehrere Cards können mit dem UIkit Grid-System übersichtlich angeordnet werden:</p>';
+        
+        $content .= '<pre><code>&lt;?php
+// Funktion zum Erstellen einer Card
+function create_card_for_grid($title, $body, $style = \'default\', $size = \'\') {
+    $sizeClass = $size ? " uk-card-$size" : \'\';
+    $media = \'&lt;div style="height:120px;background:#f0f0f0;display:flex;align-items:center;justify-content:center"&gt;Bild&lt;/div&gt;\';
+    
+    $fragment = new rex_fragment();
+    $fragment->setVar(\'title\', $title, false);
+    $fragment->setVar(\'media\', $media, false);
+    $fragment->setVar(\'body\', $body, false);
+    $fragment->setVar(\'footer\', \'&lt;a href="#" class="uk-button uk-button-text"&gt;Mehr&lt;/a&gt;\', false);
+    $fragment->setVar(\'main_attributes\', [\'class\' => "uk-card-$style uk-card-hover$sizeClass"], false);
+    return $fragment->parse(\'uikit_card.php\');
+}
+
+// Cards mit Grid-Layout ausgeben
+echo \'&lt;div class="uk-grid-match uk-child-width-1-1 uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid&gt;\';
+
+echo \'&lt;div&gt;\';
+echo create_card_for_grid(\'Card 1\', \'&lt;p&gt;Beschreibung der ersten Card.&lt;/p&gt;\');
+echo \'&lt;/div&gt;\';
+
+echo \'&lt;div&gt;\';
+echo create_card_for_grid(\'Card 2\', \'&lt;p&gt;Beschreibung der zweiten Card.&lt;/p&gt;\', \'primary\');
+echo \'&lt;/div&gt;\';
+
+echo \'&lt;div&gt;\';
+echo create_card_for_grid(\'Card 3\', \'&lt;p&gt;Beschreibung der dritten Card.&lt;/p&gt;\', \'secondary\');
+echo \'&lt;/div&gt;\';
+
+echo \'&lt;div&gt;\';
+echo create_card_for_grid(\'Card 4\', \'&lt;p&gt;Beschreibung der vierten Card.&lt;/p&gt;\', \'default\', \'small\');
+echo \'&lt;/div&gt;\';
+
+echo \'&lt;div&gt;\';
+echo create_card_for_grid(\'Card 5\', \'&lt;p&gt;Beschreibung der fünften Card.&lt;/p&gt;\', \'primary\', \'small\');
+echo \'&lt;/div&gt;\';
+
+echo \'&lt;div&gt;\';
+echo create_card_for_grid(\'Card 6\', \'&lt;p&gt;Beschreibung der sechsten Card.&lt;/p&gt;\', \'secondary\', \'small\');
+echo \'&lt;/div&gt;\';
+
+echo \'&lt;/div&gt;\';
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        
+        $content .= '<div class="uk-grid-match uk-child-width-1-1 uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>';
+        
+        // Card 1
+        $content .= '<div>';
+        $media = '<div style="height:120px;background:#f0f0f0;display:flex;align-items:center;justify-content:center">Bild</div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Card 1', false);
+        $fragment->setVar('media', $media, false);
+        $fragment->setVar('body', '<p>Beschreibung der ersten Card.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Mehr</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-default uk-card-hover'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        // Card 2
+        $content .= '<div>';
+        $media = '<div style="height:120px;background:#f0f0f0;display:flex;align-items:center;justify-content:center">Bild</div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Card 2', false);
+        $fragment->setVar('media', $media, false);
+        $fragment->setVar('body', '<p>Beschreibung der zweiten Card.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Mehr</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-primary uk-card-hover'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        // Card 3
+        $content .= '<div>';
+        $media = '<div style="height:120px;background:#f0f0f0;display:flex;align-items:center;justify-content:center">Bild</div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Card 3', false);
+        $fragment->setVar('media', $media, false);
+        $fragment->setVar('body', '<p>Beschreibung der dritten Card.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Mehr</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-secondary uk-card-hover'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        // Card 4
+        $content .= '<div>';
+        $media = '<div style="height:120px;background:#f0f0f0;display:flex;align-items:center;justify-content:center">Bild</div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Card 4', false);
+        $fragment->setVar('media', $media, false);
+        $fragment->setVar('body', '<p>Beschreibung der vierten Card.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Mehr</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-default uk-card-hover uk-card-small'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        // Card 5
+        $content .= '<div>';
+        $media = '<div style="height:120px;background:#f0f0f0;display:flex;align-items:center;justify-content:center">Bild</div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Card 5', false);
+        $fragment->setVar('media', $media, false);
+        $fragment->setVar('body', '<p>Beschreibung der fünften Card.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Mehr</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-primary uk-card-hover uk-card-small'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        // Card 6
+        $content .= '<div>';
+        $media = '<div style="height:120px;background:#f0f0f0;display:flex;align-items:center;justify-content:center">Bild</div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Card 6', false);
+        $fragment->setVar('media', $media, false);
+        $fragment->setVar('body', '<p>Beschreibung der sechsten Card.</p>', false);
+        $fragment->setVar('footer', '<a href="#" class="uk-button uk-button-text">Mehr</a>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-secondary uk-card-hover uk-card-small'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        $content .= '</div>';
+        $content .= '</div>';
+        $content .= '</div>';
+        
+        // Beispiel 5: Media-Platzierung bei Cards
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Beispiel 5: Medieninhalte oben oder unten platzieren</h3>';
+        $content .= '<p>Bilder können bei Cards oben oder unten positioniert werden:</p>';
+        
+        $content .= '<pre><code>&lt;?php
+// Media oben (Standard)
+$media_top = \'&lt;img src="/media/beispiel_bild.jpg" alt="Beispielbild"&gt;\';
+$fragment = new rex_fragment();
+$fragment->setVar(\'title\', \'Media oben\', false);
+$fragment->setVar(\'media\', $media_top, false);
+$fragment->setVar(\'body\', \'&lt;p&gt;Das Bild wird standardmäßig oben angezeigt.&lt;/p&gt;\', false);
+$fragment->setVar(\'main_attributes\', [\'class\' => \'uk-card-default\'], false);
+echo $fragment->parse(\'uikit_card.php\');
+
+// Media unten
+$media_bottom = \'&lt;img src="/media/beispiel_bild.jpg" alt="Beispielbild"&gt;\';
+$fragment = new rex_fragment();
+$fragment->setVar(\'title\', \'Media unten\', false);
+$fragment->setVar(\'media\', $media_bottom, false);
+$fragment->setVar(\'media_bottom\', true, false); // Media unten anzeigen
+$fragment->setVar(\'body\', \'&lt;p&gt;Das Bild wird unten angezeigt.&lt;/p&gt;\', false);
+$fragment->setVar(\'main_attributes\', [\'class\' => \'uk-card-default\'], false);
+echo $fragment->parse(\'uikit_card.php\');
+?&gt;</code></pre>';
+
+        $content .= '<div class="uk-background-muted uk-padding">';
+        $content .= '<div class="uk-child-width-1-2@s" uk-grid>';
+        
+        // Media oben
+        $content .= '<div>';
+        $media_top = '<div style="height:150px;background:#e1e1e1;display:flex;align-items:center;justify-content:center">Bild oben</div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Media oben', false);
+        $fragment->setVar('media', $media_top, false);
+        $fragment->setVar('body', '<p>Das Bild wird standardmäßig oben angezeigt.</p>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-default'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        // Media unten
+        $content .= '<div>';
+        $media_bottom = '<div style="height:150px;background:#e1e1e1;display:flex;align-items:center;justify-content:center">Bild unten</div>';
+        $fragment = new rex_fragment();
+        $fragment->setVar('title', 'Media unten', false);
+        $fragment->setVar('media', $media_bottom, false);
+        $fragment->setVar('media_bottom', true, false);
+        $fragment->setVar('body', '<p>Das Bild wird unten angezeigt.</p>', false);
+        $fragment->setVar('main_attributes', ['class' => 'uk-card-default'], false);
+        $content .= $fragment->parse('uikit_card.php');
+        $content .= '</div>';
+        
+        $content .= '</div>';
+        $content .= '</div>';
+        $content .= '</div>';
+
+        // Parameter-Dokumentation
+        $content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-medium-bottom">';
+        $content .= '<h3 class="uk-card-title">Parameter</h3>';
+        $content .= '<p>Die folgenden Parameter können für das Card-Fragment gesetzt werden:</p>';
+
+        $content .= '<div class="uk-overflow-auto">';
+        $content .= '<table class="uk-table uk-table-divider uk-table-hover uk-table-small">';
+        $content .= '<thead><tr><th>Parameter</th><th>Typ</th><th>Beschreibung</th></tr></thead>';
+        $content .= '<tbody>';
+        $content .= '<tr><td><code>media</code></td><td>String</td><td>Nimmt Markup für ein Medium/Bild an</td></tr>';
+        $content .= '<tr><td><code>media_bottom</code></td><td>Boolean</td><td>Definiert, ob das Medium am Ende dargestellt werden soll</td></tr>';
+        $content .= '<tr><td><code>title</code></td><td>String</td><td>Titel bzw. Header der Card</td></tr>';
+        $content .= '<tr><td><code>body</code></td><td>String</td><td>Hauptinhalt der Card</td></tr>';
+        $content .= '<tr><td><code>body_prepend</code></td><td>String</td><td>Inhalt vor dem Body</td></tr>';
+        $content .= '<tr><td><code>body_append</code></td><td>String</td><td>Inhalt nach dem Body</td></tr>';
+        $content .= '<tr><td><code>footer</code></td><td>String</td><td>Footer-Inhalt der Card</td></tr>';
+        $content .= '<tr><td><code>main_attributes</code></td><td>Array</td><td>Hier können Attribute zur uk-card ergänzt werden</td></tr>';
+        $content .= '<tr><td><code>body_attributes</code></td><td>Array</td><td>Hier können Attribute zum Body ergänzt werden</td></tr>';
+        $content .= '</tbody>';
+        $content .= '</table>';
         $content .= '</div>';
         $content .= '</div>';
         
