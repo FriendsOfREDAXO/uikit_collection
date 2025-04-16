@@ -45,9 +45,26 @@ git checkout "$UIKIT_VERSION"
 ACTUAL_VERSION=$(node -p "require('./package.json').version")
 echo -e "${BLUE}Verwende UIkit Version: ${ACTUAL_VERSION}${NC}"
 
+# Prüfen, ob im package.json pnpm als Abhängigkeit oder in den Scripts erwähnt wird
+USE_PNPM=false
+if grep -q "pnpm" package.json; then
+    USE_PNPM=true
+    echo -e "${BLUE}pnpm wird für diese UIkit-Version benötigt${NC}"
+    
+    # Prüfen, ob pnpm installiert ist
+    if ! command -v pnpm &> /dev/null; then
+        echo -e "${BLUE}pnpm ist nicht installiert. Installiere pnpm...${NC}"
+        npm install -g pnpm
+    fi
+fi
+
 # Abhängigkeiten installieren
 echo -e "${BLUE}Installiere Abhängigkeiten...${NC}"
-npm install
+if [ "$USE_PNPM" = true ]; then
+    pnpm install
+else
+    npm install
+fi
 
 # Unser angepasstes Theme kopieren
 echo -e "${BLUE}Erstelle angepasstes Theme...${NC}"
@@ -65,9 +82,21 @@ EOL
 
 # UIkit mit angepasstem Theme bauen
 echo -e "${BLUE}Kompiliere UIkit mit angepasstem Theme...${NC}"
-npm run compile
+if [ "$USE_PNPM" = true ]; then
+    # Bei neueren Versionen von UIkit werden die Befehle getrennt ausgeführt
+    pnpm compile-less || echo "pnpm compile-less fehlgeschlagen, versuche Fallback mit npm"
+    pnpm compile-js || echo "pnpm compile-js fehlgeschlagen, versuche Fallback mit npm"
+    
+    # Fallback auf npm, falls pnpm-Befehle fehlschlagen
+    if [ ! -d "dist" ] || [ ! -f "dist/css/uikit.css" ]; then
+        echo -e "${BLUE}Fallback auf npm run compile...${NC}"
+        npm run compile
+    fi
+else
+    npm run compile
+fi
 
-# Kompilierte Dateien kopieren - KORREKTUR: Direktes Ablegen im assets-Ordner
+# Kompilierte Dateien kopieren
 echo -e "${BLUE}Kopiere kompilierte Dateien in das assets-Verzeichnis...${NC}"
 ASSETS_DIR="${ROOT_DIR}/assets"
 mkdir -p "${ASSETS_DIR}"
