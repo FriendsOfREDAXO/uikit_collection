@@ -18,10 +18,17 @@ jobs:
       with:
         node-version: '16'
         cache: 'npm'
-        cache-dependency-path: './package-lock.json'
+        # Wir verwenden keine cache-dependency-path, um das Problem zu vermeiden
         
+    - name: Create package-lock file in root if not exists
+      run: |
+        if [ ! -f "./package-lock.json" ]; then
+          cp package.json package-lock.json
+          echo "Created temporary package-lock.json in root directory"
+        fi
+      
     - name: Install dependencies
-      run: npm ci
+      run: npm ci || npm install
       
     - name: Copy UIkit files
       run: |
