@@ -24,6 +24,12 @@ jobs:
         with:
           node-version: '18'
           
+      # pnpm installieren, da neuere UIkit-Versionen es verwenden
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
+          pnpm --version
+          
       # Umgebungsvariablen definieren genau wie im lokalen Skript
       - name: Setup environment variables
         run: |
@@ -72,7 +78,15 @@ jobs:
         run: |
           echo "Installiere Abhängigkeiten..."
           cd "$TEMP_DIR"
-          npm install
+          
+          # Je nachdem was in package.json definiert ist, npm oder pnpm verwenden
+          if grep -q '"pnpm"' package.json; then
+            echo "Verwende pnpm für die Installation"
+            pnpm install
+          else 
+            echo "Verwende npm für die Installation"
+            npm install
+          fi
         
       # Angepasstes Theme erstellen
       - name: Create custom theme
@@ -80,7 +94,7 @@ jobs:
           echo "Erstelle angepasstes Theme..."
           cd "$TEMP_DIR"
           mkdir -p custom/redaxo-theme
-          cp -r "$ROOT_DIR/uikit-theme/"* custom/redaxo-theme/
+          cp -r "$ROOT_DIR/uikit-theme/"* custom/redaxo-theme/ || echo "Keine uikit-theme Dateien gefunden"
           
           # Erstelle die Hauptdatei für das Theme
           cat > custom/redaxo-theme.less <<EOL
@@ -96,12 +110,23 @@ jobs:
         run: |
           echo "Kompiliere UIkit mit angepasstem Theme..."
           cd "$TEMP_DIR"
-          npm run compile
+          
+          # Prüfen, ob pnpm oder npm verwendet werden soll
+          if grep -q '"pnpm"' package.json; then
+            echo "Verwende pnpm für die Kompilierung"
+            # Direkte Aufrufe der Less- und JS-Kompilierung für pnpm
+            pnpm compile-less || echo "pnpm compile-less fehlgeschlagen, versuche Fallback..."
+            pnpm compile-js || echo "pnpm compile-js fehlgeschlagen, versuche Fallback..."
+          else
+            echo "Verwende npm für die Kompilierung"
+            npm run compile || echo "npm run compile fehlgeschlagen"
+          fi
           
           # Debug: Zeige kompilierte Dateien
           echo "Kompilierte Dateien im dist-Verzeichnis:"
-          ls -la dist/css/
-          ls -la dist/js/
+          ls -la dist/ || echo "Kein dist-Verzeichnis gefunden"
+          ls -la dist/css/ || echo "Kein dist/css-Verzeichnis gefunden"
+          ls -la dist/js/ || echo "Kein dist/js-Verzeichnis gefunden"
       
       # Kompilierte Dateien kopieren
       - name: Copy compiled files
@@ -110,18 +135,25 @@ jobs:
           ASSETS_DIR="${ROOT_DIR}/assets"
           mkdir -p "${ASSETS_DIR}"
           
+          # Prüfen, ob dist-Verzeichnis existiert
+          if [ ! -d "$TEMP_DIR/dist" ]; then
+            echo "FEHLER: dist-Verzeichnis nicht gefunden! Kompilierung fehlgeschlagen?"
+            exit 1
+          fi
+          
           # Kopiere die kompilierten CSS-Dateien
           mkdir -p "${ASSETS_DIR}/css"
-          cp "$TEMP_DIR/dist/css/uikit"*.css "${ASSETS_DIR}/css/"
+          cp "$TEMP_DIR/dist/css/uikit"*.css "${ASSETS_DIR}/css/" || echo "Keine CSS-Dateien gefunden"
           
           # Kopiere die kompilierten JavaScript-Dateien
           mkdir -p "${ASSETS_DIR}/js"
-          cp "$TEMP_DIR/dist/js/uikit"*.js "${ASSETS_DIR}/js/"
+          cp "$TEMP_DIR/dist/js/uikit"*.js "${ASSETS_DIR}/js/" || echo "Keine JS-Dateien gefunden"
           
           # Debug: Zeige kopierte Dateien
           echo "Inhalt des Assets-Verzeichnisses nach dem Kopieren:"
-          ls -la "${ASSETS_DIR}/css/"
-          ls -la "${ASSETS_DIR}/js/"
+          ls -la "${ASSETS_DIR}/" || echo "Kein assets-Verzeichnis gefunden"
+          ls -la "${ASSETS_DIR}/css/" || echo "Kein css-Verzeichnis gefunden"
+          ls -la "${ASSETS_DIR}/js/" || echo "Kein js-Verzeichnis gefunden"
       
       # Aufräumen
       - name: Clean up
@@ -158,19 +190,25 @@ jobs:
           BRANCH_NAME="update-uikit-v$ACTUAL_VERSION"
           git checkout -b $BRANCH_NAME
           
+          # Prüfen, ob das assets-Verzeichnis existiert
+          if [ ! -d "${ROOT_DIR}/assets" ]; then
+            echo "FEHLER: assets-Verzeichnis nicht gefunden! Build fehlgeschlagen?"
+            exit 1
+          fi
+          
           # Änderungen hinzufügen und committen
-          git add assets/
+          git add -f assets/ || echo "Keine assets zum Hinzufügen gefunden"
           
           # Debug: Zeige Status nach dem Hinzufügen
           git status
           
-          git commit -m "Update UIkit assets to version $ACTUAL_VERSION" || echo "No changes to commit"
+          git commit -m "Update UIkit assets to version $ACTUAL_VERSION" || echo "Keine Änderungen zum Committen"
           
           # Debug: Zeige Status nach dem Commit
           git status
           
           # Branch pushen
-          git push --set-upstream origin $BRANCH_NAME
+          git push --force-with-lease --set-upstream origin $BRANCH_NAME || echo "Push fehlgeschlagen"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
         
       # Pull Request erstellen
