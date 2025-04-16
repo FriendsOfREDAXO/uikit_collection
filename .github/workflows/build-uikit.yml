@@ -96,7 +96,7 @@ jobs:
       
       - name: Upload release artifacts
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: uikit_collection
           path: uikit_collection.zip
