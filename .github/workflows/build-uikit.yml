@@ -46,6 +46,10 @@ jobs:
           echo "Root Directory: $ROOT_DIR"
           echo "UIkit Version/Branch: $UIKIT_VERSION"
           
+          # Debugging: Zeige die Verzeichnisstruktur
+          echo "Aktuelle Verzeichnisstruktur des Repositories:"
+          ls -la "${ROOT_DIR}"
+          
           # Temporäres Verzeichnis löschen, falls vorhanden
           if [ -d "$TEMP_DIR" ]; then
               echo "Lösche vorhandenes temporäres Verzeichnis..."
@@ -112,10 +116,19 @@ jobs:
           ls -la dist/css/
           ls -la dist/js/
           
-          # Kompilierte Dateien kopieren
+          # Kompilierte Dateien kopieren - stellen Sie sicher, dass der Pfad korrekt ist
           echo "Kopiere kompilierte Dateien in das assets-Verzeichnis..."
-          ASSETS_DIR="${ROOT_DIR}/assets"
-          mkdir -p "${ASSETS_DIR}"
+          
+          # Stelle sicher, dass wir das richtige assets-Verzeichnis haben
+          if [ -d "${ROOT_DIR}/assets" ]; then
+            ASSETS_DIR="${ROOT_DIR}/assets"
+            echo "Verwende existierendes assets-Verzeichnis: ${ASSETS_DIR}"
+          else
+            # Erstelle das assets-Verzeichnis, falls es nicht existiert
+            ASSETS_DIR="${ROOT_DIR}/assets"
+            mkdir -p "${ASSETS_DIR}"
+            echo "Erstelle neues assets-Verzeichnis: ${ASSETS_DIR}"
+          fi
           
           # Kopiere die kompilierten CSS-Dateien
           mkdir -p "${ASSETS_DIR}/css"
@@ -157,6 +170,17 @@ jobs:
           # Debug: Zeige Status vor dem Commit
           echo "Git Status vor dem Commit:"
           git status
+          
+          # Prüfe, ob das assets Verzeichnis existiert
+          if [ -d "assets" ]; then
+            echo "Assets-Verzeichnis gefunden: $(pwd)/assets"
+            ls -la assets/
+          else
+            echo "FEHLER: Assets-Verzeichnis nicht gefunden!"
+            echo "Aktuelle Verzeichnisstruktur:"
+            find . -type d -maxdepth 3 | sort
+            exit 1
+          fi
           
           # Neuen Branch erstellen
           BRANCH_NAME="update-uikit-v$ACTUAL_VERSION"
@@ -211,4 +235,3 @@ jobs:
             Automatisch erstellt durch den GitHub Actions Workflow.
           branch: ${{ env.BRANCH_NAME }}
           base: main
-          delete-branch: false
