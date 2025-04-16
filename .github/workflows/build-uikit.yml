@@ -18,13 +18,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Alle Historie abrufen, wichtig für das Bestimmen des Default-Branches
+          fetch-depth: 0
         
       # Node.js einrichten
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          
+      # pnpm installieren
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
+          pnpm --version
           
       # Kopie des lokalen build-uikit.sh in GitHub Actions
       - name: Build UIkit
@@ -35,7 +41,6 @@ jobs:
           # Verzeichnisse definieren
           ROOT_DIR="${GITHUB_WORKSPACE}"
           TEMP_DIR="${ROOT_DIR}/temp-uikit"
-          # Verwende den vom Benutzer angegebenen Branch oder main als Fallback
           UIKIT_VERSION="${{ github.event.inputs.uikit_branch }}"
           
           echo "Root Directory: $ROOT_DIR"
@@ -75,26 +80,16 @@ jobs:
           
           # Abhängigkeiten installieren
           echo "Installiere Abhängigkeiten..."
-          npm install
+          pnpm install
+          
+          # Debug: Zeige Inhalt des Theme-Ordners
+          echo "Inhalt des uikit-theme Verzeichnisses:"
+          ls -la "${ROOT_DIR}/uikit-theme"
           
           # Verzeichnis für das angepasste Theme erstellen
           echo "Erstelle angepasstes Theme..."
           mkdir -p custom/redaxo-theme
-          
-          # Debug: Prüfen, ob uikit-theme existiert
-          echo "Inhalt des ROOT_DIR:"
-          ls -la "${ROOT_DIR}"
-          
-          echo "Prüfe nach uikit-theme Verzeichnis:"
-          if [ -d "${ROOT_DIR}/uikit-theme" ]; then
-            echo "uikit-theme Verzeichnis gefunden"
-            ls -la "${ROOT_DIR}/uikit-theme"
-          else
-            echo "WARNUNG: uikit-theme Verzeichnis nicht gefunden!"
-          fi
-          
-          # Unser angepasstes Theme kopieren
-          cp -r "${ROOT_DIR}/uikit-theme/"* custom/redaxo-theme/ || echo "Keine Theme-Dateien gefunden!"
+          cp -r "${ROOT_DIR}/uikit-theme/"* custom/redaxo-theme/
           
           # Erstelle die Hauptdatei für das Theme
           cat > custom/redaxo-theme.less <<EOL
@@ -107,7 +102,9 @@ jobs:
           
           # UIkit mit angepasstem Theme bauen
           echo "Kompiliere UIkit mit angepasstem Theme..."
-          npm run compile
+          # Bei neueren UIkit Versionen wird pnpm verwendet
+          pnpm compile-less
+          pnpm compile-js
           
           # Debug: Zeigen, was kompiliert wurde
           echo "Inhalt des dist-Verzeichnisses:"
