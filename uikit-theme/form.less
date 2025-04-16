@@ -1,0 +1,56 @@
+// REDAXO UIkit Theme - Formular-Anpassungen
+// Diese Datei enthält Anpassungen für Formularkomponenten in UIkit
+
+// Form-Stile anpassen, um besser zu REDAXO zu passen
+.hook-form() {
+    // Allgemeine Anpassungen für Formular-Container
+}
+
+// Input-Felder anpassen
+.hook-form-single-line() {
+    // Input-Felder für REDAXO optimieren
+}
+
+// Textareas anpassen
+.hook-form-multi-line() {
+    // Mehrzeilige Eingabefelder für REDAXO optimieren
+}
+
+// Auswahlfelder anpassen
+.hook-form-select() {
+    // Select-Felder für REDAXO optimieren
+}
+
+// Radio und Checkboxen anpassen
+.hook-form-radio() {
+    // Radio-Buttons für REDAXO optimieren
+}
+
+.hook-form-checkbox() {
+    // Checkboxen für REDAXO optimieren
+}
+
+// Fehlermarkierung
+.hook-form-danger() {
+    // Fehlermarkierung für REDAXO anpassen
+}
+
+// Success-Markierung
+.hook-form-success() {
+    // Erfolgsmarkierung für REDAXO anpassen
+}
+
+// Zusätzliche form-spezifische Stile
+.hook-form-misc() {
+    // YForm-spezifische Anpassungen
+    .uk-form-required label:after {
+        content: "*";
+        color: @global-danger-background;
+        margin-left: 4px;
+    }
+    
+    // Fehlermeldungen in Formularen
+    .uk-form-danger + .uk-form-help-block {
+        color: @global-danger-background;
+    }
+}

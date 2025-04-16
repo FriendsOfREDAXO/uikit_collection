@@ -1,0 +1,121 @@
+name: Build UIkit
+
+on:
+  workflow_dispatch:  # Erlaubt manuelle Ausführung
+  schedule:
+    - cron: '0 0 * * *'  # Täglich um Mitternacht UTC prüfen
+  push:
+    branches:
+      - main  # oder master, je nachdem welchen Branch Sie verwenden
+    paths:
+      - 'uikit-theme/**'  # Nur ausführen wenn Änderungen am Theme vorgenommen wurden
+
+jobs:
+  check-uikit-release:
+    runs-on: ubuntu-latest
+    outputs:
+      new-release: ${{ steps.check-release.outputs.new-release }}
+      version: ${{ steps.check-release.outputs.version }}
+    steps:
+      - name: Check for new UIkit release
+        id: check-release
+        run: |
+          # Hole die neueste UIkit-Version von GitHub
+          LATEST_TAG=$(curl -s https://api.github.com/repos/uikit/uikit/releases/latest | jq -r '.tag_name')
+          
+          # Speichere die Version für Vergleich (ohne 'v' Prefix)
+          CLEAN_VERSION=$(echo $LATEST_TAG | sed 's/^v//')
+          echo "LATEST_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+          echo "version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+          
+          # Prüfe, ob wir bereits eine Datei mit der letzten verarbeiteten Version haben
+          if [ -f ".uikit-version" ]; then
+            OLD_VERSION=$(cat .uikit-version)
+            if [ "$CLEAN_VERSION" != "$OLD_VERSION" ]; then
+              echo "Neues UIkit Release gefunden: $CLEAN_VERSION (vorher: $OLD_VERSION)"
+              echo "new-release=true" >> $GITHUB_OUTPUT
+            else
+              echo "Kein neues UIkit Release gefunden. Aktuelle Version: $CLEAN_VERSION"
+              echo "new-release=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "Keine vorherige Version gefunden. Erste Ausführung."
+            echo "new-release=true" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    needs: check-uikit-release
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-uikit-release.outputs.new-release == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      - name: Clone UIkit repository
+        run: |
+          git clone https://github.com/uikit/uikit.git temp-uikit
+          cd temp-uikit
+          # Verwende den master-Branch für die neueste Version
+          git checkout master
+
+      - name: Get UIkit version
+        working-directory: ./temp-uikit
+        id: uikit-version
+        run: |
+          ACTUAL_VERSION=$(node -p "require('./package.json').version")
+          echo "UIKIT_VERSION=$ACTUAL_VERSION" >> $GITHUB_ENV
+          echo "Verwende UIkit Version: $ACTUAL_VERSION"
+          # Speichere die aktuelle Version für künftige Vergleiche
+          echo $ACTUAL_VERSION > ../.uikit-version
+
+      - name: Install dependencies
+        working-directory: ./temp-uikit
+        run: npm install
+
+      - name: Create custom theme
+        run: |
+          mkdir -p temp-uikit/custom/redaxo-theme
+          cp -r uikit-theme/* temp-uikit/custom/redaxo-theme/
+          # Erstelle die Hauptdatei für das Theme
+          cat > temp-uikit/custom/redaxo-theme.less <<EOL
+          // Import UIkit core (ohne default theme)
+          @import "../src/less/uikit.less";
+          
+          // Import redaxo-spezifische Anpassungen
+          @import "redaxo-theme/_import.less";
+          EOL
+
+      - name: Build UIkit with custom theme
+        working-directory: ./temp-uikit
+        run: npm run compile
+
+      - name: Copy compiled files to assets directory
+        run: |
+          # Erstelle assets-Verzeichnis
+          mkdir -p assets/css
+          mkdir -p assets/js
+          
+          # Kopiere die kompilierten CSS-Dateien
+          cp temp-uikit/dist/css/uikit*.css assets/css/
+          
+          # Kopiere die kompilierten JavaScript-Dateien
+          cp temp-uikit/dist/js/uikit*.js assets/js/
+
+      - name: Create Pull Request with updated UIkit
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update UIkit build auf Version ${{ env.UIKIT_VERSION }}"
+          title: "Update UIkit build (Version ${{ env.UIKIT_VERSION }})"
+          body: |
+            Automatically built UIkit mit REDAXO-spezifischem Theme
+            Verwendete UIkit Version: ${{ env.UIKIT_VERSION }}
+            
+            Dieser Build wurde automatisch erstellt, weil ein neues UIkit-Release verfügbar ist.
+          branch: "update-uikit-build"

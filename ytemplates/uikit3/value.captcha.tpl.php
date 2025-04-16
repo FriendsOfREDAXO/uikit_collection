@@ -1,19 +1,31 @@
 <?php
 
-$class = 'form-captcha';
-$class .= $this->getElement('required') ? 'form-is-required ' : '';
-$notice = $this->getElement('notice') != '' ? '<p class="help-block">' . $this->getElement('notice') . '</p>' : '';
+/**
+ * @var rex_yform_value_captcha $this
+ * @psalm-scope-this rex_yform_value_captcha
+ */
 
-$class_group = trim('form-group ' . $class . $this->getWarningClass());
-$class_control = trim('form-control');
+$class_group = 'uk-margin';
+if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['hide_field_warning_messages']) {
+    $class_group .= ' uk-form-danger';
+}
+
+$notice = '';
+if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['hide_field_warning_messages']) {
+    $notice = '<p class="uk-form-help-block uk-text-small"><span class="uk-text-danger">' . rex_i18n::translate($this->params['warning_messages'][$this->getId()], false) . '</span></p>';
+}
 
 ?>
-<div class="<?php echo $class_group ?>">
-    <label class="control-label" for="<?php echo $this->getFieldId() ?>"><?php echo $this->getLabelStyle($this->getElement(1)) ?></label>
-    <div class="input-group">
-        <span class="input-group-addon"><img id="<?php echo $this->getFieldId() ?>-captcha" src="<?php echo $link ?>" onclick="javascript:this.src='<?php echo $link ?>&'+Math.random();" alt="CAPTCHA" /></span>
-        <input class="form-control" type="text" name="<?php echo $this->getFieldName() ?>" id="<?php echo $this->getFieldId() ?>" value="" maxlength="5" size="5" />
-        <span class="input-group-btn"><a class="btn btn-default" href="javascript:void();" onclick="document.getElementById('<?php echo $this->getFieldId() ?>-captcha').src='<?php echo $link ?>&'+Math.random(); return false;">Reload</a></span>
+<div class="<?= $class_group ?>">
+    <label class="uk-form-label uk-form-required" for="<?= $this->getFieldId() ?>"><?= $this->getElement('label') ?></label>
+    <div class="uk-form-controls">
+        <img src="<?= $link ?>" onclick="javascript:this.src='<?= $link ?>&'+Math.random();" class="captcha" alt="<?= rex_i18n::translate($this->getElement('label')) ?>" />
+        <div class="uk-margin-small-top">
+            <input class="uk-input<?= $class_group != 'uk-margin' ? ' uk-form-danger' : '' ?>" id="<?= $this->getFieldId() ?>" 
+                   name="<?= $this->getFieldName() ?>" type="text" 
+                   autocomplete="off" 
+                   value="" />
+        </div>
+        <?= $notice ?>
     </div>
-    <?php echo $notice ?>
 </div>

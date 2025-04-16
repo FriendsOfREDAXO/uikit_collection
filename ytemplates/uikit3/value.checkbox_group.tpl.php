@@ -1,39 +1,61 @@
 <?php
 
+/**
+ * @var rex_yform_value_checkbox_group $this
+ * @psalm-scope-this rex_yform_value_checkbox_group
+ */
+
+$options ??= [];
+$values = $this->getValue();
+if (!is_array($values)) {
+    $values = explode(',', $values);
+}
+
 $notices = [];
-if ($this->getElement('notice') != '') {
+if ('' != $this->getElement('notice')) {
     $notices[] = rex_i18n::translate($this->getElement('notice'), false);
 }
 if (isset($this->params['warning_messages'][$this->getId()]) && !$this->params['hide_field_warning_messages']) {
-    $notices[] = '<span class="text-warning">' . rex_i18n::translate($this->params['warning_messages'][$this->getId()], false) . '</span>'; //    var_dump();
+    $notices[] = '<span class="uk-text-danger">' . rex_i18n::translate($this->params['warning_messages'][$this->getId()], false) . '</span>';
 }
 
 $notice = '';
 if (count($notices) > 0) {
-    $notice = '<p class="help-block">' . implode('<br />', $notices) . '</p>';
+    $notice = '<p class="uk-form-help-block uk-text-small">' . implode('<br />', $notices) . '</p>';
 }
 
+$class_group = trim('uk-margin ' . $this->getWarningClass());
+
 ?>
-
-<?php if (trim($this->getLabel()) != ''): ?>
-<div class="checkbox-group form-group">
-    <label class="control-label"><?php echo $this->getLabel() ?></label>
-
-<?php endif; ?>
-
-<?php foreach ($options as $k => $v): ?>
-    <?php
-    $class_group = trim('checkbox ' . $this->getHTMLClass($k) . ' ' . $this->getWarningClass());
-    ?>
-    <div class="<?= $class_group ?>" id="<?= $this->getHTMLId($k) ?>">
-        <label>
-            <input type="checkbox" name="<?= $this->getFieldName() ?>[]" value="<?= $k ?>"<?= in_array($k, $this->getValue()) ? ' checked="checked"' : '' ?> />
-            <?= $this->getLabelStyle($v) ?>
-        </label>
+<div class="<?= $class_group ?>" id="<?= $this->getHTMLId() ?>">
+    <label class="uk-form-label <?= $this->getElement('required') ? 'uk-form-required' : '' ?>"><?= $this->getLabel() ?></label>
+    <div class="uk-form-controls uk-form-controls-text">
+        <?php foreach ($options as $index => $option): ?>
+            <?php
+            $attributes = [];
+            $attributes['id'] = $this->getFieldId() . '-' . $index;
+            $attributes['name'] = $this->getFieldName() . '[]';
+            $attributes['value'] = $option['value'];
+            $attributes['type'] = 'checkbox';
+            $attributes['class'] = 'uk-checkbox';
+            
+            if ($this->getWarningClass()) {
+                $attributes['class'] .= ' uk-form-danger';
+            }
+            
+            if (in_array((string) $option['value'], $values)) {
+                $attributes['checked'] = 'checked';
+            }
+            
+            $attributes = $this->getAttributeElements($attributes, ['required', 'disabled', 'readonly']);
+            ?>
+            <div class="uk-margin-small-top">
+                <label>
+                    <input <?= implode(' ', $attributes) ?> />
+                    <span class="uk-margin-small-left"><?= $option['label'] ?></span>
+                </label>
+            </div>
+        <?php endforeach ?>
+        <?= $notice ?>
     </div>
-<?php endforeach ?>
-<?php echo $notice; ?>
-
-<?php if (trim($this->getLabel()) != ''): ?>
 </div>
-<?php endif; ?>

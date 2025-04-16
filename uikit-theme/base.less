@@ -1,0 +1,40 @@
+// REDAXO UIkit Theme - Base-Komponenten-Anpassungen
+// Diese Datei enthält Anpassungen an den UIkit-Basis-Stilen, um Konflikte mit REDAXO zu vermeiden
+
+// Base-Hook zum Deaktivieren bestimmter Standard-Stile für das Backend
+.hook-base() {
+    // Wir vermeiden globale Stile, die das REDAXO-Backend beeinflussen könnten
+}
+
+// Normalisierung einschränken
+.hook-base-body() {
+    // Keine Body-Stile anwenden, da diese bereits von REDAXO definiert sind
+}
+
+// Link-Stile nur innerhalb von UIkit-Komponenten anwenden
+.hook-base-link() {
+    // Links nur innerhalb von UIkit-Komponenten stylen
+}
+
+// Überschriften nicht global überschreiben
+.hook-base-heading() {
+    // Keine globalen Überschriften-Stile
+}
+
+// Absätze nicht global verändern
+.hook-base-paragraph() {
+    // Keine globalen Absatz-Stile
+}
+
+// Zusätzliche Stile über misc-Hook
+.hook-base-misc() {
+    // Selektoren gezielt auf UIkit-Komponenten beschränken
+    [class*='uk-'] a {
+        text-decoration: none;
+    }
+    
+    // UIkit-Komponenten aus dem Reset ausnehmen
+    [class*='uk-'] {
+        box-sizing: border-box;
+    }
+}

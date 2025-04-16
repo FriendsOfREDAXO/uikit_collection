@@ -1,14 +1,13 @@
 package: uikit_collection
 
-version: '4.0.0'
-vendor: '3.17.11'
+version: '5.0.0'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
 
 default_config:
     path: 'assets/addons/uikit_collection/uikit/dist'
-    prefix: ''
+    prefix: 'redaxo-theme'
 
 requires:
     redaxo: '>=5.15.0'

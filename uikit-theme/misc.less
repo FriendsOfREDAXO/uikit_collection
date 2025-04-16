@@ -1,0 +1,51 @@
+// REDAXO UIkit Theme - Miscellaneous-Anpassungen
+// Diese Datei enthält allgemeine Anpassungen und Überschreibungen
+
+// REDAXO-spezifische Anpassungen
+.hook-misc() {
+    // YForm-spezifische Klassen
+    // Wir definieren einige Kompatibilitätsklassen für YForm
+
+    // Wrapper für YForm-Formulare
+    .yform {
+        .uk-form-controls {
+            margin-bottom: 15px;
+        }
+    }
+
+    // Validierungsfehler in YForm
+    .yform .has-error .uk-form-label,
+    .yform .has-error .control-label {
+        color: @global-danger-background;
+    }
+
+    // Fehlermeldungen in YForm
+    .alert-danger, 
+    .alert-success {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 2px;
+    }
+
+    .alert-danger {
+        color: darken(@global-danger-background, 15%);
+        background-color: lighten(@global-danger-background, 40%);
+        border-color: lighten(@global-danger-background, 35%);
+    }
+
+    .alert-success {
+        color: darken(@global-primary-background, 15%);
+        background-color: lighten(@global-primary-background, 45%);
+        border-color: lighten(@global-primary-background, 40%);
+    }
+    
+    // Allgemeine Stilanpassungen für bessere REDAXO-Integration
+    .uk-container {
+        // Containerbreite für das Backend anpassen
+        &.rex-main-container {
+            max-width: none;
+            padding: 0;
+        }
+    }
+}

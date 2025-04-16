@@ -32,6 +32,12 @@ Verwendung in boot.php des project addons:
 uikitCollection::cke5LightboxHelper();
 ```
 
+Optionaler Parameter für einen benutzerdefinierten Selector (Standard ist 'main'):
+
+```php
+uikitCollection::cke5LightboxHelper('article');
+```
+
 ## UikitIcon
 
 Verwendung: 
@@ -84,8 +90,76 @@ Dieses Fragment nimmt über dem Parameter media eine Liste von Medien des Medien
 
 > Es wird ein Metafeld med_copyright in den Medien-Metas benötigt. 
 
+### uikit_slideshow.php
 
-## Credits
+Mit diesem Fragment können Slideshows mit Bildern, Videos und Inhalten erstellt werden. Es unterstützt verschiedene Animationstypen und Navigationsmöglichkeiten.
+
+**Parameter**
+
+```
+$help['slides']            = 'Array mit Slides. Jeder Slide ist ein Array mit den Keys "media", "title", "content"';
+$help['animation']         = 'Animation-Typ: fade, slide, scale, pull, push (Standard: slide)';
+$help['ratio']             = 'Seitenverhältnis der Bilder, z.B. "16:9" oder "4:3" (Optional)';
+$help['autoplay']          = 'Automatische Wiedergabe (true/false)';
+$help['slide_show_nav']    = 'Navigation anzeigen (true/false)';
+$help['dotnav']            = 'Punktnavigation anzeigen (true/false)';
+```
+
+### uikit_grid.php
+
+Ein flexibles Fragment zur Erstellung von Grid- oder Masonry-Layouts mit UIkit. Ideal für responsive Darstellungen von Content-Elementen, Bildern oder Cards.
+
+**Parameter**
+
+```
+$help['items']             = 'Array mit Items. Jedes Item ist ein Array mit beliebigen Keys';
+$help['masonry']           = 'Masonry-Layout aktivieren (true/false)';
+$help['gap']               = 'Abstand zwischen den Items (small, medium, large oder Pixelwert)';
+$help['cols']              = 'Anzahl der Spalten (Default: 1-2@s 1-3@m 1-4@l)';
+```
+
+### uikit_modal.php
+
+Dieses Fragment ermöglicht die einfache Integration von UIkit Modals/Dialogen mit verschiedenen Einstellungsmöglichkeiten.
+
+**Parameter**
+
+```
+$help['id']              = 'ID für das Modal (erforderlich)';
+$help['title']           = 'Titel/Überschrift des Modals';
+$help['content']         = 'Hauptinhalt des Modals';
+$help['button_text']     = 'Text für den auslösenden Button';
+$help['size']            = 'Größe des Modals: container, small, large, full';
+```
+
+### uikit_offcanvas.php
+
+Mit diesem Fragment können Off-Canvas-Navigationen oder -Inhalte erstellt werden, die von der Seite eingeblendet werden.
+
+**Parameter**
+
+```
+$help['id']              = 'ID für das Offcanvas (erforderlich)';
+$help['position']        = 'Position des Offcanvas: left, right, top, bottom (Standard: left)';
+$help['mode']            = 'Animation: slide, push, reveal, none (Standard: slide)';
+$help['content']         = 'Hauptinhalt des Offcanvas';
+```
+
+### uikit_notification.php
+
+Dieses Fragment ermöglicht die Erstellung von dynamischen Benachrichtigungen mit UIkit.
+
+**Parameter**
+
+```
+$help['message']         = 'Nachrichtentext der Benachrichtigung';
+$help['status']          = 'Status der Benachrichtigung: primary, success, warning, danger';
+$help['position']        = 'Position: top-left, top-center, top-right, bottom-left, bottom-center, bottom-right';
+$help['show_immediately'] = 'Sofort anzeigen ohne Button (true/false)';
+```
+
+
+## Autoren
 
 Wolfgang Bund
 
@@ -96,9 +170,6 @@ Christian Kolloch
 Thomas Skerbis
 
 Markus Wottrich
-
-
-## Autor
 
 **Friends Of REDAXO**
 
