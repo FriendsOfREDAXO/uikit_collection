@@ -1,0 +1,30 @@
+{
+  "name": "uikit_collection",
+  "version": "5.0.0",
+  "description": "UIkit Collection for REDAXO CMS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"No build necessary\"",
+    "postinstall": "echo \"Dependencies installed\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FriendsOfREDAXO/uikit_collection.git"
+  },
+  "keywords": [
+    "redaxo",
+    "uikit",
+    "fragments",
+    "addon"
+  ],
+  "author": "Friends Of REDAXO",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FriendsOfREDAXO/uikit_collection/issues"
+  },
+  "homepage": "https://github.com/FriendsOfREDAXO/uikit_collection#readme",
+  "dependencies": {
+    "uikit": "^3.16.23"
+  }
+}
