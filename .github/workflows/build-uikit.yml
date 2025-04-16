@@ -22,6 +22,11 @@ jobs:
         with:
           node-version: '16'
           
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
+          pnpm --version
+          
       - name: Setup environment variables
         run: |
           echo "ROOT_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -66,7 +71,15 @@ jobs:
         run: |
           echo "Installing dependencies..."
           cd "$TEMP_DIR"
-          npm install
+          
+          # Prüfe, welche Package Manager verwendet wird (npm oder pnpm)
+          if grep -q "pnpm" package.json; then
+            echo "Verwende pnpm für die Installation"
+            pnpm install
+          else
+            echo "Verwende npm für die Installation"
+            npm install
+          fi
         
       - name: Create custom theme
         run: |
@@ -88,7 +101,16 @@ jobs:
         run: |
           echo "Compiling UIkit with custom theme..."
           cd "$TEMP_DIR"
-          npm run compile
+          
+          # Verwende direkte Kompilierungsbefehle anstelle von npm scripts
+          if [ -f "package.json" ] && grep -q "pnpm" package.json; then
+            echo "Verwende pnpm für die Kompilierung"
+            pnpm compile-less || pnpm run compile-less
+            pnpm compile-js || pnpm run compile-js
+          else
+            echo "Verwende npm für die Kompilierung"
+            npm run compile
+          fi
       
       - name: Copy compiled files
         run: |
