@@ -1,13 +1,16 @@
 package: uikit_collection
 
-version: '5.0.0'
+version: '5.1.0'
 author: 'Friends Of REDAXO'
 supportpage: https://github.com/FriendsOfREDAXO/uikit_collection
 info: 'FOR UIKIT Collection'
 
 default_config:
+    include_assets: false
     path: 'assets/addons/uikit_collection/uikit/dist'
-    prefix: 'redaxo-theme'
+    prefix: ''
+    backend_path: 'assets/addons/uikit_collection/uikit/dist'
+    backend_prefix: 'redaxo-theme'
 
 requires:
     redaxo: '>=5.15.0'
@@ -18,6 +21,9 @@ page:
     perm: admin
     icon: rex-icon fa-window-maximize
     subpages:
+        config:
+            title: 'Konfiguration'
+            icon: rex-icon fa-cogs
         demo:
             title: 'Demo'
             icon: rex-icon fa-desktop

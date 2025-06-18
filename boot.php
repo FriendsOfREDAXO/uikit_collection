@@ -4,9 +4,18 @@ $package = rex_addon::get('uikit_collection');
 $path = $package->getConfig('path');
 $prefix = $package->getConfig('prefix');
 
+// Backend-spezifische Konfiguration
+$backend_path = $package->getConfig('backend_path', $path);
+$backend_prefix = $package->getConfig('backend_prefix', $prefix);
+
 if ($prefix!='')
 {
   $prefix  = '.'.$prefix;
+}
+
+if ($backend_prefix!='')
+{
+  $backend_prefix  = '.'.$backend_prefix;
 }
 
 if (rex_plugin::get('yform', 'manager')->isAvailable()) {
@@ -16,15 +25,24 @@ if (rex_plugin::get('yform', 'manager')->isAvailable()) {
 
 if (rex::isBackend() && rex::getUser()) {
     rex_perm::register('uikit_modul[]');
-        // Korrekte Pfade für das UIkit im Backend
-        rex_view::addCssFile($package->getAssetsUrl('css/uikit'.$prefix.'.min.css'));
+        // Backend-spezifische UIkit Assets verwenden
+        if ($backend_path) {
+            $backend_css_file = $backend_path.'/css/uikit'.$backend_prefix.'.min.css';
+            $backend_js_file = $backend_path.'/js/uikit.min.js';
+            $backend_js_icons_file = $backend_path.'/js/uikit-icons.min.js';
+        } else {
+            // Standard-Assets verwenden wenn kein Backend-Pfad gesetzt
+            $backend_css_file = $package->getAssetsUrl('css/uikit'.$backend_prefix.'.min.css');
+            $backend_js_file = $package->getAssetsUrl('js/uikit.min.js');
+            $backend_js_icons_file = $package->getAssetsUrl('js/uikit-icons.min.js');
+        }
+        
+        rex_view::addCssFile($backend_css_file);
         rex_view::addCssFile($package->getAssetsUrl('uikit_backend_fix.css'));
-        rex_view::addJsFile($package->getAssetsUrl('js/uikit.min.js'));
-        rex_view::addJsFile($package->getAssetsUrl('js/uikit-icons.min.js'));
+        rex_view::addJsFile($backend_js_file);
+        rex_view::addJsFile($backend_js_icons_file);
 }
 
-// Hilfsklasse einbinden
-require_once rex_path::addon('uikit_collection').'lib/uikitCollection.php';
 
 // Frontend: UIkit Assets einbinden, wenn aktiviert
 if (rex::isFrontend() && $package->getConfig('include_assets', false) === true) {
@@ -32,12 +50,21 @@ if (rex::isFrontend() && $package->getConfig('include_assets', false) === true) 
         $content = $ep->getSubject();
         
         // UIkit CSS - korrekte Pfade
-        $cssFile = $package->getAssetsUrl('css/uikit'.$prefix.'.min.css');
+        if ($path) {
+            $cssFile = $path.'/css/uikit'.$prefix.'.min.css';
+        } else {
+            $cssFile = $package->getAssetsUrl('css/uikit'.$prefix.'.min.css');
+        }
         $cssLink = '<link rel="stylesheet" href="'.$cssFile.'">';
         
-        // UIkit JS - korrekte Pfade
-        $jsFile = $package->getAssetsUrl('js/uikit.min.js');
-        $jsIconsFile = $package->getAssetsUrl('js/uikit-icons.min.js');
+        // UIkit JS - korrekte Pfade  
+        if ($path) {
+            $jsFile = $path.'/js/uikit.min.js';
+            $jsIconsFile = $path.'/js/uikit-icons.min.js';
+        } else {
+            $jsFile = $package->getAssetsUrl('js/uikit.min.js');
+            $jsIconsFile = $package->getAssetsUrl('js/uikit-icons.min.js');
+        }
         $jsLink = '<script src="'.$jsFile.'"></script>';
         $jsIconsLink = '<script src="'.$jsIconsFile.'"></script>';
         
@@ -58,5 +85,13 @@ if (!$package->hasConfig('path')) {
 }
 if (!$package->hasConfig('prefix')) {
     $package->setConfig('prefix', '');
+}
+
+// Backend-spezifische Konfigurationen hinzufügen
+if (!$package->hasConfig('backend_path')) {
+    $package->setConfig('backend_path', '');
+}
+if (!$package->hasConfig('backend_prefix')) {
+    $package->setConfig('backend_prefix', '');
 }
 
